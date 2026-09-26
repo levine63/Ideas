@@ -148,6 +148,7 @@ button:focus-visible{outline:3px solid var(--rain);outline-offset:2px}
 .meter .b span{display:block;width:100%;background:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2010%22%20preserveAspectRatio%3D%22none%22%3E%3Crect%20x%3D%221%22%20y%3D%221.2%22%20width%3D%2222%22%20height%3D%227.8%22%20rx%3D%223.9%22%20fill%3D%22%23B07F45%22%20stroke%3D%22%236E4A22%22%20stroke-width%3D%221.2%22/%3E%3Cpath%20d%3D%22M5.5%201.6%20V8.6%22%20stroke%3D%22%236E4A22%22%20stroke-width%3D%221.1%22/%3E%3C/svg%3E") left bottom / 100% var(--slot) repeat-y;transition:height .35s ease}
 .meter .b.low{background:var(--hungry-soft)}
 .meter .b.low span{background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2010%22%20preserveAspectRatio%3D%22none%22%3E%3Crect%20x%3D%221%22%20y%3D%221.2%22%20width%3D%2222%22%20height%3D%227.8%22%20rx%3D%223.9%22%20fill%3D%22%23D0735C%22%20stroke%3D%22%238A2E1C%22%20stroke-width%3D%221.2%22/%3E%3Cpath%20d%3D%22M5.5%201.6%20V8.6%22%20stroke%3D%22%238A2E1C%22%20stroke-width%3D%221.1%22/%3E%3C/svg%3E")}
+.meter .b.fut{background:repeating-linear-gradient(0deg,transparent 0 8px,var(--chip) 8px 10px);opacity:.7}
 .meter .b.fut span{background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2010%22%20preserveAspectRatio%3D%22none%22%3E%3Crect%20x%3D%221%22%20y%3D%221.2%22%20width%3D%2222%22%20height%3D%227.8%22%20rx%3D%223.9%22%20fill%3D%22%23D6CFBD%22%20stroke%3D%22%23ABA38D%22%20stroke-width%3D%221.2%22/%3E%3Cpath%20d%3D%22M5.5%201.6%20V8.6%22%20stroke%3D%22%23ABA38D%22%20stroke-width%3D%221.1%22/%3E%3C/svg%3E")}
 .meter .b.now{box-shadow:0 0 0 2px var(--ink)}
 .meter .b .v{position:absolute;left:-2px;right:-2px;text-align:center;font-size:11px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--ink2);font-style:normal}
@@ -186,6 +187,16 @@ button:focus-visible{outline:3px solid var(--rain);outline-offset:2px}
 @keyframes flash{0%{background:var(--leaf-soft)}100%{}}
 .eatnote{font-size:14px;color:var(--ink2);padding:0 4px}
 
+/* family + nudges + party */
+.fam{display:grid;gap:6px}
+.fam .fx{grid-template-columns:36px 1fr auto;padding:4px 8px}
+.famn{font-family:var(--display);font-size:24px;min-width:34px;text-align:center;align-self:center;font-variant-numeric:tabular-nums}
+.nudgecard{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;background:var(--maize-soft);border:2px solid var(--sack);border-radius:16px;padding:10px}
+.party{position:absolute;inset:0;z-index:7;pointer-events:none;overflow:hidden}
+.party i{position:absolute;top:-50px;left:var(--x);font-style:normal;font-size:calc(26px * var(--s));display:none}
+.party .ban{position:absolute;top:32%;left:6%;right:6%;background:var(--maize);color:#2A1E00;font-family:var(--display);font-weight:800;font-size:30px;line-height:1.1;text-align:center;border-radius:22px;padding:18px 12px;box-shadow:0 6px 0 var(--sack-dk),0 16px 30px rgb(0 0 0/.25);border:3px solid var(--sack-dk);animation:banout .4s 3s forwards}
+@keyframes banout{to{opacity:0}}
+
 /* card */
 .plancard{border:3px dashed var(--sack);border-radius:18px;padding:10px;display:grid;gap:8px;background-color:var(--panel);
   background-image:repeating-linear-gradient(45deg,transparent 0 6px,rgb(0 0 0/.03) 6px 7px)}
@@ -221,6 +232,11 @@ button:focus-visible{outline:3px solid var(--rain);outline-offset:2px}
   @keyframes blink{0%,94%,100%{transform:scaleY(1)}97%{transform:scaleY(.1)}}
   .face{transform-origin:50% 90%}
   .face.bob{animation:bob .5s}
+  .face.dance{animation:bob .45s 6}
+  .party i{display:block;animation:fall 2.6s var(--d) cubic-bezier(.3,.1,.7,1) forwards}
+  @keyframes fall{to{transform:translateY(880px) rotate(var(--r))}}
+  .party .ban{animation:banin .5s cubic-bezier(.2,1.6,.4,1), banout .4s 3s forwards}
+  @keyframes banin{from{transform:scale(.3) rotate(-8deg);opacity:0}}
   @keyframes bob{40%{transform:rotate(-6deg)}80%{transform:rotate(4deg)}}
 }
 </style>
@@ -252,14 +268,22 @@ const PHRASES = {
     example:"👀 Try an example family", exampleBanner:"Example family. These are not your numbers.", mine:"Start mine",
     guess_say:"Quick guess! <b>Before we count</b>: in which moon will the bags run out? There is no wrong answer.",
     guess_lasts:"🌽 They will last until the next harvest",
-    eat_say:"How much maize does your family <b>eat in one moon</b>? Half bags are fine.",
+    eat_say:"Who eats from your store? Then: how much maize does your family <b>eat in one moon</b>? Half bags are fine.",
+    adults:"Adults", kids:"Children", inSchool:"Children in school",
+    nudge_food:"Is {b} a moon enough for {a} adults and {k} children? Families that size often eat about {s} a moon.",
+    nudge_food_yes:"Use {s}", nudge_food_no:"Keep mine",
+    nudge_school:"You have {n} children in school. No fees, uniforms or books this year?",
+    nudge_school_yes:"🎒 Add school costs", nudge_school_no:"None this year",
+    nudge_safe:"🐀 Khoswe is happy: no keep-safe bags! Almost every family has a surprise: the clinic, a funeral, a broken bike.",
+    nudge_safe_yes:"🐀 Keep some safe", nudge_safe_no:"Skip",
+    party:"Food until harvest!",
     eat_year:"For the whole year that is <b>{b}</b>.",
     cat_school:"School", cat_home:"Home", cat_farm:"Farm", cat_people:"People", cat_surprise:"Surprises",
     say_school:"Now let's walk through the year. <b>School</b>: fees, uniforms, books… Tap each thing your family will pay for.",
     say_home:"<b>Home</b>: salt, soap, oil, grinding… small things add up. Tap what you buy.",
     say_farm:"<b>Farm</b>: seed and fertiliser for next season. Hired help. Tap what you need.",
-    say_people:"<b>People</b>: funerals, weddings, church, relatives who ask. Tap what might come.",
-    say_surprise:"This is <b>Khoswe the rat</b> 🐀. He eats bags for things nobody plans: the clinic, a broken bike. Keep some bags safe from him?",
+    say_people:"<b>People</b>: weddings, church, relatives who ask, loans to repay. Tap what will come.",
+    say_surprise:"This is <b>Khoswe the rat</b> 🐀. He eats bags for things nobody can plan: the clinic, a funeral, a broken bike. Keep some bags safe from him?",
     board:"Your year", keepSafe:"🐀 Keep-safe: {b}",
     sheet_which:"Which moon?", sheet_pick:"Tap a moon first", sheet_surprise:"🐀 No moon: these bags stay in the store, safe from Khoswe.",
     sheet_ok:"✓ Put it on the board", sheet_none:"✓ Not needed this year", close:"Close",
@@ -290,7 +314,7 @@ const PHRASES = {
       phone:"Phone talk-time", blanket:"Blankets", relish:"Relish, fish",
       seed:"Seed", fert:"Fertiliser", labour:"Hired help", tools:"Hoe, tools", store:"Sacks, storage", transport:"Transport",
       funeral:"Funeral", wedding:"Wedding", church:"Church, mosque", relatives:"Relatives ask", loan:"Loan to repay", group:"Savings group",
-      sick:"Clinic", medicine:"Medicine", animal:"Animal dies", bike:"Something breaks", pests:"Pests, bad rain", other:"Something else" }
+      sick:"Clinic", medicine:"Medicine", animal:"Animal dies", bike:"Something breaks", other:"Something else" }
   }
 };
 let LANG = "en";
@@ -306,20 +330,29 @@ const CATS = [
   {id:"school", ic:"🎒", items:[["fees","🏫"],["uniform","👕"],["shoes","👟"],["books","✏️"],["exam","📝"],["bus","🚌"]]},
   {id:"home", ic:"🏠", items:[["salt","🧂"],["soap","🧼"],["oil","🛢️"],["light","🕯️"],["mill","⚙️"],["roof","🛖"],["phone","📱"],["blanket","🛏️"],["relish","🐟"]]},
   {id:"farm", ic:"🌱", items:[["seed","🌽"],["fert","🧪"],["labour","🧑‍🌾"],["tools","⛏️"],["store","🧺"],["transport","🚲"]]},
-  {id:"people", ic:"👪", items:[["funeral","🕊️"],["wedding","💍"],["church","⛪"],["relatives","🤲"],["loan","📒"],["group","🪙"]]},
-  {id:"surprise", ic:"🐀", surprise:true, items:[["sick","🏥"],["medicine","💊"],["animal","🐐"],["bike","🔧"],["pests","🐛"],["other","❔"]]}
+  {id:"people", ic:"👪", items:[["wedding","💍"],["church","⛪"],["relatives","🤲"],["loan","📒"],["group","🪙"]]},
+  {id:"surprise", ic:"🐀", surprise:true, items:[["sick","🏥"],["medicine","💊"],["funeral","🕊️"],["animal","🐐"],["bike","🔧"],["other","❔"]]}
 ];
 const ITEM = {}; CATS.forEach(c=>c.items.forEach(([id,ic])=>ITEM[id]={id,ic,cat:c.id,surprise:!!c.surprise}));
 const STEPS = ["harvest","guess","eat","remember","play","fix","card"];
 const CHECKS = [5,7,9]; // Oct, Dec, Feb
+
+// Deployer switches and food benchmark.
+// Zambia: ~130 kg maize per person per year nationally, 150-185 kg in rural farm households.
+// With a child counted as half an adult, that is ~170 kg per adult per year = 0.28 of a 50 kg bag a moon.
+// This check tells families what is typical, which is outside information; turn it off for a pure-recall study arm.
+const CHECK = { food:true, school:true, keepSafe:true };
+const FOOD = { kgPerAdultYear:170, childShare:.5, bagKg:50, askBelow:.75 };
+const typicalEat = () => (S.adults + S.kids*FOOD.childShare) * FOOD.kgPerAdultYear / 12 / FOOD.bagKg;
+const suggestEat = () => Math.max(.5, Math.ceil(typicalEat()*2)/2);
 const FACE_FOR = {harvest:"happy", guess:"think", eat:"happy", remember:"think", play:"think", fix:"think", card:"happy"};
 
-function example(){ return { harvest:18, price:300, guess:10, eat:1.5, eat0:1.5, catIdx:0, catsDone:["school","home","farm","people","surprise"],
+function example(){ return { harvest:18, price:300, guess:10, eat:1.5, eat0:1.5, adults:2, kids:4, school:2, asked:{}, catIdx:0, catsDone:["school","home","farm","people","surprise"],
   picks:{ fees:{b:1,m:8}, uniform:{b:.5,m:8}, books:{b:.5,m:4}, salt:{b:.5,m:2}, soap:{b:.5,m:5}, mill:{b:.5,m:7},
-    seed:{b:1,m:5}, fert:{b:2,m:6}, labour:{b:1,m:7}, funeral:{b:1,m:3}, church:{b:.5,m:7}, loan:{b:1,m:1}, sick:{b:1,m:null} },
+    seed:{b:1,m:5}, fert:{b:2,m:6}, labour:{b:1,m:7}, church:{b:.5,m:7}, loan:{b:1,m:1}, sick:{b:1,m:null}, funeral:{b:1,m:null} },
   step:0, example:true, showPrice:true }; }
-function blank(){ return {harvest:0, price:300, guess:null, eat:1, eat0:null, catIdx:0, catsDone:[], picks:{}, step:0, example:false, showPrice:false}; }
-let S = blank(), sheet = null, playing = null, playMonth = -1, ui = {};
+function blank(){ return {harvest:0, price:300, guess:null, eat:1, eat0:null, adults:2, kids:0, school:0, asked:{}, catIdx:0, catsDone:[], picks:{}, step:0, example:false, showPrice:false}; }
+let S = blank(), sheet = null, playing = null, playMonth = -1, ui = {}, nudge = null;
 
 // ================= MODEL =================
 const reserve = () => Object.entries(S.picks).filter(([k])=>ITEM[k].surprise).reduce((a,[,p])=>a+p.b,0);
@@ -398,7 +431,7 @@ function bagUnit(){ const base=Math.max(1,S.harvest-reserve()); return base<=24?
 function meterStyle(){ const base=Math.max(1,S.harvest-reserve()), slots=Math.ceil(base/bagUnit()); return `--slot:calc((var(--mh) - 25px) / ${slots})`; }
 const bagKey = () => bagUnit()>1 ? `<div class="bagkey">${t("bagkey",{n:bagUnit()})}</div>` : "";
 function bars(r, upto){ const base=Math.max(1,S.harvest-reserve());
-  return r.out.map((o,i)=>{ const vis=i<=upto, pct=Math.min(100,o.start/base*100);
+  return r.out.map((o,i)=>{ const vis=i<=upto, pct=vis?Math.min(100,o.start/base*100):0; // future moons stay empty: no spoilers
     return `<div class="b ${vis?(o.low?"low":""):"fut"} ${i===upto&&upto<11?"now":""}" tabindex="0" data-tip="${vis?tip(i,o):mName(i)}"><span style="height:${pct}%"></span>${vis?`<em class="v" style="bottom:calc(${pct}% + 2px)">${fmt(o.start)}</em>`:""}</div>`; }).join(""); }
 function speak(s){ try{ speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(s.replace(/<[^>]+>/g,"")); u.rate=.92; u.lang="en"; speechSynthesis.speak(u);}catch(e){} }
 
@@ -415,7 +448,9 @@ const SCREENS = {
   guess: () => ({ say:t("guess_say"), next:S.guess!==null, body:`${moonGrid(i=>S.guess===i?"sel":"","g")}
     <button class="m wide ${S.guess===12?"sel":""}" data-a="g" data-i="12"><span class="nm">${t("guess_lasts")}</span></button>${legend()}` }),
 
-  eat: () => ({ say:t("eat_say"), next:S.eat>0, body:`<div class="store-row">${sacks(S.eat, ui.added)}</div>
+  eat: () => ({ say:t("eat_say"), next:S.eat>0, body:`
+    <div class="fam">${famRow("🧑",t("adults"),"adults")}${famRow("🧒",t("kids"),"kids")}${famRow("🎒",t("inSchool"),"school")}</div>
+    <div class="store-row">${sacks(S.eat, ui.added)}</div>
     ${stepper("e-","e+",fmt(S.eat),t("bagsEachMoon"),S.eat<=.5)}
     <div class="boardwrap"><div class="board">${MONTH_IC.map(()=>`<div class="col">${pins(S.eat)}</div>`).join("")}</div>${band()}${labels()}</div>
     <div class="small">${t("eat_year",{b:nb(S.eat*12)})}</div>` }),
@@ -461,13 +496,33 @@ const SCREENS = {
     ${ui.toast?`<div class="toast">${t("keep_toast")}</div>`:""}
     <div class="row"><button class="pill" data-a="restart">${t("startAgain")}</button><button class="pill" data-a="erase">${ui.eraseArmed?t("erase_sure"):t("erase")}</button></div>` }; }
 };
+function famRow(ic,label,key){ const v=S[key], min=key==="adults"?1:0, max=key==="school"?S.kids:20;
+  return `<div class="fx"><span class="ic">${ic}</span><span class="t">${label}</span><span class="ctl"><button data-a="fam" data-k="${key}" data-d="-1" aria-label="less" ${v<=min?'aria-disabled="true"':""}>−</button><b class="famn">${v}</b><button data-a="fam" data-k="${key}" data-d="1" aria-label="more" ${v>=max?'aria-disabled="true"':""}>+</button></span></div>`; }
 function pins(n){ let h=""; for(let k=0;k<Math.floor(Math.min(n,8));k++) h+='<i class="pin"></i>'; if(n%1) h+='<i class="pin half"></i>'; return h; }
 function burst(){ let h=""; for(let i=0;i<10;i++){ const a=i/10*Math.PI*2; h+=`<i style="--dx:${Math.round(Math.cos(a)*90)}px;--dy:${Math.round(Math.sin(a)*60-30)}px"></i>`; } return h; }
+
+// ================= NUDGES =================
+// Asked once each, never blocking: the family can always carry on.
+function needNudge(){
+  const st=STEPS[S.step];
+  if(st==="eat" && CHECK.food && !S.asked.food && S.eat < FOOD.askBelow*typicalEat()) return "food";
+  if(st==="remember" && CATS[S.catIdx].id==="school" && CHECK.school && !S.asked.school && S.school>0
+     && !Object.keys(S.picks).some(k=>ITEM[k].cat==="school")) return "school";
+  if(st==="remember" && CATS[S.catIdx].surprise && CHECK.keepSafe && !S.asked.keepSafe && reserve()===0) return "keepSafe";
+  return null;
+}
+function nudgeView(){
+  const v = {s:nb(suggestEat()), b:nb(S.eat), a:S.adults, k:S.kids, n:S.school};
+  const K = {food:["nudge_food","nudge_food_yes","nudge_food_no"], school:["nudge_school","nudge_school_yes","nudge_school_no"], keepSafe:["nudge_safe","nudge_safe_yes","nudge_safe_no"]}[nudge];
+  return { say:t(K[0],v), card:`<div class="nudgecard"><button class="pill strong" data-a="nudgeYes">${t(K[1],v)}</button><button class="pill" data-a="nudgeNo">${t(K[2],v)}</button></div>` };
+}
 
 // ================= RENDER =================
 let lastMood = null;
 function render(){
-  const st = STEPS[S.step], sc = SCREENS[st](), mood = sc.mood || FACE_FOR[st];
+  const st = STEPS[S.step], sc = SCREENS[st]();
+  if(nudge){ const nv=nudgeView(); sc.say=nv.say; sc.body=nv.card+sc.body; sc.mood="think"; }
+  const mood = sc.mood || FACE_FOR[st];
   $("#dots").innerHTML = STEPS.map((_,i)=>`<i class="${i<S.step?"done":i===S.step?"on":""}"></i>`).join("");
   if(mood!==lastMood){ $("#face").innerHTML = face(mood); const f=$("#face .face"); if(lastMood) f.classList.add("bob"); lastMood=mood; }
   $("#bubble").innerHTML = sc.say;
@@ -480,6 +535,14 @@ function render(){
   $("#phone").querySelectorAll(".ratdash").forEach(e=>e.remove());
   if(ui.ratRun){ $("#phone").insertAdjacentHTML("beforeend",`<div class="ratdash" aria-hidden="true"><span>🐀</span></div>`); setTimeout(()=>document.querySelectorAll(".ratdash").forEach(e=>e.remove()),2300); }
   ui = {};
+}
+function party(){
+  document.querySelectorAll(".party").forEach(e=>e.remove());
+  const bits=["🌽","🎉","🌽","✨","🌾"]; let h="";
+  for(let i=0;i<36;i++) h+=`<i style="--x:${Math.round(Math.random()*100)}%;--d:${(Math.random()*.9).toFixed(2)}s;--r:${Math.round(Math.random()*720-360)}deg;--s:${(0.8+Math.random()*.9).toFixed(2)}">${bits[i%bits.length]}</i>`;
+  $("#phone").insertAdjacentHTML("beforeend",`<div class="party" aria-live="polite">${h}<div class="ban">🎉 ${t("party")} 🎉</div></div>`);
+  const f=$("#face .face"); if(f){ f.classList.remove("dance"); void f.offsetWidth; f.classList.add("dance"); }
+  setTimeout(()=>document.querySelectorAll(".party").forEach(e=>e.remove()),3400);
 }
 function sheetHtml(){
   const it = ITEM[sheet.id];
@@ -495,19 +558,22 @@ function sheetHtml(){
 const markDone = () => { const id=CATS[S.catIdx].id; if(!S.catsDone.includes(id)) S.catsDone.push(id); };
 function startPlay(){
   clearInterval(playing); playMonth=-1;
-  if(matchMedia("(prefers-reduced-motion: reduce)").matches){ playMonth=11; render(); return; }
-  playing = setInterval(()=>{ playMonth++; if(playMonth>=11){ clearInterval(playing); playing=null; } render(); }, 520);
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches){ playMonth=11; render(); if(run().runOut===null) party(); return; }
+  playing = setInterval(()=>{ playMonth++; if(playMonth>=11){ clearInterval(playing); playing=null; } render(); if(playMonth>=11 && run().runOut===null) party(); }, 520);
   render();
 }
 function flashRow(id){ requestAnimationFrame(()=>{ const el=document.getElementById("fx-"+id); if(el) el.classList.add("flash"); }); }
 const ACTIONS = {
   "h+":()=>{S.harvest=Math.min(60,S.harvest+1); ui.added=true;}, "h-":()=>S.harvest=Math.max(0,S.harvest-1),
   "p+":()=>S.price=Math.min(2000,S.price+25), "p-":()=>S.price=Math.max(0,S.price-25), "price":()=>S.showPrice=true,
-  "new":()=>S=blank(), "ex":()=>S=example(), "restart":()=>{S.step=0; S.catIdx=0; playMonth=-1; clearInterval(playing); playing=null;},
+  "new":()=>S=blank(), "ex":()=>S=example(), "restart":()=>{S.step=0; S.catIdx=0; S.asked={}; playMonth=-1; clearInterval(playing); playing=null;},
   "erase":()=>{ if(eraseArmed){ S=blank(); eraseArmed=false; } else { eraseArmed=true; ui.eraseArmed=true; setTimeout(()=>eraseArmed=false,3000); } },
   "keep":()=>ui.toast=true,
   "recheck":()=>{ clearInterval(playing); playing=null; S.step=STEPS.indexOf("remember"); S.catIdx=0; $("#pbody").scrollTop=0; },
   "g":el=>S.guess=+el.dataset.i,
+  "fam":el=>{ const k=el.dataset.k, min=k==="adults"?1:0; S[k]=Math.max(min,Math.min(20,S[k]+ +el.dataset.d)); S.school=Math.min(S.school,S.kids); },
+  "nudgeYes":()=>{ S.asked[nudge]=true; if(nudge==="food"){ S.eat=suggestEat(); } nudge=null; },
+  "nudgeNo":()=>{ S.asked[nudge]=true; nudge=null; return ACTIONS.next({getAttribute:()=>null}); },
   "e+":()=>{S.eat=Math.min(6,S.eat+.5); ui.added=true;}, "e-":()=>S.eat=Math.max(.5,S.eat-.5),
   "cat":el=>{markDone(); S.catIdx=+el.dataset.i; if(CATS[S.catIdx].surprise) ui.ratRun=true;},
   "item":el=>{const p=S.picks[el.dataset.id]; sheet={id:el.dataset.id, b:p?p.b:1, m:p?p.m:null, had:!!p};},
@@ -522,6 +588,8 @@ const ACTIONS = {
   "r+":()=>{ const k=Object.keys(S.picks).find(k=>ITEM[k].surprise)||"other"; S.picks[k]={b:(S.picks[k]?.b||0)+.5,m:null}; },
   "r-":()=>{ const k=Object.keys(S.picks).find(k=>ITEM[k].surprise); if(k){ S.picks[k].b-=.5; if(S.picks[k].b<=0) delete S.picks[k]; } },
   "next":el=>{ if(el.getAttribute("aria-disabled")==="true") return "skip";
+    if(nudge){ S.asked[nudge]=true; nudge=null; }
+    else { const n=needNudge(); if(n){ nudge=n; if(n==="keepSafe") ui.ratRun=true; return; } }
     if(STEPS[S.step]==="eat"){ if(S.eat0===null) S.eat0=S.eat; S.catIdx=0; }
     if(STEPS[S.step]==="remember"){ markDone(); if(S.catIdx<CATS.length-1){ S.catIdx++; if(CATS[S.catIdx].surprise) ui.ratRun=true; $("#pbody").scrollTop=0; return; } }
     S.step=Math.min(STEPS.length-1,S.step+1); $("#pbody").scrollTop=0; if(STEPS[S.step]==="play"){ playMonth=-1; clearInterval(playing); playing=null; } },
@@ -531,7 +599,11 @@ const ACTIONS = {
 let eraseArmed = false;
 document.addEventListener("click", e=>{
   const b = e.target.closest("[data-a]"); if(!b) return;
-  const f = ACTIONS[b.dataset.a]; if(f && f(b)==="skip") return; render();
+  const a = b.dataset.a;
+  if(nudge && !["next","nudgeYes","nudgeNo"].includes(a)) nudge=null;
+  const wasShort = STEPS[S.step]==="fix" && run().runOut!==null;
+  const f = ACTIONS[a]; if(f && f(b)==="skip") return; render();
+  if(wasShort && STEPS[S.step]==="fix" && run().runOut===null) party();
 });
 const showTip = e => { const b=e.target.closest(".meter .b"); if(b && $("#tip")) $("#tip").textContent=b.dataset.tip; };
 document.addEventListener("pointerover", showTip); document.addEventListener("focusin", showTip);

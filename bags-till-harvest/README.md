@@ -35,10 +35,13 @@ It opens **empty**. Tap **👀 Try an example family** to load made-up numbers; 
 1. **Harvest.** Tap + to add bags to the store. Optionally set what one bag sells for, so
    costs also show in kwacha.
 2. **Guess.** Before any counting: *in which month will the bags run out?*
-3. **Eating.** How many bags the family eats each month, in half-bag steps.
+3. **Eating.** Who eats from the store (adults, children, children in school), then how many
+   bags the family eats each month, in half-bag steps.
 4. **Remember.** Walk through five categories (School, Home, Farm, People, Surprises). Tap
    a picture card, choose how many bags and which month. The pin lands on the year board.
-   Surprises have no month; they become a **keep-safe** reserve guarded from Khoswe the rat.
+   Surprises (clinic, medicine, **funeral**, animal dies, something breaks, something else) have
+   no month; they become a **keep-safe** reserve guarded from Khoswe the rat. Funeral lives here,
+   not under People, because nobody can plan when one comes.
 5. **Play the year.** The store empties one month at a time, shown as stacks of sacks (one sack
    per bag; for big harvests each sack is 2 or 5 bags, with a key). Months without maize turn red
    with a `!`. It ends with *Your guess / The count*. If the bags run short, the guide stays
@@ -55,7 +58,7 @@ It opens **empty**. Tap **👀 Try an example family** to load made-up numbers; 
 - The seven screens above, playable end to end, with back navigation
 - Bags as the only unit; half bags allowed
 - Optional bag price, which shows costs in kwacha
-- 33 picture cards in 5 categories, with ticks on categories already visited
+- 32 picture cards in 5 categories, with ticks on categories already visited
 - Year board with pins, animated play-through, guess-vs-count result
 - Live fixing of the plan
 - Plan card with checkpoint months
@@ -66,6 +69,35 @@ It opens **empty**. Tap **👀 Try an example family** to load made-up numbers; 
 - Plan card: check months keep their ✓ even when red; empty months show 0 and a bowl; "Keep this plan" tells people to take a photo; Erase needs two taps.
 - Every word the user sees comes from one phrase bank
 - Works at phone width and on a laptop; light and dark themes; honours "reduce motion"
+
+- **Three gentle questions**, each asked once, never blocking (tap "Keep mine" / "None this
+  year" / "Skip" or just Next):
+  - *Food:* if eating is under 75% of what is typical for the family size, the guide asks whether
+    it is enough and offers the typical amount.
+  - *School:* if children are in school but no School cost was picked.
+  - *Keep-safe:* if nothing is kept safe from Khoswe when leaving Surprises.
+- **Big celebration** when the plan lasts until harvest: maize rain, a banner, the guide dances.
+  It fires after playing the year, and on the Fix screen when a change clears the last red month.
+- **No spoilers:** during Play, months not reached yet stay empty.
+
+### Food benchmark and switches
+
+Near the top of the script:
+
+```js
+const CHECK = { food:true, school:true, keepSafe:true };
+const FOOD  = { kgPerAdultYear:170, childShare:.5, bagKg:50, askBelow:.75 };
+```
+
+- `kgPerAdultYear: 170`. Zambia averages about 130 kg of maize per person per year nationally,
+  and 150–185 kg in rural farm households (World Bank, *Maize Trade Policies in Zambia*, 2022;
+  Choma district figure of 185 kg). Counting a child as half an adult (`childShare`) gives
+  roughly 170 kg per adult: 0.28 of a 50 kg bag a month. A family of 2 adults and 4 children is
+  typically about 1.1 bags a month. **Confirm locally before any field use.**
+- `askBelow: .75`: the food question appears only when the plan is under 75% of typical.
+- The food question tells families what is typical, which is outside information the original
+  study did not give. Set `CHECK.food = false` for a pure-recall study arm. The school and
+  keep-safe questions only jog memory, which is closer to the study's own prompts.
 
 ### Excluded, on purpose, for now
 - **Other languages.** The phrase bank is ready for them; only English is written.
@@ -112,7 +144,7 @@ question.
 4. Word amounts of bags with `bag_one` ("{n} bag", for ½ or 1) and `bag_other`
    ("{n} bags"). If your language has different plural rules, change `nb()` in the script.
 5. `months` must stay a list of **12** names, in harvest order starting with May.
-6. `items` must keep all 33 keys. Their order doesn't matter.
+6. `items` must keep all 32 keys. Their order doesn't matter.
 7. `<b>…</b>` marks a word in bold. Keep it or drop it.
 8. Set `LANG = "ny"` (your new code) and reload.
 
@@ -130,9 +162,9 @@ Many phones have no voice for Nyanja or Bemba, so expect recorded audio to be ne
 | All | `bag_one`, `bag_other`, `next`, `done`, `back`, `bagsEachMoon`, `empty`, `k`, `months`, `seasons` |
 | Harvest | `harvest_say`, `harvest_unit`, `harvest_price`, `price_btn`, `example`, `exampleBanner`, `mine` |
 | Guess | `guess_say`, `guess_lasts` |
-| Eating | `eat_say`, `eat_year` |
-| Remember | `cat_*` (5 category names), `say_*` (5 category prompts), `board`, `keepSafe`, `sheet_which`, `sheet_pick`, `sheet_surprise`, `sheet_ok`, `close`, `items` |
-| Play | `play_say`, `play_done_bad`, `play_done_good`, `recheck_q`, `recheck_btn`, `bagkey`, `good_spare_r`, `play_btn`, `play_again`, `play_tap`, `play_tip`, `tip_left`, `tip_none`, `guessed`, `counted`, `harvestWord`, `good`, `good_spare`, `bad`, `bad_one`, `bad_comfort` |
+| Eating | `eat_say`, `eat_year`, `adults`, `kids`, `inSchool`, `nudge_food`, `nudge_food_yes`, `nudge_food_no` |
+| Remember | `cat_*` (5 category names), `say_*` (5 category prompts), `board`, `keepSafe`, `sheet_which`, `sheet_pick`, `sheet_surprise`, `sheet_ok`, `sheet_none`, `close`, `items`, `nudge_school`, `nudge_school_yes`, `nudge_school_no`, `nudge_safe`, `nudge_safe_yes`, `nudge_safe_no` |
+| Play | `play_say`, `play_done_bad`, `play_done_good`, `recheck_q`, `recheck_btn`, `bagkey`, `good_spare_r`, `party`, `play_btn`, `play_again`, `play_tap`, `play_tip`, `tip_left`, `tip_none`, `guessed`, `counted`, `harvestWord`, `good`, `good_spare`, `bad`, `bad_one`, `bad_comfort` |
 | Fix | `fix_say` (uses `{minus}` `{earlier}` `{later}` button pictures), `fix_ok_say`, `fix_ok`, `fix_short`, `earlier`, `later`, `eating`, `keepSafeRow`, `noCosts`, `eat_less`, `tooSmall` |
 | Plan card | `card_say`, `card_legend`, `card_short`, `keep`, `keep_toast`, `startAgain`, `erase`, `erase_sure` |
 
