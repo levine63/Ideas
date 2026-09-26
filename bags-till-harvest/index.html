@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Bags Till Harvest</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<script src="qrcode.js"></script><!-- qrcode-generator 1.4.4, MIT, Kazuhiko Arase; local so QR codes work offline -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
 <style>
 :root{
@@ -218,6 +219,9 @@ button:focus-visible{outline:3px solid var(--rain);outline-offset:2px}
 .pc.harv{box-shadow:0 0 0 3px var(--maize)}
 .remind{display:grid;gap:8px;justify-items:center;background:var(--panel);border:2px solid var(--line);border-radius:16px;padding:10px}
 a.pill{color:var(--ink);text-decoration:none}
+.qr{display:grid;place-items:center;background:#fff;padding:10px;border-radius:12px;min-height:60px}
+.qr svg{display:block;width:220px;height:220px}
+.linkbox{width:100%;font-size:12px;padding:6px;border:1px solid var(--line);border-radius:8px}
 .cardnote{font-size:15px;text-align:center}
 .cardnote.bad{color:var(--hungry);font-weight:700}
 .toast{background:var(--ink);color:var(--phone);border-radius:14px;padding:10px 12px;font-size:15px;text-align:center}
@@ -316,6 +320,15 @@ const PHRASES = {
     remind_title:"Count your maize bags",
     remind_details:"Plan: about {b} in the store at the start of {m} (including {r} keep-safe). If you have fewer, slow down early.",
     monthsLong:["May","June","July","August","September","October","November","December","January","February","March","April"],
+    share_app:"📲 Open this app on another phone", share_app_head:"Scan with your phone camera to open the app",
+    send_plan:"📲 Send this plan to a phone", send_head:"Scan with your own phone camera to take this plan home",
+    send_wa:"💬 Send by WhatsApp", share_wa_text:"Bags Till Harvest: plan your maize until the next harvest. {url}",
+    send_wa_text:"My Bags Till Harvest plan: {url}",
+    send_presenter:"WhatsApp sends from this phone, and the plan stays in this phone's chats. Scanning is more private. Delete the chat afterwards.",
+    send_note:"The plan travels inside the link. Nothing is stored on a server.", no_qr:"No QR code without internet. Copy this link instead:",
+    received:"📥 Plan received on this phone.",
+    send_sms:"✉️ Send by SMS (simple phones)", sms_text:"Bags Till Harvest plan. Count your maize bags: {list}. If fewer, slow down early.",
+    sms_item:"1 {m} {b}", sms_note:"SMS works on any phone. It goes from this phone's SIM and stays in its sent messages.",
     ex_reveal:"👀 What did the example family remember here?",
     sr_less:"Make {x} smaller by half a bag", sr_more:"Make {x} bigger by half a bag", sr_earlier:"Move {x} one moon earlier", sr_later:"Move {x} one moon later",
     fix_ok:"✓ Food until harvest", fix_short:"Short by {b}", earlier:"earlier", later:"later",
@@ -366,7 +379,9 @@ const SPREAD_BY_DEFAULT = ["home"];
 const CHECK = { food:true, school:true, keepSafe:true };
 // Calendar reminders put the family's bag numbers into a phone calendar. Turn them off on a
 // presenter's or shared device by opening the page with ?reminders=off (or set this to false).
-const FEATURES = { reminders: !/[?&]reminders=off\b/.test(location.search) };
+// ?presenter=1 = a presenter's or shared phone: no reminders, plus a button to open the app on farmers' phones.
+const PRESENTER = /[?&]presenter=1\b/.test(location.search);
+const FEATURES = { reminders: !PRESENTER && !/[?&]reminders=off\b/.test(location.search), shareApp: PRESENTER };
 const FOOD = { kgPerPersonYear:150, bagKg:50, askBelow:.75 };
 const typicalEat = () => S.people * FOOD.kgPerPersonYear / 12 / FOOD.bagKg;
 // A plan that only lasts because eating went below the family's first answer gets no party.
@@ -477,7 +492,9 @@ const SCREENS = {
     ${stepper("h-","h+",S.harvest,t("harvest_unit"),S.harvest<=0)}
     ${S.showPrice?`<div class="row"><span class="small">${t("harvest_price")}</span><button class="pill" data-a="p-">−</button><b class="small" style="font-size:18px">${t("k",{n:S.price})}</b><button class="pill" data-a="p+">+</button></div>`
       :`<div class="row"><button class="pill" data-a="price">${t("price_btn")}</button></div>`}
-    ${S.example?"":`<div class="row"><button class="pill strong" data-a="ex">${t("example")}</button></div>`}` }),
+    ${S.example?"":`<div class="row"><button class="pill strong" data-a="ex">${t("example")}</button></div>`}
+    ${FEATURES.shareApp ? (ui.shareApp ? sharePanel(t("share_app_head"), location.origin+location.pathname, t("share_wa_text",{url:location.origin+location.pathname}), "")
+        : `<div class="row"><button class="pill" data-a="shareApp">${t("share_app")}</button></div>`) : ""}` }),
 
   guess: () => ({ say:t("guess_say"), next:S.guess!==null, body:`${moonGrid(i=>S.guess===i?"sel":"","g")}
     <button class="m wide ${S.guess===12?"sel":""}" data-a="g" data-i="12"><span class="nm">${t("guess_lasts")}</span></button>${legend()}` }),
@@ -540,7 +557,10 @@ const SCREENS = {
       ${r.short>0?`<div class="cardnote bad">${t("card_short",{b:nb(r.short)})}</div>`:""}
       ${eatCut()?`<div class="cardnote"><b>${t("cut_card",{list:cuts().join(", ")})}</b></div>`:""}
       <div class="cardnote">${t("card_legend",{b:"🐀 "+nb(reserve())})}</div></div>
+    ${S.received?`<div class="banner"><span>${t("received")}</span></div>`:""}
     ${remindersHtml(r)}
+    ${S.showSend ? sharePanel(t("send_head"), planToLink(), smsText()+"\n"+t("send_wa_text",{url:planToLink()}), (PRESENTER||!FEATURES.reminders?t("send_presenter")+" ":"")+t("send_note"), smsText())
+      : `<div class="row"><button class="pill" data-a="sendPlan">${t("send_plan")}</button></div>`}
     ${ui.toast?`<div class="toast">${t("keep_toast")}</div>`:""}
     <div class="row"><button class="pill" data-a="restart">${t("startAgain")}</button><button class="pill" data-a="erase">${ui.eraseArmed?t("erase_sure"):t("erase")}</button></div>` }; }
 };
@@ -574,6 +594,31 @@ function remindersHtml(r){
   return `<div class="remind"><b>${t("remind_head")}</b><div class="row">${list.map(c=>`<a class="pill" href="${gcalUrl(c)}" target="_blank" rel="noopener">${t("remind_btn",{m:mName(c.i),b:nb(c.inStore)})}</a>`).join("")}</div>
     <div class="row"><a class="pill" href="${icsUrl(list)}" download="bags-till-harvest.ics">${t("remind_all")}</a></div><span class="small">${t("remind_why")} ${t("remind_note")}</span></div>`;
 }
+// ---- plan in a link: #plan=<base64 JSON>; the fragment never reaches the web server ----
+function planToLink(){
+  const k = Object.entries(S.picks).map(([id,p])=>[id,p.b,p.m===ALL?"a":p.m===null?-1:p.m]);
+  const o = {h:S.harvest, e:S.eat, e0:S.eat0, n:S.people, g:S.guess, pr:S.price, k};
+  const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+  return location.origin + location.pathname + "#plan=" + b64;
+}
+function planFromHash(){
+  const m = location.hash.match(/^#plan=([\w-]+)/); if(!m) return null;
+  try{ const o = JSON.parse(decodeURIComponent(escape(atob(m[1].replace(/-/g,"+").replace(/_/g,"/")))));
+    const picks={}; for(const [id,b,mm] of o.k||[]) if(ITEM[id]) picks[id]={b:+b, m: mm==="a"?ALL:mm===-1?null:+mm};
+    return {...blank(), harvest:+o.h||0, eat:+o.e||1, eat0:o.e0==null?null:+o.e0, people:+o.n||0, guess:o.g==null?null:+o.g, price:+o.pr||300,
+      picks, catsDone:CATS.map(c=>c.id), first:{picks:JSON.parse(JSON.stringify(picks)), reserve:0}, step:STEPS.indexOf("card"), received:true};
+  }catch(e){ return null; }
+}
+function qrBlock(url){ return `<div class="qr" data-text="${url}"></div>`; }
+function drawQRs(){ document.querySelectorAll(".qr[data-text]").forEach(el=>{ const url=el.dataset.text; el.removeAttribute("data-text");
+  if(window.qrcode){ try{ const q=qrcode(0,"M"); q.addData(url); q.make(); el.innerHTML=q.createSvgTag({cellSize:4,margin:2,scalable:true}); return; }catch(e){} }
+  el.innerHTML = `<span class="small">${t("no_qr")}</span><input class="linkbox" readonly value="${url}" onclick="this.select()">`; }); }
+const waLink = text => "https://wa.me/?text=" + encodeURIComponent(text);
+function smsText(){ const r=run(); const list=CHECKS.map(i=>t("sms_item",{m:mName(i),b:i===CHECKS[0]?nb(Math.max(0,r.out[i].start)+reserve()):fmt(Math.max(0,r.out[i].start)+reserve())})).join("; ");
+  return t("sms_text",{list}).replace(/(\d)½/g,"$1 1/2").replace(/½/g,"1/2"); }  // plain characters keep it to one SMS
+const smsLink = text => "sms:?body=" + encodeURIComponent(text);
+function sharePanel(head, url, waText, note, sms){
+  return `<div class="remind"><b>${head}</b>${qrBlock(url)}<div class="row"><a class="pill" href="${waLink(waText)}" target="_blank" rel="noopener">${t("send_wa")}</a>${sms?`<a class="pill" href="${smsLink(sms)}">${t("send_sms")}</a>`:""}</div><span class="small">${note}</span>${sms?`<span class="small">${t("sms_note")}</span>`:""}</div>`; }
 function pins(n){ let h=""; for(let k=0;k<Math.floor(Math.min(n,8)+1e-9);k++) h+='<i class="pin"></i>'; const f=n%1; if(f>=.45) h+='<i class="pin half"></i>'; else if(f>.01) h+='<i class="pin tiny"></i>'; return h; }
 function burst(){ let h=""; for(let i=0;i<10;i++){ const a=i/10*Math.PI*2; h+=`<i style="--dx:${Math.round(Math.cos(a)*90)}px;--dy:${Math.round(Math.sin(a)*60-30)}px"></i>`; } return h; }
 
@@ -608,6 +653,8 @@ function render(){
   $("#phone").querySelectorAll(".sheet,.scrim").forEach(e=>e.remove());
   if(sheet) $("#phone").insertAdjacentHTML("beforeend", sheetHtml());
   $("#phone").dataset.say = sc.say;
+  drawQRs();
+  try{ if(window.parent!==window) window.parent.postMessage({bthStep:st}, "*"); }catch(e){}
   $("#phone").querySelectorAll(".ratdash").forEach(e=>e.remove());
   if(ui.ratRun){ $("#phone").insertAdjacentHTML("beforeend",`<div class="ratdash" aria-hidden="true"><span>🐀</span></div>`); setTimeout(()=>document.querySelectorAll(".ratdash").forEach(e=>e.remove()),2300); }
   ui = {};
@@ -644,7 +691,7 @@ const ACTIONS = {
   "p+":()=>S.price=Math.min(2000,S.price+25), "p-":()=>S.price=Math.max(0,S.price-25), "price":()=>S.showPrice=true,
   "new":()=>S=blank(), "ex":()=>S=example(), "restart":()=>{S.step=0; S.catIdx=0; S.asked={}; S.first=null; playMonth=-1; clearInterval(playing); playing=null;},
   "erase":()=>{ if(eraseArmed){ S=blank(); eraseArmed=false; } else { eraseArmed=true; ui.eraseArmed=true; setTimeout(()=>eraseArmed=false,3000); } },
-  "keep":()=>ui.toast=true, "remindOn":()=>S.remindOn=true,
+  "keep":()=>ui.toast=true, "remindOn":()=>S.remindOn=true, "sendPlan":()=>S.showSend=true, "shareApp":()=>ui.shareApp=true,
   "cutBack":()=>{ if(S.eat0!==null) S.eat=Math.max(S.eat,S.eat0);
     if(S.first) for(const [k,p] of Object.entries(S.first.picks)){ const c=S.picks[k]; if(!c) S.picks[k]={...p}; else if(c.b<p.b) c.b=p.b; }
     S.step=STEPS.indexOf("fix"); $("#pbody").scrollTop=0; },
@@ -689,6 +736,12 @@ document.addEventListener("click", e=>{
 const showTip = e => { const b=e.target.closest(".meter .b"); if(b && $("#tip")) $("#tip").textContent=b.dataset.tip; };
 document.addEventListener("pointerover", showTip); document.addEventListener("focusin", showTip);
 $("#soundBtn").addEventListener("click", ()=>{ $("#soundBtn").classList.remove("hello"); speak($("#phone").dataset.say); });
+// The design sketch embeds this page and can jump to a screen (loads the example family, all costs shown).
+window.addEventListener("message", e=>{ const i=e.data && e.data.bthGo; if(typeof i!=="number" || i<0 || i>=STEPS.length) return;
+  clearInterval(playing); playing=null; sheet=null; nudge=null;
+  if(!S.example){ S=example(); } S.picks={...S.picks}; for(const [k,v] of Object.entries(S.exPicks)) if(!S.picks[k]) S.picks[k]={...v};
+  S.catsDone=CATS.map(c=>c.id); S.asked={food:true,school:true,keepSafe:true}; S.step=i; playMonth = STEPS[i]==="play"?-1:playMonth; $("#pbody").scrollTop=0; render(); });
+const got = planFromHash(); if(got){ S = got; try{ history.replaceState(null,"",location.pathname+location.search); }catch(e){} }
 render();
 })();
 </script>
