@@ -327,7 +327,7 @@ const PHRASES = {
     send_presenter:"WhatsApp sends from this phone, and the plan stays in this phone's chats. Scanning is more private. Delete the chat afterwards.",
     send_note:"The plan travels inside the link. Nothing is stored on a server.", no_qr:"No QR code without internet. Copy this link instead:",
     received:"📥 Plan received on this phone.",
-    send_sms:"✉️ Send by SMS (simple phones)", sms_text:"Bags Till Harvest plan. Count your maize bags: {list}. If fewer, slow down early.",
+    send_sms:"✉️ Send by SMS (simple phones)", sms_text:"Bags Till Harvest plan. Count your maize bags (keep-safe included): {list}. If fewer, slow down early.",
     sms_item:"1 {m} {b}", sms_note:"SMS works on any phone. It goes from this phone's SIM and stays in its sent messages.",
     ex_reveal:"👀 What did the example family remember here?",
     sr_less:"Make {x} smaller by half a bag", sr_more:"Make {x} bigger by half a bag", sr_earlier:"Move {x} one moon earlier", sr_later:"Move {x} one moon later",
@@ -336,7 +336,7 @@ const PHRASES = {
     eat_less:"Eating less is hard. Try moving costs first.",
     tooSmall:"If the harvest is too small, no plan can cover it. That is not your fault. <b>Ask your group leader about help.</b>",
     card_say:"Here is your plan. At the moons with a <b>✓</b>, count your bags. If you have fewer, slow down early.",
-    card_legend:"Big number = bags in the store at the start of the moon. Keep-safe bags are extra: {b}.",
+    card_legend:"Big number = bags in the store at the start of the moon.", card_keepsafe:"Keep-safe bags are extra: {b}.",
     card_short:"Short by {b}. Go back and fix, or ask for help.",
     keep:"📷 Keep this plan", keep_toast:"Take a photo of this screen, or copy the ✓ numbers onto your store wall.",
     startAgain:"↻ Start again", erase:"🗑️ Erase", erase_sure:"Tap again to erase",
@@ -409,7 +409,7 @@ const spendIn = m => Object.entries(S.picks).filter(([k])=>!ITEM[k].surprise).re
 // For each moon: bags in the store at the START (not counting keep-safe), and whether the moon runs short.
 function run(){
   let stock = S.harvest - reserve(); const out=[]; let runOut=null, hungry=0;
-  for(let m=0;m<12;m++){ const start=stock; stock -= S.eat + spendIn(m); const low=stock<0;
+  for(let m=0;m<12;m++){ const start=stock; stock -= S.eat + spendIn(m); const low=stock < -1e-9;  // tolerance: spread costs add twelfths, which do not sum exactly
     if(low){ if(runOut===null) runOut=m; hungry++; } out.push({start:Math.max(0,start), low}); }
   return {out, runOut, hungry, short:runOut===null?0:Math.max(.5,Math.ceil(-stock*2-1e-9)/2), end:stock};
 }
@@ -471,7 +471,7 @@ const band = () => `<div class="band" aria-hidden="true">${SEASON.map(s=>`<span 
 const labels = () => `<div class="mlab">${MONTH_IC.map((_,i)=>`<span>${mName(i)}</span>`).join("")}</div>`;
 const legend = () => { const L=PHRASES[LANG].seasons||PHRASES.en.seasons; return `<div class="legend">${["harv","dry","hot","rain"].map(s=>`<span><i class="s-${s}" style="background:var(--${s==="harv"?"maize":s==="rain"?"rain-soft":s})"></i>${L[s]}</span>`).join("")}</div>`; };
 const stepper = (minus, plus, val, unit, atMin) => `<div class="stepper"><button data-a="${minus}" aria-label="less" ${atMin?'aria-disabled="true"':""}>−</button><div class="n">${val}</div><button data-a="${plus}" aria-label="more">+</button></div><div class="unit">${unit}</div>`;
-const moonGrid = (cls, act) => `<div class="moons" id="moons">${MONTH_IC.map((ic,i)=>`<button class="m s-${SEASON[i]} ${cls(i)}" data-a="${act}" data-i="${i}"><span class="ic">${ic}</span><span class="nm">${mName(i)}</span></button>`).join("")}</div>`;
+const moonGrid = (cls, act) => `<div class="moons" id="moons">${MONTH_IC.map((ic,i)=>`<button class="m s-${SEASON[i]} ${cls(i)}" data-a="${act}" data-i="${i}" aria-pressed="${cls(i).includes("sel")}"><span class="ic">${ic}</span><span class="nm">${mName(i)}</span></button>`).join("")}</div>`;
 const tip = (i,o) => o.low && o.start<=0 ? t("tip_none",{m:mName(i)}) : t("tip_left",{m:mName(i),b:nb(o.start)});
 const guessName = () => S.guess===12 ? t("harvestWord") : mName(S.guess);
 const chip = s => `<span class="chipi">${s}</span>`;
@@ -481,7 +481,7 @@ function meterStyle(){ const base=Math.max(1,S.harvest-reserve()), slots=Math.ce
 const bagKey = () => bagUnit()>1 ? `<div class="bagkey">${t("bagkey",{n:bagUnit()})}</div>` : "";
 function bars(r, upto){ const base=Math.max(1,S.harvest-reserve());
   return r.out.map((o,i)=>{ const vis=i<=upto, pct=vis?Math.min(100,o.start/base*100):0; // future moons stay empty: no spoilers
-    return `<div class="b ${vis?(o.low?"low":""):"fut"} ${i===upto&&upto<11?"now":""}" tabindex="0" data-tip="${vis?tip(i,o):mName(i)}"><span style="height:${pct}%"></span>${vis?`<em class="v" style="bottom:calc(${pct}% + 2px)">${fmt(o.start)}</em>`:""}</div>`; }).join(""); }
+    return `<div class="b ${vis?(o.low?"low":""):"fut"} ${i===upto&&upto<11?"now":""}" tabindex="0" data-tip="${vis?tip(i,o):mName(i)}" aria-label="${vis?tip(i,o):mName(i)}"><span style="height:${pct}%"></span>${vis?`<em class="v" style="bottom:calc(${pct}% + 2px)">${fmt(o.start)}</em>`:""}</div>`; }).join(""); }
 function speak(s){ try{ speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(s.replace(/<[^>]+>/g,"")); u.rate=.92; u.lang="en"; speechSynthesis.speak(u);}catch(e){} }
 
 // ================= SCREENS =================
@@ -509,7 +509,7 @@ const SCREENS = {
   remember: () => { const c = CATS[S.catIdx]; return { say:t("say_"+c.id), next:true, nextLabel:S.catIdx<CATS.length-1?t("next"):t("done"), body:`
     <div class="cats">${CATS.map((k,i)=>`<button class="cat ${i===S.catIdx?"on":""} ${S.catsDone.includes(k.id)?"done":""}" data-a="cat" data-i="${i}">${k.ic} ${t("cat_"+k.id)}</button>`).join("")}</div>
     ${S.example && c.items.some(([id])=>S.exPicks[id] && !S.picks[id]) ? `<button class="pill strong" data-a="exReveal" style="align-self:center">${t("ex_reveal")}</button>` : ""}
-    <div class="cards">${c.items.map(([id,ic])=>{const p=S.picks[id];return `<button class="card ${p?"picked":""}" data-a="item" data-id="${id}">${p?`<span class="tag">${fmt(p.b)}</span>`:""}<span class="ic">${ic}</span><span class="lb">${iName(id)}</span></button>`}).join("")}</div>
+    <div class="cards">${c.items.map(([id,ic])=>{const p=S.picks[id];return `<button class="card ${p?"picked":""}" data-a="item" data-id="${id}" aria-pressed="${!!p}">${p?`<span class="tag">${fmt(p.b)}</span>`:""}<span class="ic">${ic}</span><span class="lb">${iName(id)}</span></button>`}).join("")}</div>
     <div class="boardwrap"><span class="ttl">${t("board")}</span>
       ${c.surprise?`<span class="rat ${ui.ratRun?"run":""}" aria-hidden="true">🐀</span>`:""}
       <div class="board">${MONTH_IC.map((_,i)=>`<div class="col" title="${mName(i)}">${pins(spendIn(i))}</div>`).join("")}</div>
@@ -528,7 +528,7 @@ const SCREENS = {
       : `<div class="verdict bad"><span>${t(r.hungry===1?"bad_one":"bad",{m:mName(r.runOut),h:r.hungry})}</span>${rem}${vs(mName(r.runOut))}<span class="note">${t("bad_comfort")}</span></div>`;
     return { say:done?(r.runOut===null?(eatCut()?t("cut_say"):t("play_done_good")):t("play_done_bad")):t("play_say"), mood: done ? (r.runOut===null&&!eatCut()?"happy":"think") : "think", next:done, body:`
       <div class="playrow">${granary(cur)}<div><div class="meter" style="${meterStyle()}">${bars(r, shown)}</div>${band()}${labels()}</div></div>${bagKey()}
-      <div class="tip" id="tip">${shown<0?t("play_tap"):t("play_tip")}</div>${verdict}
+      <div class="tip" id="tip" aria-live="polite">${shown<0?t("play_tap"):t("play_tip")}</div>${verdict}
       ${done?`<div class="row"><button class="pill" data-a="play">${t("play_again")}</button></div>`:(playing?"":`<button class="big gold" data-a="play" style="flex:none">${t("play_btn")}</button>`)}` }; },
 
   fix: () => { const r=run();
@@ -539,11 +539,11 @@ const SCREENS = {
     const items = Object.entries(S.picks).filter(([k])=>!ITEM[k].surprise).sort((a,b)=>ord(a[1].m)-ord(b[1].m))
       .map(([k,p])=> p.m===ALL
         ? row(ITEM[k].ic, iName(k), `${nb(p.b)} · ${t("spread_short")}`, btn("fx-","−","",k,"",sr("sr_less",iName(k))), "", k)
-        : row(ITEM[k].ic, iName(k), `${nb(p.b)} · ${mName(p.m)}`, btn("fx-","−","",k,"",sr("sr_less",iName(k)))+btn("fx<","◀",t("earlier"),k,"",sr("sr_earlier",iName(k)))+btn("fx>","▶",t("later"),k,"",sr("sr_later",iName(k))), r.out[p.m].low?"red":"", k)).join("");
+        : row(ITEM[k].ic, iName(k), `${nb(p.b)} · ${mName(p.m)}`, btn("fx-","−","",k,"",sr("sr_less",iName(k)))+btn("fx<","◀",t("earlier"),k,p.m<=0?"min":"",sr("sr_earlier",iName(k)))+btn("fx>","▶",t("later"),k,p.m>=11?"min":"",sr("sr_later",iName(k))), r.out[p.m].low?"red":"", k)).join("");
     const ok = r.runOut===null, cut = ok && eatCut();
     return { say: cut ? t("cut_say") : ok ? t("fix_ok_say") : t("fix_say",{minus:chip("−"),earlier:chip("◀"),later:chip("▶")}), mood:ok&&!cut?"happy":"think", next:true, body:`
       <div><div class="meter" style="--mh:100px;${meterStyle()}">${bars(r, 11)}</div>${band()}${labels()}${bagKey()}</div>
-      <div class="tip" id="tip" style="color:var(${cut?"--ink2":ok?"--leaf":"--hungry"})">${cut?t("cut_tip"):ok?t("fix_ok"):t("fix_short",{b:nb(r.short)})}</div>
+      <div class="tip" id="tip" aria-live="polite" style="color:var(${cut?"--ink2":ok?"--leaf":"--hungry"})">${cut?t("cut_tip"):ok?t("fix_ok"):t("fix_short",{b:nb(r.short)})}</div>
       <div class="fixlist">${items||`<span class="small">${t("noCosts")}</span>`}</div>
       ${row("🐀",t("keepSafeRow"),nb(reserve()),btn("r-","−","","","",sr("sr_less",t("keepSafeShort")))+btn("r+","+","","","",sr("sr_more",t("keepSafeShort"))))}
       ${row("🍲",t("eating"),`${fmt(S.eat)} ${t("bagsEachMoon")}`,btn("e-","−","",""," "+(S.eat<=.5?"min":""),sr("sr_less",t("eating")))+btn("e+","+","","","",sr("sr_more",t("eating"))))}
@@ -556,7 +556,7 @@ const SCREENS = {
       ${(()=>{ const ic=Object.entries(S.picks).filter(([k,p])=>p.m===ALL).map(([k])=>ITEM[k].ic).join(" "); return ic?`<div class="cardnote">${t("card_spread",{ic})}</div>`:""; })()}
       ${r.short>0?`<div class="cardnote bad">${t("card_short",{b:nb(r.short)})}</div>`:""}
       ${eatCut()?`<div class="cardnote"><b>${t("cut_card",{list:cuts().join(", ")})}</b></div>`:""}
-      <div class="cardnote">${t("card_legend",{b:"🐀 "+nb(reserve())})}</div></div>
+      <div class="cardnote">${t("card_legend")}${reserve()?" "+t("card_keepsafe",{b:"🐀 "+nb(reserve())}):""}</div></div>
     ${S.received?`<div class="banner"><span>${t("received")}</span></div>`:""}
     ${remindersHtml(r)}
     ${S.showSend ? sharePanel(t("send_head"), planToLink(), smsText()+"\n"+t("send_wa_text",{url:planToLink()}), (PRESENTER||!FEATURES.reminders?t("send_presenter")+" ":"")+t("send_note"), smsText())
@@ -568,7 +568,7 @@ function peopleRow(){ const v=S.people;
   return `<div class="fx"><span class="ic">👪</span><span class="t">${t("people")}<small class="ppl">${"🧑".repeat(Math.min(v,12))}${v>12?"…":""}</small></span><span class="ctl"><button data-a="ppl" data-d="-1" aria-label="less" ${v<=0?'aria-disabled="true"':""}>−</button><b class="famn">${v}</b><button data-a="ppl" data-d="1" aria-label="more">+</button></span></div>`; }
 // ---- calendar reminders at the check months (Google Calendar link, or an .ics file) ----
 function checkDates(r){
-  const now=new Date(), y0 = now.getMonth()>=4 ? now.getFullYear() : now.getFullYear()-1; // harvest year starts in May
+  const now=new Date(), y0 = now.getMonth()>=3 ? now.getFullYear() : now.getFullYear()-1; // plans made from April on are for the harvest year starting in May
   return CHECKS.map(i=>{ const jm=(4+i)%12, y=y0+((4+i)>=12?1:0), d=new Date(y,jm,1);
     const inStore = Math.max(0,r.out[i].start)+reserve();
     return {i, d, inStore, text:t("remind_title"), details:t("remind_details",{b:nb(inStore), m:(PHRASES[LANG].monthsLong||PHRASES.en.monthsLong)[i], r:nb(reserve())})};
@@ -580,11 +580,14 @@ function gcalUrl(c){ return "https://calendar.google.com/calendar/render?action=
   +"&dates="+ymd(c.d)+"/"+ymd(dayAfter(c.d))+"&details="+encodeURIComponent(c.details); }
 function icsUrl(list){
   const esc = s => s.replace(/[\\,;]/g, m=>"\\"+m);
-  const ev = list.map((c,n)=>["BEGIN:VEVENT","UID:bags-till-harvest-"+ymd(c.d)+"-"+n,"DTSTAMP:"+ymd(new Date())+"T000000Z",
+  const fold = line => { const out=[]; let cur=""; for(const ch of line){ if(new TextEncoder().encode(cur+ch).length>73){ out.push(cur); cur=" "+ch; } else cur+=ch; } out.push(cur); return out.join("\r\n"); };
+  const stamp = new Date().toISOString().replace(/[-:]/g,"").replace(/\.\d{3}/,"");
+  const ev = list.map((c,n)=>["BEGIN:VEVENT","UID:bags-till-harvest-"+ymd(c.d)+"-"+n,"DTSTAMP:"+stamp,
     "DTSTART;VALUE=DATE:"+ymd(c.d),"DTEND;VALUE=DATE:"+ymd(dayAfter(c.d)),"SUMMARY:"+esc(c.text),"DESCRIPTION:"+esc(c.details),
-    "BEGIN:VALARM","ACTION:DISPLAY","DESCRIPTION:"+esc(c.text),"TRIGGER:PT9H","END:VALARM","END:VEVENT"].join("\r\n"));
+    "BEGIN:VALARM","ACTION:DISPLAY","DESCRIPTION:"+esc(c.text),"TRIGGER:PT9H","END:VALARM","END:VEVENT"].map(fold).join("\r\n"));
   const ics=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Bags Till Harvest//EN",...ev,"END:VCALENDAR"].join("\r\n");
-  return URL.createObjectURL(new Blob([ics],{type:"text/calendar"}));
+  if(icsUrl.last) URL.revokeObjectURL(icsUrl.last);
+  return icsUrl.last = URL.createObjectURL(new Blob([ics],{type:"text/calendar;charset=utf-8"}));
 }
 function remindersHtml(r){
   if(!FEATURES.reminders) return "";
@@ -597,16 +600,29 @@ function remindersHtml(r){
 // ---- plan in a link: #plan=<base64 JSON>; the fragment never reaches the web server ----
 function planToLink(){
   const k = Object.entries(S.picks).map(([id,p])=>[id,p.b,p.m===ALL?"a":p.m===null?-1:p.m]);
-  const o = {h:S.harvest, e:S.eat, e0:S.eat0, n:S.people, g:S.guess, pr:S.price, k};
+  const enc = picks => Object.entries(picks).map(([id,p])=>[id,p.b,p.m===ALL?"a":p.m===null?-1:p.m]);
+  const o = {h:S.harvest, e:S.eat, e0:S.eat0, n:S.people, g:S.guess, pr:S.price, k, ex:S.example?1:0,
+    f: S.first ? enc(S.first.picks) : null, fr: S.first ? S.first.reserve : null};
   const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
   return location.origin + location.pathname + "#plan=" + b64;
 }
 function planFromHash(){
   const m = location.hash.match(/^#plan=([\w-]+)/); if(!m) return null;
   try{ const o = JSON.parse(decodeURIComponent(escape(atob(m[1].replace(/-/g,"+").replace(/_/g,"/")))));
-    const picks={}; for(const [id,b,mm] of o.k||[]) if(ITEM[id]) picks[id]={b:+b, m: mm==="a"?ALL:mm===-1?null:+mm};
-    return {...blank(), harvest:+o.h||0, eat:+o.e||1, eat0:o.e0==null?null:+o.e0, people:+o.n||0, guess:o.g==null?null:+o.g, price:+o.pr||300,
-      picks, catsDone:CATS.map(c=>c.id), first:{picks:JSON.parse(JSON.stringify(picks)), reserve:0}, step:STEPS.indexOf("card"), received:true};
+    // Treat every value as untrusted: known item keys only, and each number clamped to what the app allows.
+    const num = (v,lo,hi,dflt) => { v=+v; return Number.isFinite(v) ? Math.min(hi,Math.max(lo,Math.round(v*2)/2)) : dflt; };
+    const dec = list => { const out={}; for(const row of Array.isArray(list)?list:[]){ if(!Array.isArray(row)) continue; const [id,b,mm]=row;
+      if(typeof id!=="string" || !Object.hasOwn(ITEM,id)) continue;
+      const m = mm==="a" ? ALL : (mm===-1||mm===null) ? null : (Number.isInteger(mm)&&mm>=0&&mm<=11 ? mm : undefined);
+      if(m===undefined || (m===null)!==ITEM[id].surprise) continue;
+      out[id]={b:num(b,.5,20,1), m}; } return out; };
+    const picks = dec(o.k);
+    const g = Number.isInteger(o.g) && o.g>=0 && o.g<=12 ? o.g : null;
+    const firstPicks = o.f ? dec(o.f) : JSON.parse(JSON.stringify(picks));
+    const firstRes = o.fr!=null ? num(o.fr,0,60,0) : Object.entries(firstPicks).filter(([k])=>ITEM[k].surprise).reduce((a,[,p])=>a+p.b,0);
+    return {...blank(), harvest:num(o.h,0,60,0), eat:num(o.e,.5,6,1), eat0:o.e0==null?null:num(o.e0,.5,6,null), people:Math.round(num(o.n,0,20,0)), guess:g,
+      price: Number.isFinite(+o.pr) ? Math.min(2000,Math.max(0,Math.round(+o.pr))) : 300, example:o.ex===1, exPicks:{},
+      picks, catsDone:CATS.map(c=>c.id), first:{picks:firstPicks, reserve:firstRes}, step:STEPS.indexOf("card"), received:true};
   }catch(e){ return null; }
 }
 function qrBlock(url){ return `<div class="qr" data-text="${url}"></div>`; }
@@ -646,7 +662,8 @@ function render(){
   const mood = sc.mood || FACE_FOR[st];
   $("#dots").innerHTML = STEPS.map((_,i)=>`<i class="${i<S.step?"done":i===S.step?"on":""}"></i>`).join("");
   if(mood!==lastMood){ $("#face").innerHTML = face(mood); const f=$("#face .face"); if(lastMood) f.classList.add("bob"); lastMood=mood; }
-  $("#bubble").innerHTML = sc.say;
+  const fa=document.activeElement, fkey = fa && fa.dataset && fa.dataset.a ? `[data-a="${fa.dataset.a}"]`+["id","i","k","d"].map(k=>fa.dataset[k]!=null?`[data-${k}="${fa.dataset[k]}"]`:"").join("") : null;
+  if($("#bubble").dataset.said!==sc.say){ $("#bubble").innerHTML = sc.say; $("#bubble").dataset.said = sc.say; }
   const scroll = $("#pbody").scrollTop; $("#pbody").innerHTML = sc.body; $("#pbody").scrollTop = scroll;
   $("#pfoot").innerHTML = (S.step>0?`<button class="big back" data-a="back" aria-label="back">${t("back")}</button>`:"")
     + (sc.foot || `<button class="big go" data-a="next" aria-disabled="${!sc.next}">${sc.nextLabel||t("next")}</button>`);
@@ -654,6 +671,7 @@ function render(){
   if(sheet) $("#phone").insertAdjacentHTML("beforeend", sheetHtml());
   $("#phone").dataset.say = sc.say;
   drawQRs();
+  if(fkey){ const el=document.querySelector(fkey); if(el) el.focus({preventScroll:true}); }
   try{ if(window.parent!==window) window.parent.postMessage({bthStep:st}, "*"); }catch(e){}
   $("#phone").querySelectorAll(".ratdash").forEach(e=>e.remove());
   if(ui.ratRun){ $("#phone").insertAdjacentHTML("beforeend",`<div class="ratdash" aria-hidden="true"><span>🐀</span></div>`); setTimeout(()=>document.querySelectorAll(".ratdash").forEach(e=>e.remove()),2300); }
@@ -689,8 +707,8 @@ function flashRow(id){ requestAnimationFrame(()=>{ const el=document.getElementB
 const ACTIONS = {
   "h+":()=>{S.harvest=Math.min(60,S.harvest+1); ui.added=true;}, "h-":()=>S.harvest=Math.max(0,S.harvest-1),
   "p+":()=>S.price=Math.min(2000,S.price+25), "p-":()=>S.price=Math.max(0,S.price-25), "price":()=>S.showPrice=true,
-  "new":()=>S=blank(), "ex":()=>S=example(), "restart":()=>{S.step=0; S.catIdx=0; S.asked={}; S.first=null; playMonth=-1; clearInterval(playing); playing=null;},
-  "erase":()=>{ if(eraseArmed){ S=blank(); eraseArmed=false; } else { eraseArmed=true; ui.eraseArmed=true; setTimeout(()=>eraseArmed=false,3000); } },
+  "new":()=>S=blank(), "ex":()=>S=example(), "restart":()=>{S.step=0; S.catIdx=0; S.asked={}; S.first=null; S.eat0=null; S.remindOn=false; S.showSend=false; S.received=false; playMonth=-1; clearInterval(playing); playing=null;},
+  "erase":()=>{ if(eraseArmed){ S=blank(); eraseArmed=false; } else { eraseArmed=true; ui.eraseArmed=true; setTimeout(()=>{ eraseArmed=false; render(); },3000); } },
   "keep":()=>ui.toast=true, "remindOn":()=>S.remindOn=true, "sendPlan":()=>S.showSend=true, "shareApp":()=>ui.shareApp=true,
   "cutBack":()=>{ if(S.eat0!==null) S.eat=Math.max(S.eat,S.eat0);
     if(S.first) for(const [k,p] of Object.entries(S.first.picks)){ const c=S.picks[k]; if(!c) S.picks[k]={...p}; else if(c.b<p.b) c.b=p.b; }
@@ -737,10 +755,12 @@ const showTip = e => { const b=e.target.closest(".meter .b"); if(b && $("#tip"))
 document.addEventListener("pointerover", showTip); document.addEventListener("focusin", showTip);
 $("#soundBtn").addEventListener("click", ()=>{ $("#soundBtn").classList.remove("hello"); speak($("#phone").dataset.say); });
 // The design sketch embeds this page and can jump to a screen (loads the example family, all costs shown).
-window.addEventListener("message", e=>{ const i=e.data && e.data.bthGo; if(typeof i!=="number" || i<0 || i>=STEPS.length) return;
+window.addEventListener("message", e=>{ if(window.parent===window || e.source!==window.parent) return;
+  const i=e.data && e.data.bthGo; if(!Number.isInteger(i) || i<0 || i>=STEPS.length) return;
   clearInterval(playing); playing=null; sheet=null; nudge=null;
   if(!S.example){ S=example(); } S.picks={...S.picks}; for(const [k,v] of Object.entries(S.exPicks)) if(!S.picks[k]) S.picks[k]={...v};
-  S.catsDone=CATS.map(c=>c.id); S.asked={food:true,school:true,keepSafe:true}; S.step=i; playMonth = STEPS[i]==="play"?-1:playMonth; $("#pbody").scrollTop=0; render(); });
+  S.catsDone=CATS.map(c=>c.id); S.asked={food:true,school:true,keepSafe:true}; S.step=i;
+  if(i>STEPS.indexOf("remember")) S.first={picks:JSON.parse(JSON.stringify(S.picks)), reserve:reserve()}; playMonth = STEPS[i]==="play"?-1:playMonth; $("#pbody").scrollTop=0; render(); });
 const got = planFromHash(); if(got){ S = got; try{ history.replaceState(null,"",location.pathname+location.search); }catch(e){} }
 render();
 })();

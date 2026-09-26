@@ -1,9 +1,9 @@
 # Bags Till Harvest
 
-A phone-sized, single-page prototype that helps a farm family recall the year's costs after
+A phone-sized, single-page prototype designed to help a farm family recall the year's costs after
 harvest and see whether its maize will last until the next one. The family counts its bags,
 guesses when they will run out, walks through future costs by category, and watches a simple
-month-by-month projection. [Play the prototype](https://levine63.github.io/Ideas/bags-till-harvest/) ·
+month-by-month projection. It is designed with low-literacy users in mind but has not yet been tested with farmers. It is not affiliated with or reviewed by the study's authors. [Play the prototype](https://levine63.github.io/Ideas/bags-till-harvest/) ·
 [Design notes beside the app](https://levine63.github.io/Ideas/bags-till-harvest/design-sketch.html).
 
 **Try it:** Tap **👀 Try an example family**, make a guess, and in each cost category tap
@@ -11,7 +11,7 @@ month-by-month projection. [Play the prototype](https://levine63.github.io/Ideas
 The example numbers are invented. To use your own numbers, tap **Start mine**. Do this
 privately: anyone looking at the screen can see the harvest and costs. Reloading resets the page.
 
-**Research basis.** Augenblick, Jack, Kaur, Masiye, and Swanson, [*Retrieval Failures and Consumption Smoothing: A Field Experiment on Seasonal Poverty*](https://www.nber.org/papers/w35430) (2026 working paper; listed by an author as forthcoming in *The Quarterly Journal of Economics*). In the field experiment, prompted associative recall of future expenses raised remembered expenses by 36–60%; treated households had 15% more savings six weeks later and entered the hungry season with an additional month of savings. The [earlier 2023 version](https://www.povertyactionlab.org/sites/default/files/research-paper/WP4597_Retrieval-Failures-and-Consumption-Smoothing-in_Zambia_Jack-et-al_Sept2023.pdf) reported 42% more remembered expenses and measured the 15% savings difference two months later. These are outcomes of the **facilitated intervention**, not evidence that this app works.
+**Research basis.** Augenblick, Jack, Kaur, Masiye, and Swanson, [*Retrieval Failures and Consumption Smoothing: A Field Experiment on Seasonal Poverty*](https://www.nber.org/papers/w35430) (2026 working paper; listed by an author as forthcoming in *The Quarterly Journal of Economics*). In the field experiment, prompted associative recall of future expenses raised remembered expenses by 36–60%; treated households had 15% more savings six weeks later and entered the hungry season with about one additional month of savings. The [earlier 2023 version](https://www.povertyactionlab.org/sites/default/files/research-paper/WP4597_Retrieval-Failures-and-Consumption-Smoothing-in_Zambia_Jack-et-al_Sept2023.pdf) reported 42% more remembered expenses and measured the 15% savings difference two months later. These are outcomes of the **facilitated intervention**, not evidence that this app works.
 
 > **Prototype, not a validated household budget or nutrition tool.** The prompts and sequence
 > have not been checked against the study's surveyor script. The month-by-month model treats
@@ -61,7 +61,7 @@ reload the page.
    remembered, then shows *Your guess / The count*. A shortfall gets calm words and a way to
    fix it. A plan that lasts gets a big celebration, then *"Plans that last on the first try
    often miss something"* with a button back to the costs.
-6. **Fix.** For each cost: smaller (−), earlier (◀), later (▶). Also change eating and the
+6. **Fix.** For each cost: smaller (−), earlier (◀), later (▶); costs spread over the year have only −. Also change eating and the
    keep-safe bags. The stacks update live, and costs that land in red months are marked red.
 7. **Plan card.** Bags in the store at the start of each month; August, November and February
    (every three months) are check months, marked whether or not the stock lasts. From here the
@@ -77,8 +77,9 @@ reload the page.
 - Costs by month, or spread over the year.
 - **Three gentle questions**, each asked once and never blocking (answer, or just tap Next):
   - *Food:* if eating is under 75% of a coded, unvalidated benchmark for the number of people,
-    the guide asks whether it is enough and offers that amount. This is not a nutritional
-    recommendation.
+    the guide asks whether it is enough and offers that amount ("Families of 6 often eat about
+    1½ bags a moon"). The farmer sees that sentence as fact, so it is the app's strongest piece of
+    outside information. It is not a nutritional recommendation.
   - *School:* if no School cost was picked ("No children in school" is one answer).
   - *Keep-safe:* if nothing is kept safe from Khoswe when leaving Surprises.
 - **Cuts are checked against the first list.** When the family first leaves the cost walk, the
@@ -91,7 +92,10 @@ reload the page.
 - **Calendar reminders**, only for a plan that lasts without cuts, and only after the farmer
   taps **📅 Reminders on my own phone?** One Google Calendar button per check month, or one
   `.ics` file with all of them. Each says how many bags the plan expects in the store, keep-safe
-  included. Only future dates are offered. Never shown on presenter phones.
+  included. Only future dates are offered; plans made from April on use the harvest year that starts
+  in May. Never offered in the presenter version or with
+  `?reminders=off`; the app cannot tell whose phone it is, so presenters must use that link. The
+  Google Calendar button passes the reminder text, bag numbers included, to Google.
 - **Send this plan to a phone** (plan card): a QR code and a WhatsApp link that carry the plan
   inside the link, plus a one-message **SMS** for simple phones (see below).
 - **Presenter version** (`?presenter=1`): no reminders, and a button that shows a QR code and
@@ -109,16 +113,16 @@ reload the page.
 
 ### Excluded, on purpose, for now
 - **Other languages.** The phrase bank is ready for them; only English is written.
-- **Saving on the phone.** Reloading resets the page. A plan survives only by sending it to a
-  phone (the link carries it) or in calendar reminders.
+- **Saving on the phone.** Reloading resets the page. A plan survives only as a photo of the
+  plan card, a link sent to a phone (the link carries it), an SMS, or calendar reminders.
 - **Recorded audio.** Read-aloud is the device's own synthetic voice, English only.
 - **Research mode.** No fixed study script, no logging, no study arms. The example family's
   amounts are invented; in a study they would count as extra information given to the farmer.
 - **Must-pay costs.** Nothing marks school fees or loans as impossible to cut.
 - **Printing** the plan card.
 - **Real illustrations.** Emoji are placeholders.
-- **Local calendars.** Months run May to April for the Zambian maize season. School terms and
-  check months are fixed in the code.
+- **Local calendars.** Months run May to April for the Zambian maize season. Month icons (🎒 for
+  school months) and check months are fixed in the code; there is no school-term logic.
 - **Safety limits.** Nothing stops a family planning to eat very little, and green indicates
   only the simplified maize balance.
 
@@ -132,7 +136,7 @@ or officer's phone.
 | Farmer has a smartphone and signal | The presenter opens the [presenter version](https://levine63.github.io/Ideas/bags-till-harvest/?presenter=1) and taps **📲 Open this app on another phone** | A QR code (scan with the phone camera) and a **WhatsApp** share button with the app link. The farmer plans privately on their own phone, with reminders available. |
 | Farmer uses a presenter's phone | [Presenter version](https://levine63.github.io/Ideas/bags-till-harvest/?presenter=1) | No reminders, so no family's numbers land in the presenter's calendar. Erase (two taps) or reload before the next family. |
 | Taking a plan home to a smartphone | Plan card: **📲 Send this plan to a phone** | A QR code, or a WhatsApp link, that carries the whole plan inside the link (after `#`, which never reaches the web server). Opening it on the farmer's phone shows the plan card with "Plan received"; there the farmer can opt into reminders. Needs signal on the farmer's phone. |
-| Farmer has a simple phone | Plan card: **✉️ Send by SMS** | One plain-text SMS with the three check months, for example: *"Bags Till Harvest plan. Count your maize bags: 1 Aug 27 bags; 1 Nov 23 1/2; 1 Feb 19 1/2. If fewer, slow down early."* A simple phone can't scan a QR code or open the app. |
+| Farmer has a simple phone | Plan card: **✉️ Send by SMS** | One plain-text SMS with the three check months, for example (illustrative numbers): *"Bags Till Harvest plan. Count your maize bags (keep-safe included): 1 Aug 27 bags; 1 Nov 23 1/2; 1 Feb 19 1/2. If fewer, slow down early."* A simple phone can't scan a QR code or open the app. |
 
 Privacy: WhatsApp and SMS go from the presenter's account or SIM, and the plan stays in its sent
 messages; the app says so and suggests deleting the chat. Scanning the QR code sends nothing
@@ -141,7 +145,7 @@ page.
 
 ### Switches
 
-| Switch | Where | Default | Turn off when |
+| Switch | Where | Default | When to change |
 |---|---|---|---|
 | Presenter version | `?presenter=1` in the link | off | turn **on** for a presenter's or shared phone |
 | Calendar reminders | `?reminders=off` in the link (or presenter version), or `FEATURES.reminders` | on | the phone is not the farmer's own |
@@ -163,7 +167,7 @@ The food prompt adds external information. The study's associative-recall interv
 ## Editing the phrase bank
 
 Most visible text lives in one object near the top of the `<script>` in `index.html`. Some
-accessibility labels ("less", "more") are still hard-coded.
+accessibility labels ("less", "more", "back", "remove", "Read aloud") are still hard-coded.
 
 ```js
 const PHRASES = {
@@ -214,7 +218,7 @@ phones have no voice for Nyanja or Bemba, so expect recorded audio to be needed.
 | Remember | `cat_*` (5 category names), `say_*` (5 category prompts), `board`, `keepSafe`, `sheet_which`, `sheet_pick`, `sheet_surprise`, `ex_reveal`, `sheet_ok`, `sheet_none`, `spread`, `spread_short`, `sheet_year`, `close`, `items`, `nudge_school`, `nudge_school_yes`, `nudge_school_no`, `nudge_safe`, `nudge_safe_yes`, `nudge_safe_no` |
 | Play | `play_say`, `play_done_bad`, `play_done_good`, `recheck_q`, `recheck_btn`, `remembered`, `remembered_one`, `cut_say`, `bagkey`, `good_spare_r`, `party`, `play_btn`, `play_again`, `play_tap`, `play_tip`, `tip_left`, `tip_none`, `guessed`, `counted`, `harvestWord`, `good`, `good_spare`, `bad`, `bad_one`, `bad_comfort` |
 | Fix | `fix_say` (uses `{minus}` `{earlier}` `{later}` button pictures), `fix_ok_say`, `fix_ok`, `fix_short`, `earlier`, `later`, `eating`, `keepSafeRow`, `noCosts`, `eat_less`, `tooSmall`, `sr_less`, `sr_more`, `sr_earlier`, `sr_later` |
-| Plan card | `card_say`, `card_legend`, `card_spread`, `card_short`, `keep`, `keep_toast`, `received`, `remind_ask`, `remind_why`, `remind_head`, `remind_btn`, `remind_all`, `remind_note`, `remind_title`, `remind_details`, `send_plan`, `send_head`, `send_wa`, `send_wa_text`, `send_sms`, `sms_text`, `sms_item`, `sms_note`, `send_presenter`, `send_note`, `no_qr`, `cut_head`, `cut_q`, `cut_back`, `cut_tip`, `cut_card`, `cut_eat`, `keepSafeShort`, `startAgain`, `erase`, `erase_sure` |
+| Plan card | `card_say`, `card_legend`, `card_keepsafe`, `card_spread`, `card_short`, `keep`, `keep_toast`, `received`, `remind_ask`, `remind_why`, `remind_head`, `remind_btn`, `remind_all`, `remind_note`, `remind_title`, `remind_details`, `send_plan`, `send_head`, `send_wa`, `send_wa_text`, `send_sms`, `sms_text`, `sms_item`, `sms_note`, `send_presenter`, `send_note`, `no_qr`, `cut_head`, `cut_q`, `cut_back`, `cut_tip`, `cut_card`, `cut_eat`, `keepSafeShort`, `startAgain`, `erase`, `erase_sure` |
 
 ## Editing anything else
 
@@ -229,7 +233,9 @@ Below the phrase bank, the script has no user-facing words:
 - **Presenter and feature switches:** `PRESENTER`, `FEATURES`, `CHECK`, `FOOD`.
 - **Example family:** `example()` (its costs are in `exPicks`).
 - **Plan links:** `planToLink()` and `planFromHash()`. The plan is compact JSON, base64-encoded
-  after `#plan=`.
+  after `#plan=`. It carries the first cost list too, so cuts made before sending still count on
+  the receiving phone. Every value read from a link is checked and clamped; unknown items are
+  dropped.
 - **Limits:** in `ACTIONS`, for example a harvest of up to 60 bags and eating of up to 6 bags a
   month.
 
