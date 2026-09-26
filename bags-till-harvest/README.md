@@ -39,8 +39,11 @@ It opens **empty**. Tap **👀 Try an example family** to load made-up numbers; 
 4. **Remember.** Walk through five categories (School, Home, Farm, People, Surprises). Tap
    a picture card, choose how many bags and which month. The pin lands on the year board.
    Surprises have no month; they become a **keep-safe** reserve guarded from Khoswe the rat.
-5. **Play the year.** The store empties one month at a time. Months without maize turn red
-   with a `!`. It ends with *You guessed X / Counted Y*.
+5. **Play the year.** The store empties one month at a time, shown as stacks of sacks (one sack
+   per bag; for big harvests each sack is 2 or 5 bags, with a key). Months without maize turn red
+   with a `!`. It ends with *Your guess / The count*. If the bags run short, the guide stays
+   calm and offers to fix it together. If they last, it celebrates, then asks whether anything
+   was forgotten, with a button back to the cost walk.
 6. **Fix.** For each cost: smaller (−), earlier (◀), later (▶). Also change eating and the
    keep-safe reserve. The bars update live.
 7. **Plan card.** Bags in store at the start of each month. October, December and February
@@ -129,7 +132,7 @@ Many phones have no voice for Nyanja or Bemba, so expect recorded audio to be ne
 | Guess | `guess_say`, `guess_lasts` |
 | Eating | `eat_say`, `eat_year` |
 | Remember | `cat_*` (5 category names), `say_*` (5 category prompts), `board`, `keepSafe`, `sheet_which`, `sheet_pick`, `sheet_surprise`, `sheet_ok`, `close`, `items` |
-| Play | `play_say`, `play_done_say`, `play_btn`, `play_again`, `play_tap`, `play_tip`, `tip_left`, `tip_none`, `guessed`, `counted`, `harvestWord`, `good`, `good_spare`, `bad`, `bad_one`, `bad_comfort` |
+| Play | `play_say`, `play_done_bad`, `play_done_good`, `recheck_q`, `recheck_btn`, `bagkey`, `good_spare_r`, `play_btn`, `play_again`, `play_tap`, `play_tip`, `tip_left`, `tip_none`, `guessed`, `counted`, `harvestWord`, `good`, `good_spare`, `bad`, `bad_one`, `bad_comfort` |
 | Fix | `fix_say` (uses `{minus}` `{earlier}` `{later}` button pictures), `fix_ok_say`, `fix_ok`, `fix_short`, `earlier`, `later`, `eating`, `keepSafeRow`, `noCosts`, `eat_less`, `tooSmall` |
 | Plan card | `card_say`, `card_legend`, `card_short`, `keep`, `keep_toast`, `startAgain`, `erase`, `erase_sure` |
 

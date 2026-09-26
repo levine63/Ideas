@@ -143,16 +143,17 @@ button:focus-visible{outline:3px solid var(--rain);outline-offset:2px}
 .scrim{position:absolute;inset:0;background:rgb(20 20 10/.4);z-index:4}
 
 /* play + fix meter */
-.meter{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:3px;align-items:end;height:140px;padding-top:18px;border-bottom:3px solid var(--soil)}
+.meter{--mh:140px;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:3px;align-items:end;height:var(--mh);padding-top:22px;border-bottom:3px solid var(--soil)}
 .meter .b{position:relative;height:100%;display:flex;align-items:flex-end;border-radius:4px 4px 0 0}
-.meter .b span{display:block;width:100%;background:var(--maize);border-radius:4px 4px 0 0;transition:height .35s ease}
+.meter .b span{display:block;width:100%;background:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2010%22%20preserveAspectRatio%3D%22none%22%3E%3Crect%20x%3D%221%22%20y%3D%221.2%22%20width%3D%2222%22%20height%3D%227.8%22%20rx%3D%223.9%22%20fill%3D%22%23B07F45%22%20stroke%3D%22%236E4A22%22%20stroke-width%3D%221.2%22/%3E%3Cpath%20d%3D%22M5.5%201.6%20V8.6%22%20stroke%3D%22%236E4A22%22%20stroke-width%3D%221.1%22/%3E%3C/svg%3E") left bottom / 100% var(--slot) repeat-y;transition:height .35s ease}
 .meter .b.low{background:var(--hungry-soft)}
-.meter .b.low span{background:var(--hungry)}
-.meter .b.fut span{background:var(--line);opacity:.5}
-.meter .b.now span{box-shadow:0 0 0 2px var(--ink)}
+.meter .b.low span{background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2010%22%20preserveAspectRatio%3D%22none%22%3E%3Crect%20x%3D%221%22%20y%3D%221.2%22%20width%3D%2222%22%20height%3D%227.8%22%20rx%3D%223.9%22%20fill%3D%22%23D0735C%22%20stroke%3D%22%238A2E1C%22%20stroke-width%3D%221.2%22/%3E%3Cpath%20d%3D%22M5.5%201.6%20V8.6%22%20stroke%3D%22%238A2E1C%22%20stroke-width%3D%221.1%22/%3E%3C/svg%3E")}
+.meter .b.fut span{background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2010%22%20preserveAspectRatio%3D%22none%22%3E%3Crect%20x%3D%221%22%20y%3D%221.2%22%20width%3D%2222%22%20height%3D%227.8%22%20rx%3D%223.9%22%20fill%3D%22%23D6CFBD%22%20stroke%3D%22%23ABA38D%22%20stroke-width%3D%221.2%22/%3E%3Cpath%20d%3D%22M5.5%201.6%20V8.6%22%20stroke%3D%22%23ABA38D%22%20stroke-width%3D%221.1%22/%3E%3C/svg%3E")}
+.meter .b.now{box-shadow:0 0 0 2px var(--ink)}
 .meter .b .v{position:absolute;left:-2px;right:-2px;text-align:center;font-size:11px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--ink2);font-style:normal}
 .meter .b.low::after{content:"!";position:absolute;bottom:2px;left:0;right:0;text-align:center;font-weight:800;color:var(--hungry);font-size:16px}
 .meter .b.low span + .v{display:none}
+.bagkey{font-size:13px;color:var(--ink2);text-align:right;margin-top:-4px}
 .tip{min-height:24px;font-size:15px;text-align:center;color:var(--ink2);font-weight:700}
 .playrow{display:grid;grid-template-columns:64px minmax(0,1fr);gap:10px;align-items:end}
 .playrow .granary{width:64px;height:64px}
@@ -262,11 +263,12 @@ const PHRASES = {
     board:"Your year", keepSafe:"🐀 Keep-safe: {b}",
     sheet_which:"Which moon?", sheet_pick:"Tap a moon first", sheet_surprise:"🐀 No moon: these bags stay in the store, safe from Khoswe.",
     sheet_ok:"✓ Put it on the board", sheet_none:"✓ Not needed this year", close:"Close",
-    play_say:"Now watch your store, <b>one moon at a time</b>.", play_done_say:"That was your year. Let's look at it together.",
+    play_say:"Now watch your store, <b>one moon at a time</b>.", play_done_bad:"Now you can see the hungry moons. Let's fix them together.", play_done_good:"Well done! 🎉 But Khoswe is sneaky…",
+    recheck_q:"Plans that last on the first try often miss something. Clinic? Exam fees? A funeral? Relatives asking?", recheck_btn:"🔎 Check my costs again", bagkey:"each sack = {n} bags",
     play_btn:"▶ Play the year", play_again:"↻ Play again", play_tap:"Tap ▶ to play the year", play_tip:"Tap a bar to see the count",
     tip_left:"{m}: {b} in the store", tip_none:"{m}: no maize left",
     guessed:"Your guess", counted:"The count", harvestWord:"Harvest",
-    good:"🎉 The bags last until harvest!", good_spare:"{b} spare, plus {r} keep-safe.",
+    good:"🎉 The bags last until harvest!", good_spare:"{b} spare.", good_spare_r:"{b} spare, plus {r} keep-safe.",
     bad:"The bags run out in <b>{m}</b>. That leaves <b>{h} hungry moons</b>.",
     bad_one:"The bags run out in <b>{m}</b>. That leaves <b>1 hungry moon</b>.",
     bad_comfort:"Most families guess later than the count. Small costs are easy to forget. Let's fix it together.",
@@ -391,6 +393,10 @@ const moonGrid = (cls, act) => `<div class="moons" id="moons">${MONTH_IC.map((ic
 const tip = (i,o) => o.low && o.start<=0 ? t("tip_none",{m:mName(i)}) : t("tip_left",{m:mName(i),b:nb(o.start)});
 const guessName = () => S.guess===12 ? t("harvestWord") : mName(S.guess);
 const chip = s => `<span class="chipi">${s}</span>`;
+// Each flat sack in a column is one bag (or 2 or 5 for big harvests); the top sack is cut when there is a part bag.
+function bagUnit(){ const base=Math.max(1,S.harvest-reserve()); return base<=24?1:base<=48?2:5; }
+function meterStyle(){ const base=Math.max(1,S.harvest-reserve()), slots=Math.ceil(base/bagUnit()); return `--slot:calc((var(--mh) - 25px) / ${slots})`; }
+const bagKey = () => bagUnit()>1 ? `<div class="bagkey">${t("bagkey",{n:bagUnit()})}</div>` : "";
 function bars(r, upto){ const base=Math.max(1,S.harvest-reserve());
   return r.out.map((o,i)=>{ const vis=i<=upto, pct=Math.min(100,o.start/base*100);
     return `<div class="b ${vis?(o.low?"low":""):"fut"} ${i===upto&&upto<11?"now":""}" tabindex="0" data-tip="${vis?tip(i,o):mName(i)}"><span style="height:${pct}%"></span>${vis?`<em class="v" style="bottom:calc(${pct}% + 2px)">${fmt(o.start)}</em>`:""}</div>`; }).join(""); }
@@ -427,10 +433,10 @@ const SCREENS = {
     const cur = shown<0 ? 1 : (r.out[shown].low && r.out[shown].start<=0 ? 0 : r.out[shown].start/Math.max(1,S.harvest-reserve()));
     const vs = c => `<div class="vs"><div><div class="k">${t("guessed")}</div><div class="v">${guessName()}</div></div><div><div class="k">${t("counted")}</div><div class="v">${c}</div></div></div>`;
     const verdict = !done ? "" : r.runOut===null
-      ? `<div class="burst">${burst()}</div><div class="verdict good"><b>${t("good")}</b>${vs("🌽 "+t("harvestWord"))}<span class="note">${t("good_spare",{b:nb(r.end),r:nb(reserve())})}</span></div>`
+      ? `<div class="burst">${burst()}</div><div class="verdict good"><b>${t("good")}</b>${vs("🌽 "+t("harvestWord"))}<span class="note">${t(reserve()?"good_spare_r":"good_spare",{b:nb(r.end),r:nb(reserve())})}</span><span class="note">${t("recheck_q")}</span><button class="pill strong" data-a="recheck" style="justify-self:center">${t("recheck_btn")}</button></div>`
       : `<div class="verdict bad"><span>${t(r.hungry===1?"bad_one":"bad",{m:mName(r.runOut),h:r.hungry})}</span>${vs(mName(r.runOut))}<span class="note">${t("bad_comfort")}</span></div>`;
-    return { say:done?t("play_done_say"):t("play_say"), mood: done ? (r.runOut===null?"happy":"worried") : "think", next:done, body:`
-      <div class="playrow">${granary(cur)}<div><div class="meter">${bars(r, shown)}</div>${band()}${labels()}</div></div>
+    return { say:done?(r.runOut===null?t("play_done_good"):t("play_done_bad")):t("play_say"), mood: done ? (r.runOut===null?"happy":"think") : "think", next:done, body:`
+      <div class="playrow">${granary(cur)}<div><div class="meter" style="${meterStyle()}">${bars(r, shown)}</div>${band()}${labels()}</div></div>${bagKey()}
       <div class="tip" id="tip">${shown<0?t("play_tap"):t("play_tip")}</div>${verdict}
       ${done?`<div class="row"><button class="pill" data-a="play">${t("play_again")}</button></div>`:(playing?"":`<button class="big gold" data-a="play" style="flex:none">${t("play_btn")}</button>`)}` }; },
 
@@ -440,7 +446,7 @@ const SCREENS = {
     const items = Object.entries(S.picks).filter(([k])=>!ITEM[k].surprise).sort((a,b)=>a[1].m-b[1].m)
       .map(([k,p])=>row(ITEM[k].ic, iName(k), `${nb(p.b)} · ${mName(p.m)}`, btn("fx-","−","",k)+btn("fx<","◀",t("earlier"),k)+btn("fx>","▶",t("later"),k), r.out[p.m].low?"red":"", k)).join("");
     return { say: r.runOut===null ? t("fix_ok_say") : t("fix_say",{minus:chip("−"),earlier:chip("◀"),later:chip("▶")}), mood:r.runOut===null?"happy":"think", next:true, body:`
-      <div><div class="meter" style="height:100px">${bars(r, 11)}</div>${band()}${labels()}</div>
+      <div><div class="meter" style="--mh:100px;${meterStyle()}">${bars(r, 11)}</div>${band()}${labels()}${bagKey()}</div>
       <div class="tip" id="tip" style="color:var(${r.runOut===null?"--leaf":"--hungry"})">${r.runOut===null?t("fix_ok"):t("fix_short",{b:nb(r.short)})}</div>
       <div class="fixlist">${items||`<span class="small">${t("noCosts")}</span>`}</div>
       ${row("🐀",t("keepSafeRow"),nb(reserve()),btn("r-","−")+btn("r+","+"))}
@@ -500,6 +506,7 @@ const ACTIONS = {
   "new":()=>S=blank(), "ex":()=>S=example(), "restart":()=>{S.step=0; S.catIdx=0; playMonth=-1; clearInterval(playing); playing=null;},
   "erase":()=>{ if(eraseArmed){ S=blank(); eraseArmed=false; } else { eraseArmed=true; ui.eraseArmed=true; setTimeout(()=>eraseArmed=false,3000); } },
   "keep":()=>ui.toast=true,
+  "recheck":()=>{ clearInterval(playing); playing=null; S.step=STEPS.indexOf("remember"); S.catIdx=0; $("#pbody").scrollTop=0; },
   "g":el=>S.guess=+el.dataset.i,
   "e+":()=>{S.eat=Math.min(6,S.eat+.5); ui.added=true;}, "e-":()=>S.eat=Math.max(.5,S.eat-.5),
   "cat":el=>{markDone(); S.catIdx=+el.dataset.i; if(CATS[S.catIdx].surprise) ui.ratRun=true;},
