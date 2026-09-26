@@ -47,7 +47,9 @@ It opens **empty**. Tap **👀 Try an example family** to load made-up numbers; 
    keep-safe reserve. The bars update live. These controls can make an unrealistic plan look successful; see [Priorities before field use](#priorities-before-field-use).
 7. **Plan card.** Bags in store at the start of each month. August, November and February
    (every three months) are the checkpoint months, marked as checkpoints, whether or not the
-   projected stock lasts. **Remind me to count my bags** adds a reminder for each checkpoint to
+   projected stock lasts. Reminders are **opt-in**: the farmer first taps **📅 Reminders on my
+   own phone?**, which explains that reminders show their bag numbers. Only then do the reminder
+   buttons appear. **Remind me to count my bags** adds a reminder for each checkpoint to
    the phone's own calendar: one Google Calendar button per month, or one `.ics` file with all
    of them. The reminder says how many bags the plan expects in the store that month, keep-safe
    included. Only future dates are offered.
@@ -116,6 +118,24 @@ The food prompt adds external information. The study's associative-recall interv
   and checkpoint months are fixed in the code.
 - **Safety limits.** Nothing stops a family planning to eat very little, and green indicates only the simplified maize balance.
 
+## For presenters: shared or borrowed phones
+
+If farmers use a presenter's or officer's device, turn calendar reminders off so no family's
+bag numbers end up in someone else's calendar. Share this link instead of the usual one:
+
+**https://levine63.github.io/Ideas/bags-till-harvest/?reminders=off**
+
+With `?reminders=off` the reminder button never appears. Nothing else changes. The same switch
+is in the code as `FEATURES.reminders`. Also remember that the page keeps the plan on screen
+until it is reloaded or erased: tap **🗑️ Erase** (twice) or reload before the next family.
+
+| Switch | Where | Default | Turn off when |
+|---|---|---|---|
+| Calendar reminders | `?reminders=off` in the link, or `FEATURES.reminders` | on | the phone is not the farmer's own |
+| Food question | `CHECK.food` | on | a pure-recall study arm, or no locally checked food figure |
+| School question | `CHECK.school` | on | a pure-recall study arm needs it off |
+| Keep-safe question | `CHECK.keepSafe` | on | a pure-recall study arm needs it off |
+
 ## Editing the phrase bank
 
 Most visible text lives in one object near the top of the `<script>` in `index.html`. Some strings in markup and accessibility labels still need to be moved there:
@@ -169,7 +189,7 @@ Many phones have no voice for Nyanja or Bemba, so expect recorded audio to be ne
 | Remember | `cat_*` (5 category names), `say_*` (5 category prompts), `board`, `keepSafe`, `sheet_which`, `sheet_pick`, `sheet_surprise`, `ex_reveal`, `sheet_ok`, `sheet_none`, `spread`, `spread_short`, `sheet_year`, `close`, `items`, `nudge_school`, `nudge_school_yes`, `nudge_school_no`, `nudge_safe`, `nudge_safe_yes`, `nudge_safe_no` |
 | Play | `play_say`, `play_done_bad`, `play_done_good`, `recheck_q`, `recheck_btn`, `remembered`, `remembered_one`, `cut_say`, `bagkey`, `good_spare_r`, `party`, `play_btn`, `play_again`, `play_tap`, `play_tip`, `tip_left`, `tip_none`, `guessed`, `counted`, `harvestWord`, `good`, `good_spare`, `bad`, `bad_one`, `bad_comfort` |
 | Fix | `fix_say` (uses `{minus}` `{earlier}` `{later}` button pictures), `fix_ok_say`, `fix_ok`, `fix_short`, `earlier`, `later`, `eating`, `keepSafeRow`, `noCosts`, `eat_less`, `tooSmall` |
-| Plan card | `card_say`, `card_legend`, `card_spread`, `card_short`, `keep`, `keep_toast`, `remind_head`, `remind_btn`, `remind_all`, `remind_note`, `remind_title`, `remind_details`, `monthsLong`, `cut_head`, `cut_q`, `cut_back`, `cut_tip`, `cut_card`, `cut_eat`, `keepSafeShort`, `startAgain`, `erase`, `erase_sure` |
+| Plan card | `card_say`, `card_legend`, `card_spread`, `card_short`, `keep`, `keep_toast`, `remind_ask`, `remind_why`, `remind_head`, `remind_btn`, `remind_all`, `remind_note`, `remind_title`, `remind_details`, `monthsLong`, `cut_head`, `cut_q`, `cut_back`, `cut_tip`, `cut_card`, `cut_eat`, `keepSafeShort`, `startAgain`, `erase`, `erase_sure` |
 
 ## Editing anything else
 

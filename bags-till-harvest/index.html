@@ -310,6 +310,7 @@ const PHRASES = {
     cut_back:"↩ Put them back", cut_tip:"Lasts, but only after cuts",
     cut_card:"To make this last you cut: {list}.", cut_eat:"eating {a} → {b} a moon", keepSafeShort:"keep-safe bags",
     remembered:"You remembered <b>{n} costs</b>: {b} in all.", remembered_one:"You remembered <b>1 cost</b>: {b}.",
+    remind_ask:"📅 Reminders on my own phone?", remind_why:"Only on your own phone: the reminders show your bag numbers.",
     remind_head:"📅 Remind me to count my bags", remind_btn:"📅 {m}: {b}", remind_all:"📥 All reminders (calendar file)",
     remind_note:"Adds a reminder to your own phone calendar.",
     remind_title:"Count your maize bags",
@@ -363,6 +364,9 @@ const SPREAD_BY_DEFAULT = ["home"];
 // adults and children together) = 0.25 of a 50 kg bag a moon. Replace with a locally checked figure.
 // This check tells families what is typical, which is outside information; turn it off for a pure-recall study arm.
 const CHECK = { food:true, school:true, keepSafe:true };
+// Calendar reminders put the family's bag numbers into a phone calendar. Turn them off on a
+// presenter's or shared device by opening the page with ?reminders=off (or set this to false).
+const FEATURES = { reminders: !/[?&]reminders=off\b/.test(location.search) };
 const FOOD = { kgPerPersonYear:150, bagKg:50, askBelow:.75 };
 const typicalEat = () => S.people * FOOD.kgPerPersonYear / 12 / FOOD.bagKg;
 // A plan that only lasts because eating went below the family's first answer gets no party.
@@ -563,9 +567,11 @@ function icsUrl(list){
   return URL.createObjectURL(new Blob([ics],{type:"text/calendar"}));
 }
 function remindersHtml(r){
+  if(!FEATURES.reminders) return "";
   const list=checkDates(r); if(!list.length) return "";
+  if(!S.remindOn) return `<div class="row"><button class="pill" data-a="remindOn">${t("remind_ask")}</button></div>`;
   return `<div class="remind"><b>${t("remind_head")}</b><div class="row">${list.map(c=>`<a class="pill" href="${gcalUrl(c)}" target="_blank" rel="noopener">${t("remind_btn",{m:mName(c.i),b:nb(c.inStore)})}</a>`).join("")}</div>
-    <div class="row"><a class="pill" href="${icsUrl(list)}" download="bags-till-harvest.ics">${t("remind_all")}</a></div><span class="small">${t("remind_note")}</span></div>`;
+    <div class="row"><a class="pill" href="${icsUrl(list)}" download="bags-till-harvest.ics">${t("remind_all")}</a></div><span class="small">${t("remind_why")} ${t("remind_note")}</span></div>`;
 }
 function pins(n){ let h=""; for(let k=0;k<Math.floor(Math.min(n,8)+1e-9);k++) h+='<i class="pin"></i>'; const f=n%1; if(f>=.45) h+='<i class="pin half"></i>'; else if(f>.01) h+='<i class="pin tiny"></i>'; return h; }
 function burst(){ let h=""; for(let i=0;i<10;i++){ const a=i/10*Math.PI*2; h+=`<i style="--dx:${Math.round(Math.cos(a)*90)}px;--dy:${Math.round(Math.sin(a)*60-30)}px"></i>`; } return h; }
@@ -637,7 +643,7 @@ const ACTIONS = {
   "p+":()=>S.price=Math.min(2000,S.price+25), "p-":()=>S.price=Math.max(0,S.price-25), "price":()=>S.showPrice=true,
   "new":()=>S=blank(), "ex":()=>S=example(), "restart":()=>{S.step=0; S.catIdx=0; S.asked={}; S.first=null; playMonth=-1; clearInterval(playing); playing=null;},
   "erase":()=>{ if(eraseArmed){ S=blank(); eraseArmed=false; } else { eraseArmed=true; ui.eraseArmed=true; setTimeout(()=>eraseArmed=false,3000); } },
-  "keep":()=>ui.toast=true,
+  "keep":()=>ui.toast=true, "remindOn":()=>S.remindOn=true,
   "cutBack":()=>{ if(S.eat0!==null) S.eat=Math.max(S.eat,S.eat0);
     if(S.first) for(const [k,p] of Object.entries(S.first.picks)){ const c=S.picks[k]; if(!c) S.picks[k]={...p}; else if(c.b<p.b) c.b=p.b; }
     S.step=STEPS.indexOf("fix"); $("#pbody").scrollTop=0; },
