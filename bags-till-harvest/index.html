@@ -342,8 +342,8 @@ const ALL = "all";       // a cost spread evenly over the 12 moons; its amount i
 const SPREAD_BY_DEFAULT = ["home"];
 
 // Deployer switches and food benchmark.
-// Zambia: ~130 kg maize per person per year nationally, 150-185 kg in rural farm households
-// (averaged over adults and children). 150 kg a year = 0.25 of a 50 kg bag a moon per person.
+// PROTOTYPE ASSUMPTION, not validated: 150 kg maize per person per year (household average,
+// adults and children together) = 0.25 of a 50 kg bag a moon. Replace with a locally checked figure.
 // This check tells families what is typical, which is outside information; turn it off for a pure-recall study arm.
 const CHECK = { food:true, school:true, keepSafe:true };
 const FOOD = { kgPerPersonYear:150, bagKg:50, askBelow:.75 };
