@@ -81,6 +81,8 @@ button:focus-visible{outline:3px solid var(--rain);outline-offset:2px}
 .stepper{display:flex;align-items:center;justify-content:center;gap:16px}
 .stepper button{width:68px;height:68px;border-radius:50%;border:3px solid var(--sack);background:var(--panel);font-size:34px;font-weight:700;line-height:1;box-shadow:0 3px 0 var(--sack-dk)}
 .stepper button:active{transform:translateY(3px);box-shadow:none}
+.stepper button[aria-disabled="true"]{opacity:.35;box-shadow:none}
+.fx .ctl button[aria-disabled="true"]{opacity:.35}
 .stepper .n{font-family:var(--display);font-size:52px;font-weight:800;min-width:100px;text-align:center;font-variant-numeric:tabular-nums;line-height:1}
 .unit{text-align:center;color:var(--ink2);font-size:16px;margin-top:-6px}
 
@@ -130,6 +132,9 @@ button:focus-visible{outline:3px solid var(--rain);outline-offset:2px}
 .board .pin{width:14px;height:12px;border-radius:5px 5px 3px 3px;background:var(--sack);border:1.5px solid var(--sack-dk)}
 .board .pin.half{height:7px}
 .rat{position:absolute;right:8px;top:6px;font-size:22px}
+.ratdash{position:absolute;left:0;right:0;top:34%;z-index:6;pointer-events:none;display:flex;justify-content:center}
+.ratdash span{font-size:92px;line-height:1;filter:drop-shadow(0 6px 4px rgb(0 0 0/.25));animation:ratfade 2.2s forwards}
+@keyframes ratfade{0%,75%{opacity:1}100%{opacity:0}}
 .keepsafe{font-size:14px;color:var(--ink2);display:flex;gap:6px;align-items:center}
 
 .sheet{position:absolute;inset:auto 0 0 0;background:var(--phone);border-top:4px solid var(--maize);border-radius:24px 24px 0 0;padding:14px 14px calc(14px + env(safe-area-inset-bottom,0px));display:grid;gap:10px;box-shadow:0 -12px 30px rgb(0 0 0/.22);z-index:5;max-height:90%;overflow-y:auto}
@@ -205,7 +210,9 @@ button:focus-visible{outline:3px solid var(--rain);outline-offset:2px}
   @keyframes drop{0%{transform:translateY(-16px);opacity:0}80%{transform:translateY(0) scaleY(.94)}100%{transform:none;opacity:1}}
   .speak.hello{animation:pulse 1.2s 2}
   @keyframes pulse{50%{box-shadow:0 0 0 10px rgb(233 168 0/.25)}}
-  .rat.run{animation:scurry 1s ease-out}
+  .rat.run{animation:scurry 1s 1.8s ease-out backwards}
+  .ratdash span{animation:ratdash 2.2s ease-in-out forwards}
+  @keyframes ratdash{0%{transform:translateX(-120vw) scaleX(-1)}30%{transform:translateX(0) scaleX(-1)}40%{transform:translateX(0) scaleX(-1) rotate(-8deg)}50%{transform:translateX(0) scaleX(-1) rotate(6deg)}62%{transform:translateX(0) scaleX(-1)}100%{transform:translateX(120vw) scaleX(-1)}}
   @keyframes scurry{0%{transform:translateX(-300px) scaleX(-1)}70%{transform:translateX(10px) scaleX(-1)}100%{transform:none}}
   .burst i{animation:pop .8s ease-out forwards}
   @keyframes pop{from{transform:translate(-50%,0) scale(.4);opacity:1}to{transform:translate(calc(-50% + var(--dx)),var(--dy)) scale(1);opacity:0}}
@@ -254,7 +261,7 @@ const PHRASES = {
     say_surprise:"This is <b>Khoswe the rat</b> 🐀. He eats bags for things nobody plans: the clinic, a broken bike. Keep some bags safe from him?",
     board:"Your year", keepSafe:"🐀 Keep-safe: {b}",
     sheet_which:"Which moon?", sheet_pick:"Tap a moon first", sheet_surprise:"🐀 No moon: these bags stay in the store, safe from Khoswe.",
-    sheet_ok:"✓ Put it on the board", close:"Close",
+    sheet_ok:"✓ Put it on the board", sheet_none:"✓ Not needed this year", close:"Close",
     play_say:"Now watch your store, <b>one moon at a time</b>.", play_done_say:"That was your year. Let's look at it together.",
     play_btn:"▶ Play the year", play_again:"↻ Play again", play_tap:"Tap ▶ to play the year", play_tip:"Tap a bar to see the count",
     tip_left:"{m}: {b} in the store", tip_none:"{m}: no maize left",
@@ -379,7 +386,7 @@ function face(mood){
 const band = () => `<div class="band" aria-hidden="true">${SEASON.map(s=>`<span class="s-${s}"></span>`).join("")}</div>`;
 const labels = () => `<div class="mlab">${MONTH_IC.map((_,i)=>`<span>${mName(i)}</span>`).join("")}</div>`;
 const legend = () => { const L=PHRASES[LANG].seasons||PHRASES.en.seasons; return `<div class="legend">${["harv","dry","hot","rain"].map(s=>`<span><i class="s-${s}" style="background:var(--${s==="harv"?"maize":s==="rain"?"rain-soft":s})"></i>${L[s]}</span>`).join("")}</div>`; };
-const stepper = (minus, plus, val, unit) => `<div class="stepper"><button data-a="${minus}" aria-label="less">−</button><div class="n">${val}</div><button data-a="${plus}" aria-label="more">+</button></div><div class="unit">${unit}</div>`;
+const stepper = (minus, plus, val, unit, atMin) => `<div class="stepper"><button data-a="${minus}" aria-label="less" ${atMin?'aria-disabled="true"':""}>−</button><div class="n">${val}</div><button data-a="${plus}" aria-label="more">+</button></div><div class="unit">${unit}</div>`;
 const moonGrid = (cls, act) => `<div class="moons" id="moons">${MONTH_IC.map((ic,i)=>`<button class="m s-${SEASON[i]} ${cls(i)}" data-a="${act}" data-i="${i}"><span class="ic">${ic}</span><span class="nm">${mName(i)}</span></button>`).join("")}</div>`;
 const tip = (i,o) => o.low && o.start<=0 ? t("tip_none",{m:mName(i)}) : t("tip_left",{m:mName(i),b:nb(o.start)});
 const guessName = () => S.guess===12 ? t("harvestWord") : mName(S.guess);
@@ -394,7 +401,7 @@ const SCREENS = {
   harvest: () => ({ say:t("harvest_say"), next:S.harvest>0, body:`
     ${S.example?`<div class="banner"><span>👀 ${t("exampleBanner")}</span><button data-a="new">${t("mine")}</button></div>`:""}
     <div class="store-row">${granary(S.harvest/30)}${sacks(S.harvest, ui.added)}</div>
-    ${stepper("h-","h+",S.harvest,t("harvest_unit"))}
+    ${stepper("h-","h+",S.harvest,t("harvest_unit"),S.harvest<=0)}
     ${S.showPrice?`<div class="row"><span class="small">${t("harvest_price")}</span><button class="pill" data-a="p-">−</button><b class="small" style="font-size:18px">${t("k",{n:S.price})}</b><button class="pill" data-a="p+">+</button></div>`
       :`<div class="row"><button class="pill" data-a="price">${t("price_btn")}</button></div>`}
     ${S.example?"":`<div class="row"><button class="pill strong" data-a="ex">${t("example")}</button></div>`}` }),
@@ -403,7 +410,7 @@ const SCREENS = {
     <button class="m wide ${S.guess===12?"sel":""}" data-a="g" data-i="12"><span class="nm">${t("guess_lasts")}</span></button>${legend()}` }),
 
   eat: () => ({ say:t("eat_say"), next:S.eat>0, body:`<div class="store-row">${sacks(S.eat, ui.added)}</div>
-    ${stepper("e-","e+",fmt(S.eat),t("bagsEachMoon"))}
+    ${stepper("e-","e+",fmt(S.eat),t("bagsEachMoon"),S.eat<=.5)}
     <div class="boardwrap"><div class="board">${MONTH_IC.map(()=>`<div class="col">${pins(S.eat)}</div>`).join("")}</div>${band()}${labels()}</div>
     <div class="small">${t("eat_year",{b:nb(S.eat*12)})}</div>` }),
 
@@ -428,7 +435,7 @@ const SCREENS = {
       ${done?`<div class="row"><button class="pill" data-a="play">${t("play_again")}</button></div>`:(playing?"":`<button class="big gold" data-a="play" style="flex:none">${t("play_btn")}</button>`)}` }; },
 
   fix: () => { const r=run();
-    const btn = (a,l,cap,id) => `<button data-a="${a}" data-id="${id||""}" aria-label="${cap||l}">${l}${cap?`<small>${cap}</small>`:""}</button>`;
+    const btn = (a,l,cap,id,flag) => `<button data-a="${a}" data-id="${id||""}" aria-label="${cap||l}" ${flag&&flag.includes("min")?'aria-disabled="true"':""}>${l}${cap?`<small>${cap}</small>`:""}</button>`;
     const row = (ic,label,sub,ctl,cls="",id="") => `<div class="fx ${cls}" ${id?`id="fx-${id}"`:""}><span class="ic">${ic}</span><span class="t">${label}<small>${sub}</small></span><span class="ctl">${ctl}</span></div>`;
     const items = Object.entries(S.picks).filter(([k])=>!ITEM[k].surprise).sort((a,b)=>a[1].m-b[1].m)
       .map(([k,p])=>row(ITEM[k].ic, iName(k), `${nb(p.b)} · ${mName(p.m)}`, btn("fx-","−","",k)+btn("fx<","◀",t("earlier"),k)+btn("fx>","▶",t("later"),k), r.out[p.m].low?"red":"", k)).join("");
@@ -437,7 +444,7 @@ const SCREENS = {
       <div class="tip" id="tip" style="color:var(${r.runOut===null?"--leaf":"--hungry"})">${r.runOut===null?t("fix_ok"):t("fix_short",{b:nb(r.short)})}</div>
       <div class="fixlist">${items||`<span class="small">${t("noCosts")}</span>`}</div>
       ${row("🐀",t("keepSafeRow"),nb(reserve()),btn("r-","−")+btn("r+","+"))}
-      ${row("🍲",t("eating"),`${fmt(S.eat)} ${t("bagsEachMoon")}`,btn("e-","−")+btn("e+","+"))}
+      ${row("🍲",t("eating"),`${fmt(S.eat)} ${t("bagsEachMoon")}`,btn("e-","−","",""," "+(S.eat<=.5?"min":""))+btn("e+","+"))}
       ${S.eat0!==null && S.eat<S.eat0 ? `<div class="eatnote">${t("eat_less")}</div>`:""}
       ${r.short>0?`<div class="verdict bad"><span class="note">${t("tooSmall")}</span></div>`:""}` }; },
 
@@ -464,16 +471,18 @@ function render(){
   $("#phone").querySelectorAll(".sheet,.scrim").forEach(e=>e.remove());
   if(sheet) $("#phone").insertAdjacentHTML("beforeend", sheetHtml());
   $("#phone").dataset.say = sc.say;
+  $("#phone").querySelectorAll(".ratdash").forEach(e=>e.remove());
+  if(ui.ratRun){ $("#phone").insertAdjacentHTML("beforeend",`<div class="ratdash" aria-hidden="true"><span>🐀</span></div>`); setTimeout(()=>document.querySelectorAll(".ratdash").forEach(e=>e.remove()),2300); }
   ui = {};
 }
 function sheetHtml(){
   const it = ITEM[sheet.id];
   return `<div class="scrim" data-a="close"></div><div class="sheet" role="dialog" aria-label="${iName(it.id)}">
     <h3><span style="font-size:36px">${it.ic}</span>${iName(it.id)}<button class="x" data-a="close" aria-label="${t("close")}">✕</button></h3>
-    ${stepper("s-","s+",fmt(sheet.b), (sheet.b<=1?t("bag_one",{n:""}):t("bag_other",{n:""})).trim()+(S.showPrice||S.example?" · "+t("k",{n:Math.round(sheet.b*S.price)}):""))}
-    ${it.surprise?`<div class="small">${t("sheet_surprise")}</div>`:`<div class="small" id="pickmsg">${sheet.warn?`<b style="color:var(--hungry)">${t("sheet_pick")}</b>`:t("sheet_which")}</div>${moonGrid(i=>sheet.m===i?"sel":"","sm")}`}
+    ${stepper("s-","s+",fmt(sheet.b), (sheet.b>0&&sheet.b<=1?t("bag_one",{n:""}):t("bag_other",{n:""})).trim()+(S.showPrice||S.example?" · "+t("k",{n:Math.round(sheet.b*S.price)}):""))}
+    ${sheet.b===0?"":it.surprise?`<div class="small">${t("sheet_surprise")}</div>`:`<div class="small" id="pickmsg">${sheet.warn?`<b style="color:var(--hungry)">${t("sheet_pick")}</b>`:t("sheet_which")}</div>${moonGrid(i=>sheet.m===i?"sel":"","sm")}`}
     <div class="pfoot" style="padding:0;border:none">${sheet.had?`<button class="big back" data-a="sdel" aria-label="remove">🗑️</button>`:""}
-      <button class="big go" data-a="sok">${t("sheet_ok")}</button></div></div>`;
+      <button class="big go" data-a="sok">${sheet.b===0?t("sheet_none"):t("sheet_ok")}</button></div></div>`;
 }
 
 // ================= ACTIONS =================
@@ -488,16 +497,16 @@ function flashRow(id){ requestAnimationFrame(()=>{ const el=document.getElementB
 const ACTIONS = {
   "h+":()=>{S.harvest=Math.min(60,S.harvest+1); ui.added=true;}, "h-":()=>S.harvest=Math.max(0,S.harvest-1),
   "p+":()=>S.price=Math.min(2000,S.price+25), "p-":()=>S.price=Math.max(0,S.price-25), "price":()=>S.showPrice=true,
-  "new":()=>S=blank(), "ex":()=>S=example(), "restart":()=>{S.step=0;playMonth=-1;},
+  "new":()=>S=blank(), "ex":()=>S=example(), "restart":()=>{S.step=0; S.catIdx=0; playMonth=-1; clearInterval(playing); playing=null;},
   "erase":()=>{ if(eraseArmed){ S=blank(); eraseArmed=false; } else { eraseArmed=true; ui.eraseArmed=true; setTimeout(()=>eraseArmed=false,3000); } },
   "keep":()=>ui.toast=true,
   "g":el=>S.guess=+el.dataset.i,
   "e+":()=>{S.eat=Math.min(6,S.eat+.5); ui.added=true;}, "e-":()=>S.eat=Math.max(.5,S.eat-.5),
   "cat":el=>{markDone(); S.catIdx=+el.dataset.i; if(CATS[S.catIdx].surprise) ui.ratRun=true;},
   "item":el=>{const p=S.picks[el.dataset.id]; sheet={id:el.dataset.id, b:p?p.b:1, m:p?p.m:null, had:!!p};},
-  "s+":()=>sheet.b=Math.min(20,sheet.b+.5), "s-":()=>sheet.b=Math.max(.5,sheet.b-.5),
+  "s+":()=>sheet.b=Math.min(20,sheet.b+.5), "s-":()=>sheet.b=Math.max(0,sheet.b-.5),
   "sm":el=>{sheet.m=+el.dataset.i; sheet.warn=false;},
-  "sok":()=>{ if(ITEM[sheet.id].surprise||sheet.m!==null){ S.picks[sheet.id]={b:sheet.b,m:sheet.m}; sheet=null; }
+  "sok":()=>{ if(sheet.b===0){ delete S.picks[sheet.id]; sheet=null; return; } if(ITEM[sheet.id].surprise||sheet.m!==null){ S.picks[sheet.id]={b:sheet.b,m:sheet.m}; sheet=null; }
     else { sheet.warn=true; render(); const g=$("#moons"); g.classList.add("nudge"); return "skip"; } },
   "sdel":()=>{ delete S.picks[sheet.id]; sheet=null; }, "close":()=>sheet=null,
   "fx-":el=>{ const id=el.dataset.id, p=S.picks[id]; p.b-=.5; if(p.b<=0) delete S.picks[id]; else flashRow(id); },
@@ -506,7 +515,7 @@ const ACTIONS = {
   "r+":()=>{ const k=Object.keys(S.picks).find(k=>ITEM[k].surprise)||"other"; S.picks[k]={b:(S.picks[k]?.b||0)+.5,m:null}; },
   "r-":()=>{ const k=Object.keys(S.picks).find(k=>ITEM[k].surprise); if(k){ S.picks[k].b-=.5; if(S.picks[k].b<=0) delete S.picks[k]; } },
   "next":el=>{ if(el.getAttribute("aria-disabled")==="true") return "skip";
-    if(STEPS[S.step]==="eat" && S.eat0===null) S.eat0=S.eat;
+    if(STEPS[S.step]==="eat"){ if(S.eat0===null) S.eat0=S.eat; S.catIdx=0; }
     if(STEPS[S.step]==="remember"){ markDone(); if(S.catIdx<CATS.length-1){ S.catIdx++; if(CATS[S.catIdx].surprise) ui.ratRun=true; $("#pbody").scrollTop=0; return; } }
     S.step=Math.min(STEPS.length-1,S.step+1); $("#pbody").scrollTop=0; if(STEPS[S.step]==="play"){ playMonth=-1; clearInterval(playing); playing=null; } },
   "back":()=>{ if(STEPS[S.step]==="remember" && S.catIdx>0){ S.catIdx--; return; } clearInterval(playing); playing=null; S.step=Math.max(0,S.step-1); $("#pbody").scrollTop=0; },
