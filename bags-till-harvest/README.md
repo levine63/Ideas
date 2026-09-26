@@ -22,7 +22,7 @@ Live: [Bags Till Harvest](https://levine63.github.io/Ideas/bags-till-harvest/) �
 Or open `index.html` in any browser, on a phone or a laptop. It needs no server. It fetches
 two Google Fonts and falls back to system fonts when offline.
 
-It opens **empty**. Tap **👀 Try an example family** to load made-up numbers; a banner marks them as an example.
+It opens **empty**. Tap **👀 Try an example family** to load made-up numbers; a banner marks them as an example. The example family's costs start hidden: in each category, tap **👀 What did the example family remember here?** to uncover them, so the discovery still happens.
 
 ## The seven screens
 
@@ -45,8 +45,12 @@ It opens **empty**. Tap **👀 Try an example family** to load made-up numbers; 
    was forgotten, with a button back to the cost walk.
 6. **Revise.** For each cost: smaller (−), earlier (◀), later (▶). Also change eating and the
    keep-safe reserve. The bars update live. These controls can make an unrealistic plan look successful; see [Priorities before field use](#priorities-before-field-use).
-7. **Plan card.** Bags in store at the start of each month. October, December and February
-   are the checkpoint months, marked as checkpoints, whether or not the projected stock lasts.
+7. **Plan card.** Bags in store at the start of each month. August, November and February
+   (every three months) are the checkpoint months, marked as checkpoints, whether or not the
+   projected stock lasts. **Remind me to count my bags** adds a reminder for each checkpoint to
+   the phone's own calendar: one Google Calendar button per month, or one `.ics` file with all
+   of them. The reminder says how many bags the plan expects in the store that month, keep-safe
+   included. Only future dates are offered.
 
 ## Features
 
@@ -72,6 +76,15 @@ It opens **empty**. Tap **👀 Try an example family** to load made-up numbers; 
     it is enough and offers that amount. This is not a nutritional recommendation.
   - *School:* if no School cost was picked ("No children in school" is one answer).
   - *Keep-safe:* if nothing is kept safe from Khoswe when leaving Surprises.
+- **Cuts are checked against the first list.** When the family first leaves the cost walk, the
+  app saves that cost list and keep-safe amount. If the plan only lasts after cutting eating,
+  keep-safe, or any first-list cost, there is no celebration. Instead the app lists what was cut,
+  asks whether the family can really do without it, and offers **↩ Put them back**. Moving a
+  cost earlier or later is not a cut.
+- **What did we remember?** The Play result says how many costs were remembered and how many
+  bags they come to, before comparing the guess with the count.
+- A month with no maize left is called a "moon with no maize", not a hungry moon: the model
+  tracks only maize, not other food or income.
 - **Big celebration** when the plan lasts until harvest: maize rain, a banner, the guide dances.
   It fires after playing the year, and on the Fix screen when a change clears the last red month.
 - **No spoilers:** during Play, months not reached yet stay empty.
@@ -153,10 +166,10 @@ Many phones have no voice for Nyanja or Bemba, so expect recorded audio to be ne
 | Harvest | `harvest_say`, `harvest_unit`, `harvest_price`, `price_btn`, `example`, `exampleBanner`, `mine` |
 | Guess | `guess_say`, `guess_lasts` |
 | Eating | `eat_say`, `eat_year`, `people`, `nudge_food`, `nudge_food_yes`, `nudge_food_no` |
-| Remember | `cat_*` (5 category names), `say_*` (5 category prompts), `board`, `keepSafe`, `sheet_which`, `sheet_pick`, `sheet_surprise`, `sheet_ok`, `sheet_none`, `spread`, `spread_short`, `sheet_year`, `close`, `items`, `nudge_school`, `nudge_school_yes`, `nudge_school_no`, `nudge_safe`, `nudge_safe_yes`, `nudge_safe_no` |
-| Play | `play_say`, `play_done_bad`, `play_done_good`, `recheck_q`, `recheck_btn`, `bagkey`, `good_spare_r`, `party`, `play_btn`, `play_again`, `play_tap`, `play_tip`, `tip_left`, `tip_none`, `guessed`, `counted`, `harvestWord`, `good`, `good_spare`, `bad`, `bad_one`, `bad_comfort` |
+| Remember | `cat_*` (5 category names), `say_*` (5 category prompts), `board`, `keepSafe`, `sheet_which`, `sheet_pick`, `sheet_surprise`, `ex_reveal`, `sheet_ok`, `sheet_none`, `spread`, `spread_short`, `sheet_year`, `close`, `items`, `nudge_school`, `nudge_school_yes`, `nudge_school_no`, `nudge_safe`, `nudge_safe_yes`, `nudge_safe_no` |
+| Play | `play_say`, `play_done_bad`, `play_done_good`, `recheck_q`, `recheck_btn`, `remembered`, `remembered_one`, `cut_say`, `bagkey`, `good_spare_r`, `party`, `play_btn`, `play_again`, `play_tap`, `play_tip`, `tip_left`, `tip_none`, `guessed`, `counted`, `harvestWord`, `good`, `good_spare`, `bad`, `bad_one`, `bad_comfort` |
 | Fix | `fix_say` (uses `{minus}` `{earlier}` `{later}` button pictures), `fix_ok_say`, `fix_ok`, `fix_short`, `earlier`, `later`, `eating`, `keepSafeRow`, `noCosts`, `eat_less`, `tooSmall` |
-| Plan card | `card_say`, `card_legend`, `card_spread`, `card_short`, `keep`, `keep_toast`, `startAgain`, `erase`, `erase_sure` |
+| Plan card | `card_say`, `card_legend`, `card_spread`, `card_short`, `keep`, `keep_toast`, `remind_head`, `remind_btn`, `remind_all`, `remind_note`, `remind_title`, `remind_details`, `monthsLong`, `cut_head`, `cut_q`, `cut_back`, `cut_tip`, `cut_card`, `cut_eat`, `keepSafeShort`, `startAgain`, `erase`, `erase_sure` |
 
 ## Editing anything else
 
@@ -167,7 +180,7 @@ Below the phrase bank, the script has no user-facing words:
 - **Month icons and seasons:** `MONTH_IC` and `SEASON`, 12 entries each starting in May.
 - **Guide's mood per screen:** `FACE_FOR`.
 - **Which categories start as "spread over the year":** `SPREAD_BY_DEFAULT = ["home"]`.
-- **Checkpoint months:** `CHECKS = [5,7,9]`, which counts from May = 0, so Oct, Dec, Feb.
+- **Checkpoint months:** `CHECKS = [3,6,9]`, which counts from May = 0, so Aug, Nov, Feb.
 - **Example family:** `example()`.
 - **Limits:** in `ACTIONS`, for example a harvest of up to 60 bags and eating of up to 6
   bags a month.

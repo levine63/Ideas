@@ -216,6 +216,8 @@ button:focus-visible{outline:3px solid var(--rain);outline-offset:2px}
 .pc.check.low{box-shadow:0 0 0 3px var(--hungry)}
 .pc.check.low::after{background:var(--hungry)}
 .pc.harv{box-shadow:0 0 0 3px var(--maize)}
+.remind{display:grid;gap:8px;justify-items:center;background:var(--panel);border:2px solid var(--line);border-radius:16px;padding:10px}
+a.pill{color:var(--ink);text-decoration:none}
 .cardnote{font-size:15px;text-align:center}
 .cardnote.bad{color:var(--hungry);font-weight:700}
 .toast{background:var(--ink);color:var(--phone);border-radius:14px;padding:10px 12px;font-size:15px;text-align:center}
@@ -308,6 +310,11 @@ const PHRASES = {
     cut_back:"↩ Put them back", cut_tip:"Lasts, but only after cuts",
     cut_card:"To make this last you cut: {list}.", cut_eat:"eating {a} → {b} a moon", keepSafeShort:"keep-safe bags",
     remembered:"You remembered <b>{n} costs</b>: {b} in all.", remembered_one:"You remembered <b>1 cost</b>: {b}.",
+    remind_head:"📅 Remind me to count my bags", remind_btn:"📅 {m}: {b}", remind_all:"📥 All reminders (calendar file)",
+    remind_note:"Adds a reminder to your own phone calendar.",
+    remind_title:"Count your maize bags",
+    remind_details:"Plan: about {b} in the store at the start of {m} (including {r} keep-safe). If you have fewer, slow down early.",
+    monthsLong:["May","June","July","August","September","October","November","December","January","February","March","April"],
     ex_reveal:"👀 What did the example family remember here?",
     sr_less:"Make {x} smaller by half a bag", sr_more:"Make {x} bigger by half a bag", sr_earlier:"Move {x} one moon earlier", sr_later:"Move {x} one moon later",
     fix_ok:"✓ Food until harvest", fix_short:"Short by {b}", earlier:"earlier", later:"later",
@@ -347,7 +354,7 @@ const CATS = [
 ];
 const ITEM = {}; CATS.forEach(c=>c.items.forEach(([id,ic])=>ITEM[id]={id,ic,cat:c.id,surprise:!!c.surprise}));
 const STEPS = ["harvest","guess","eat","remember","play","fix","card"];
-const CHECKS = [5,7,9]; // Oct, Dec, Feb
+const CHECKS = [3,6,9]; // Aug, Nov, Feb: every three months after harvest
 const ALL = "all";       // a cost spread evenly over the 12 moons; its amount is for the whole year
 const SPREAD_BY_DEFAULT = ["home"];
 
@@ -529,11 +536,37 @@ const SCREENS = {
       ${r.short>0?`<div class="cardnote bad">${t("card_short",{b:nb(r.short)})}</div>`:""}
       ${eatCut()?`<div class="cardnote"><b>${t("cut_card",{list:cuts().join(", ")})}</b></div>`:""}
       <div class="cardnote">${t("card_legend",{b:"🐀 "+nb(reserve())})}</div></div>
+    ${remindersHtml(r)}
     ${ui.toast?`<div class="toast">${t("keep_toast")}</div>`:""}
     <div class="row"><button class="pill" data-a="restart">${t("startAgain")}</button><button class="pill" data-a="erase">${ui.eraseArmed?t("erase_sure"):t("erase")}</button></div>` }; }
 };
 function peopleRow(){ const v=S.people;
   return `<div class="fx"><span class="ic">👪</span><span class="t">${t("people")}<small class="ppl">${"🧑".repeat(Math.min(v,12))}${v>12?"…":""}</small></span><span class="ctl"><button data-a="ppl" data-d="-1" aria-label="less" ${v<=0?'aria-disabled="true"':""}>−</button><b class="famn">${v}</b><button data-a="ppl" data-d="1" aria-label="more">+</button></span></div>`; }
+// ---- calendar reminders at the check months (Google Calendar link, or an .ics file) ----
+function checkDates(r){
+  const now=new Date(), y0 = now.getMonth()>=4 ? now.getFullYear() : now.getFullYear()-1; // harvest year starts in May
+  return CHECKS.map(i=>{ const jm=(4+i)%12, y=y0+((4+i)>=12?1:0), d=new Date(y,jm,1);
+    const inStore = Math.max(0,r.out[i].start)+reserve();
+    return {i, d, inStore, text:t("remind_title"), details:t("remind_details",{b:nb(inStore), m:(PHRASES[LANG].monthsLong||PHRASES.en.monthsLong)[i], r:nb(reserve())})};
+  }).filter(c=>c.d>now);
+}
+const ymd = d => `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,"0")}${String(d.getDate()).padStart(2,"0")}`;
+const dayAfter = d => new Date(d.getFullYear(), d.getMonth(), d.getDate()+1);
+function gcalUrl(c){ return "https://calendar.google.com/calendar/render?action=TEMPLATE&text="+encodeURIComponent(c.text)
+  +"&dates="+ymd(c.d)+"/"+ymd(dayAfter(c.d))+"&details="+encodeURIComponent(c.details); }
+function icsUrl(list){
+  const esc = s => s.replace(/[\\,;]/g, m=>"\\"+m);
+  const ev = list.map((c,n)=>["BEGIN:VEVENT","UID:bags-till-harvest-"+ymd(c.d)+"-"+n,"DTSTAMP:"+ymd(new Date())+"T000000Z",
+    "DTSTART;VALUE=DATE:"+ymd(c.d),"DTEND;VALUE=DATE:"+ymd(dayAfter(c.d)),"SUMMARY:"+esc(c.text),"DESCRIPTION:"+esc(c.details),
+    "BEGIN:VALARM","ACTION:DISPLAY","DESCRIPTION:"+esc(c.text),"TRIGGER:PT9H","END:VALARM","END:VEVENT"].join("\r\n"));
+  const ics=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Bags Till Harvest//EN",...ev,"END:VCALENDAR"].join("\r\n");
+  return URL.createObjectURL(new Blob([ics],{type:"text/calendar"}));
+}
+function remindersHtml(r){
+  const list=checkDates(r); if(!list.length) return "";
+  return `<div class="remind"><b>${t("remind_head")}</b><div class="row">${list.map(c=>`<a class="pill" href="${gcalUrl(c)}" target="_blank" rel="noopener">${t("remind_btn",{m:mName(c.i),b:nb(c.inStore)})}</a>`).join("")}</div>
+    <div class="row"><a class="pill" href="${icsUrl(list)}" download="bags-till-harvest.ics">${t("remind_all")}</a></div><span class="small">${t("remind_note")}</span></div>`;
+}
 function pins(n){ let h=""; for(let k=0;k<Math.floor(Math.min(n,8)+1e-9);k++) h+='<i class="pin"></i>'; const f=n%1; if(f>=.45) h+='<i class="pin half"></i>'; else if(f>.01) h+='<i class="pin tiny"></i>'; return h; }
 function burst(){ let h=""; for(let i=0;i<10;i++){ const a=i/10*Math.PI*2; h+=`<i style="--dx:${Math.round(Math.cos(a)*90)}px;--dy:${Math.round(Math.sin(a)*60-30)}px"></i>`; } return h; }
 
