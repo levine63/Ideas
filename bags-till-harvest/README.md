@@ -35,10 +35,12 @@ It opens **empty**. Tap **👀 Try an example family** to load made-up numbers; 
 1. **Harvest.** Tap + to add bags to the store. Optionally set what one bag sells for, so
    costs also show in kwacha.
 2. **Guess.** Before any counting: *in which month will the bags run out?*
-3. **Eating.** Who eats from the store (adults, children, children in school), then how many
-   bags the family eats each month, in half-bag steps.
+3. **Eating.** How many people eat from the store (one number), then how many bags they eat
+   each month, in half-bag steps.
 4. **Remember.** Walk through five categories (School, Home, Farm, People, Surprises). Tap
-   a picture card, choose how many bags and which month. The pin lands on the year board.
+   a picture card, choose how many bags and which month, or **Spread over the year** for costs
+   with no set month (salt, soap, grinding…). A spread cost is entered as the amount for the
+   whole year, and 1/12 of it comes out of the store each month. Home items start as spread.
    Surprises (clinic, medicine, **funeral**, animal dies, something breaks, something else) have
    no month; they become a **keep-safe** reserve guarded from Khoswe the rat. Funeral lives here,
    not under People, because nobody can plan when one comes.
@@ -74,7 +76,7 @@ It opens **empty**. Tap **👀 Try an example family** to load made-up numbers; 
   year" / "Skip" or just Next):
   - *Food:* if eating is under 75% of what is typical for the family size, the guide asks whether
     it is enough and offers the typical amount.
-  - *School:* if children are in school but no School cost was picked.
+  - *School:* if no School cost was picked ("No children in school" is one answer).
   - *Keep-safe:* if nothing is kept safe from Khoswe when leaving Surprises.
 - **Big celebration** when the plan lasts until harvest: maize rain, a banner, the guide dances.
   It fires after playing the year, and on the Fix screen when a change clears the last red month.
@@ -86,14 +88,14 @@ Near the top of the script:
 
 ```js
 const CHECK = { food:true, school:true, keepSafe:true };
-const FOOD  = { kgPerAdultYear:170, childShare:.5, bagKg:50, askBelow:.75 };
+const FOOD  = { kgPerPersonYear:150, bagKg:50, askBelow:.75 };
 ```
 
-- `kgPerAdultYear: 170`. Zambia averages about 130 kg of maize per person per year nationally,
+- `kgPerPersonYear: 150`. Zambia averages about 130 kg of maize per person per year nationally,
   and 150–185 kg in rural farm households (World Bank, *Maize Trade Policies in Zambia*, 2022;
-  Choma district figure of 185 kg). Counting a child as half an adult (`childShare`) gives
-  roughly 170 kg per adult: 0.28 of a 50 kg bag a month. A family of 2 adults and 4 children is
-  typically about 1.1 bags a month. **Confirm locally before any field use.**
+  Choma district figure of 185 kg). Those averages already mix adults and children. 150 kg is
+  0.25 of a 50 kg bag a month per person, so a family of 6 is typically about 1½ bags a month.
+  **Confirm locally before any field use.**
 - `askBelow: .75`: the food question appears only when the plan is under 75% of typical.
 - The food question tells families what is typical, which is outside information the original
   study did not give. Set `CHECK.food = false` for a pure-recall study arm. The school and
@@ -162,11 +164,11 @@ Many phones have no voice for Nyanja or Bemba, so expect recorded audio to be ne
 | All | `bag_one`, `bag_other`, `next`, `done`, `back`, `bagsEachMoon`, `empty`, `k`, `months`, `seasons` |
 | Harvest | `harvest_say`, `harvest_unit`, `harvest_price`, `price_btn`, `example`, `exampleBanner`, `mine` |
 | Guess | `guess_say`, `guess_lasts` |
-| Eating | `eat_say`, `eat_year`, `adults`, `kids`, `inSchool`, `nudge_food`, `nudge_food_yes`, `nudge_food_no` |
-| Remember | `cat_*` (5 category names), `say_*` (5 category prompts), `board`, `keepSafe`, `sheet_which`, `sheet_pick`, `sheet_surprise`, `sheet_ok`, `sheet_none`, `close`, `items`, `nudge_school`, `nudge_school_yes`, `nudge_school_no`, `nudge_safe`, `nudge_safe_yes`, `nudge_safe_no` |
+| Eating | `eat_say`, `eat_year`, `people`, `nudge_food`, `nudge_food_yes`, `nudge_food_no` |
+| Remember | `cat_*` (5 category names), `say_*` (5 category prompts), `board`, `keepSafe`, `sheet_which`, `sheet_pick`, `sheet_surprise`, `sheet_ok`, `sheet_none`, `spread`, `spread_short`, `sheet_year`, `close`, `items`, `nudge_school`, `nudge_school_yes`, `nudge_school_no`, `nudge_safe`, `nudge_safe_yes`, `nudge_safe_no` |
 | Play | `play_say`, `play_done_bad`, `play_done_good`, `recheck_q`, `recheck_btn`, `bagkey`, `good_spare_r`, `party`, `play_btn`, `play_again`, `play_tap`, `play_tip`, `tip_left`, `tip_none`, `guessed`, `counted`, `harvestWord`, `good`, `good_spare`, `bad`, `bad_one`, `bad_comfort` |
 | Fix | `fix_say` (uses `{minus}` `{earlier}` `{later}` button pictures), `fix_ok_say`, `fix_ok`, `fix_short`, `earlier`, `later`, `eating`, `keepSafeRow`, `noCosts`, `eat_less`, `tooSmall` |
-| Plan card | `card_say`, `card_legend`, `card_short`, `keep`, `keep_toast`, `startAgain`, `erase`, `erase_sure` |
+| Plan card | `card_say`, `card_legend`, `card_spread`, `card_short`, `keep`, `keep_toast`, `startAgain`, `erase`, `erase_sure` |
 
 ## Editing anything else
 
@@ -176,6 +178,7 @@ Below the phrase bank, the script has no user-facing words:
   it to `CATS` *and* adding its name under `items` in every language.
 - **Month icons and seasons:** `MONTH_IC` and `SEASON`, 12 entries each starting in May.
 - **Guide's mood per screen:** `FACE_FOR`.
+- **Which categories start as "spread over the year":** `SPREAD_BY_DEFAULT = ["home"]`.
 - **Checkpoint months:** `CHECKS = [5,7,9]`, which counts from May = 0, so Oct, Dec, Feb.
 - **Example family:** `example()`.
 - **Limits:** in `ACTIONS`, for example a harvest of up to 60 bags and eating of up to 6

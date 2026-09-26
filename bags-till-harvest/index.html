@@ -131,6 +131,8 @@ button:focus-visible{outline:3px solid var(--rain);outline-offset:2px}
 .board .col{display:flex;flex-direction:column-reverse;align-items:center;gap:2px;padding-bottom:2px}
 .board .pin{width:14px;height:12px;border-radius:5px 5px 3px 3px;background:var(--sack);border:1.5px solid var(--sack-dk)}
 .board .pin.half{height:7px}
+.board .pin.tiny{height:4px;width:10px;opacity:.8}
+.ppl{letter-spacing:-3px;font-size:14px}
 .rat{position:absolute;right:8px;top:6px;font-size:22px}
 .ratdash{position:absolute;left:0;right:0;top:34%;z-index:6;pointer-events:none;display:flex;justify-content:center}
 .ratdash span{font-size:92px;line-height:1;filter:drop-shadow(0 6px 4px rgb(0 0 0/.25));animation:ratfade 2.2s forwards}
@@ -268,12 +270,12 @@ const PHRASES = {
     example:"👀 Try an example family", exampleBanner:"Example family. These are not your numbers.", mine:"Start mine",
     guess_say:"Quick guess! <b>Before we count</b>: in which moon will the bags run out? There is no wrong answer.",
     guess_lasts:"🌽 They will last until the next harvest",
-    eat_say:"Who eats from your store? Then: how much maize does your family <b>eat in one moon</b>? Half bags are fine.",
-    adults:"Adults", kids:"Children", inSchool:"Children in school",
-    nudge_food:"Is {b} a moon enough for {a} adults and {k} children? Families that size often eat about {s} a moon.",
+    eat_say:"How many <b>people</b> eat from your store? Then: how much maize do they <b>eat in one moon</b>? Half bags are fine.",
+    people:"People who eat here",
+    nudge_food:"Is {b} a moon enough for {p} people? Families of {p} often eat about {s} a moon.",
     nudge_food_yes:"Use {s}", nudge_food_no:"Keep mine",
-    nudge_school:"You have {n} children in school. No fees, uniforms or books this year?",
-    nudge_school_yes:"🎒 Add school costs", nudge_school_no:"None this year",
+    nudge_school:"No school costs this year? No fees, uniforms, books or exam fees?",
+    nudge_school_yes:"🎒 Add school costs", nudge_school_no:"No children in school",
     nudge_safe:"🐀 Khoswe is happy: no keep-safe bags! Almost every family has a surprise: the clinic, a funeral, a broken bike.",
     nudge_safe_yes:"🐀 Keep some safe", nudge_safe_no:"Skip",
     party:"Food until harvest!",
@@ -286,7 +288,7 @@ const PHRASES = {
     say_surprise:"This is <b>Khoswe the rat</b> 🐀. He eats bags for things nobody can plan: the clinic, a funeral, a broken bike. Keep some bags safe from him?",
     board:"Your year", keepSafe:"🐀 Keep-safe: {b}",
     sheet_which:"Which moon?", sheet_pick:"Tap a moon first", sheet_surprise:"🐀 No moon: these bags stay in the store, safe from Khoswe.",
-    sheet_ok:"✓ Put it on the board", sheet_none:"✓ Not needed this year", close:"Close",
+    sheet_ok:"✓ Put it on the board", spread:"🔁 Spread over the year", spread_short:"spread over the year", sheet_year:"for the whole year", card_spread:"Spread over the year: {ic}", sheet_none:"✓ Not needed this year", close:"Close",
     play_say:"Now watch your store, <b>one moon at a time</b>.", play_done_bad:"Now you can see the hungry moons. Let's fix them together.", play_done_good:"Well done! 🎉 But Khoswe is sneaky…",
     recheck_q:"Plans that last on the first try often miss something. Clinic? Exam fees? A funeral? Relatives asking?", recheck_btn:"🔎 Check my costs again", bagkey:"each sack = {n} bags",
     play_btn:"▶ Play the year", play_again:"↻ Play again", play_tap:"Tap ▶ to play the year", play_tip:"Tap a bar to see the count",
@@ -336,27 +338,29 @@ const CATS = [
 const ITEM = {}; CATS.forEach(c=>c.items.forEach(([id,ic])=>ITEM[id]={id,ic,cat:c.id,surprise:!!c.surprise}));
 const STEPS = ["harvest","guess","eat","remember","play","fix","card"];
 const CHECKS = [5,7,9]; // Oct, Dec, Feb
+const ALL = "all";       // a cost spread evenly over the 12 moons; its amount is for the whole year
+const SPREAD_BY_DEFAULT = ["home"];
 
 // Deployer switches and food benchmark.
-// Zambia: ~130 kg maize per person per year nationally, 150-185 kg in rural farm households.
-// With a child counted as half an adult, that is ~170 kg per adult per year = 0.28 of a 50 kg bag a moon.
+// Zambia: ~130 kg maize per person per year nationally, 150-185 kg in rural farm households
+// (averaged over adults and children). 150 kg a year = 0.25 of a 50 kg bag a moon per person.
 // This check tells families what is typical, which is outside information; turn it off for a pure-recall study arm.
 const CHECK = { food:true, school:true, keepSafe:true };
-const FOOD = { kgPerAdultYear:170, childShare:.5, bagKg:50, askBelow:.75 };
-const typicalEat = () => (S.adults + S.kids*FOOD.childShare) * FOOD.kgPerAdultYear / 12 / FOOD.bagKg;
+const FOOD = { kgPerPersonYear:150, bagKg:50, askBelow:.75 };
+const typicalEat = () => S.people * FOOD.kgPerPersonYear / 12 / FOOD.bagKg;
 const suggestEat = () => Math.max(.5, Math.ceil(typicalEat()*2)/2);
 const FACE_FOR = {harvest:"happy", guess:"think", eat:"happy", remember:"think", play:"think", fix:"think", card:"happy"};
 
-function example(){ return { harvest:18, price:300, guess:10, eat:1.5, eat0:1.5, adults:2, kids:4, school:2, asked:{}, catIdx:0, catsDone:["school","home","farm","people","surprise"],
-  picks:{ fees:{b:1,m:8}, uniform:{b:.5,m:8}, books:{b:.5,m:4}, salt:{b:.5,m:2}, soap:{b:.5,m:5}, mill:{b:.5,m:7},
+function example(){ return { harvest:18, price:300, guess:10, eat:1.5, eat0:1.5, people:6, asked:{}, catIdx:0, catsDone:["school","home","farm","people","surprise"],
+  picks:{ fees:{b:1,m:8}, uniform:{b:.5,m:8}, books:{b:.5,m:4}, salt:{b:1,m:ALL}, soap:{b:.5,m:ALL}, mill:{b:1,m:ALL},
     seed:{b:1,m:5}, fert:{b:2,m:6}, labour:{b:1,m:7}, church:{b:.5,m:7}, loan:{b:1,m:1}, sick:{b:1,m:null}, funeral:{b:1,m:null} },
   step:0, example:true, showPrice:true }; }
-function blank(){ return {harvest:0, price:300, guess:null, eat:1, eat0:null, adults:2, kids:0, school:0, asked:{}, catIdx:0, catsDone:[], picks:{}, step:0, example:false, showPrice:false}; }
+function blank(){ return {harvest:0, price:300, guess:null, eat:1, eat0:null, people:0, asked:{}, catIdx:0, catsDone:[], picks:{}, step:0, example:false, showPrice:false}; }
 let S = blank(), sheet = null, playing = null, playMonth = -1, ui = {}, nudge = null;
 
 // ================= MODEL =================
 const reserve = () => Object.entries(S.picks).filter(([k])=>ITEM[k].surprise).reduce((a,[,p])=>a+p.b,0);
-const spendIn = m => Object.entries(S.picks).filter(([k,p])=>!ITEM[k].surprise && p.m===m).reduce((a,[,p])=>a+p.b,0);
+const spendIn = m => Object.entries(S.picks).filter(([k])=>!ITEM[k].surprise).reduce((a,[,p])=>a+(p.m===m?p.b:p.m===ALL?p.b/12:0),0);
 // For each moon: bags in the store at the START (not counting keep-safe), and whether the moon runs short.
 function run(){
   let stock = S.harvest - reserve(); const out=[]; let runOut=null, hungry=0;
@@ -448,8 +452,8 @@ const SCREENS = {
   guess: () => ({ say:t("guess_say"), next:S.guess!==null, body:`${moonGrid(i=>S.guess===i?"sel":"","g")}
     <button class="m wide ${S.guess===12?"sel":""}" data-a="g" data-i="12"><span class="nm">${t("guess_lasts")}</span></button>${legend()}` }),
 
-  eat: () => ({ say:t("eat_say"), next:S.eat>0, body:`
-    <div class="fam">${famRow("🧑",t("adults"),"adults")}${famRow("🧒",t("kids"),"kids")}${famRow("🎒",t("inSchool"),"school")}</div>
+  eat: () => ({ say:t("eat_say"), next:S.eat>0 && S.people>0, body:`
+    <div class="fam">${peopleRow()}</div>
     <div class="store-row">${sacks(S.eat, ui.added)}</div>
     ${stepper("e-","e+",fmt(S.eat),t("bagsEachMoon"),S.eat<=.5)}
     <div class="boardwrap"><div class="board">${MONTH_IC.map(()=>`<div class="col">${pins(S.eat)}</div>`).join("")}</div>${band()}${labels()}</div>
@@ -478,8 +482,11 @@ const SCREENS = {
   fix: () => { const r=run();
     const btn = (a,l,cap,id,flag) => `<button data-a="${a}" data-id="${id||""}" aria-label="${cap||l}" ${flag&&flag.includes("min")?'aria-disabled="true"':""}>${l}${cap?`<small>${cap}</small>`:""}</button>`;
     const row = (ic,label,sub,ctl,cls="",id="") => `<div class="fx ${cls}" ${id?`id="fx-${id}"`:""}><span class="ic">${ic}</span><span class="t">${label}<small>${sub}</small></span><span class="ctl">${ctl}</span></div>`;
-    const items = Object.entries(S.picks).filter(([k])=>!ITEM[k].surprise).sort((a,b)=>a[1].m-b[1].m)
-      .map(([k,p])=>row(ITEM[k].ic, iName(k), `${nb(p.b)} · ${mName(p.m)}`, btn("fx-","−","",k)+btn("fx<","◀",t("earlier"),k)+btn("fx>","▶",t("later"),k), r.out[p.m].low?"red":"", k)).join("");
+    const ord = m => m===ALL ? -1 : m;
+    const items = Object.entries(S.picks).filter(([k])=>!ITEM[k].surprise).sort((a,b)=>ord(a[1].m)-ord(b[1].m))
+      .map(([k,p])=> p.m===ALL
+        ? row(ITEM[k].ic, iName(k), `${nb(p.b)} · ${t("spread_short")}`, btn("fx-","−","",k), "", k)
+        : row(ITEM[k].ic, iName(k), `${nb(p.b)} · ${mName(p.m)}`, btn("fx-","−","",k)+btn("fx<","◀",t("earlier"),k)+btn("fx>","▶",t("later"),k), r.out[p.m].low?"red":"", k)).join("");
     return { say: r.runOut===null ? t("fix_ok_say") : t("fix_say",{minus:chip("−"),earlier:chip("◀"),later:chip("▶")}), mood:r.runOut===null?"happy":"think", next:true, body:`
       <div><div class="meter" style="--mh:100px;${meterStyle()}">${bars(r, 11)}</div>${band()}${labels()}${bagKey()}</div>
       <div class="tip" id="tip" style="color:var(${r.runOut===null?"--leaf":"--hungry"})">${r.runOut===null?t("fix_ok"):t("fix_short",{b:nb(r.short)})}</div>
@@ -491,14 +498,15 @@ const SCREENS = {
 
   card: () => { const r=run(); return { say:t("card_say"), mood:r.runOut===null?"happy":"think", foot:`<button class="big gold" data-a="keep">${t("keep")}</button>`, body:`
     <div class="plancard"><div class="pc-grid">${r.out.map((o,i)=>`<div class="pc s-${SEASON[i]} ${o.low?"low":""} ${CHECKS.includes(i)?"check":""} ${i===11&&r.runOut===null?"harv":""}"><span class="nm">${MONTH_IC[i]} ${mName(i)}</span><span class="cnt">${o.low&&o.start<=0?"0":fmt(o.start)}</span><span class="it">${o.low&&o.start<=0?"🥣":Object.entries(S.picks).filter(([k,p])=>p.m===i&&!ITEM[k].surprise).map(([k])=>ITEM[k].ic).join("")}</span></div>`).join("")}</div>
+      ${(()=>{ const ic=Object.entries(S.picks).filter(([k,p])=>p.m===ALL).map(([k])=>ITEM[k].ic).join(" "); return ic?`<div class="cardnote">${t("card_spread",{ic})}</div>`:""; })()}
       ${r.short>0?`<div class="cardnote bad">${t("card_short",{b:nb(r.short)})}</div>`:""}
       <div class="cardnote">${t("card_legend",{b:"🐀 "+nb(reserve())})}</div></div>
     ${ui.toast?`<div class="toast">${t("keep_toast")}</div>`:""}
     <div class="row"><button class="pill" data-a="restart">${t("startAgain")}</button><button class="pill" data-a="erase">${ui.eraseArmed?t("erase_sure"):t("erase")}</button></div>` }; }
 };
-function famRow(ic,label,key){ const v=S[key], min=key==="adults"?1:0, max=key==="school"?S.kids:20;
-  return `<div class="fx"><span class="ic">${ic}</span><span class="t">${label}</span><span class="ctl"><button data-a="fam" data-k="${key}" data-d="-1" aria-label="less" ${v<=min?'aria-disabled="true"':""}>−</button><b class="famn">${v}</b><button data-a="fam" data-k="${key}" data-d="1" aria-label="more" ${v>=max?'aria-disabled="true"':""}>+</button></span></div>`; }
-function pins(n){ let h=""; for(let k=0;k<Math.floor(Math.min(n,8));k++) h+='<i class="pin"></i>'; if(n%1) h+='<i class="pin half"></i>'; return h; }
+function peopleRow(){ const v=S.people;
+  return `<div class="fx"><span class="ic">👪</span><span class="t">${t("people")}<small class="ppl">${"🧑".repeat(Math.min(v,12))}${v>12?"…":""}</small></span><span class="ctl"><button data-a="ppl" data-d="-1" aria-label="less" ${v<=0?'aria-disabled="true"':""}>−</button><b class="famn">${v}</b><button data-a="ppl" data-d="1" aria-label="more">+</button></span></div>`; }
+function pins(n){ let h=""; for(let k=0;k<Math.floor(Math.min(n,8)+1e-9);k++) h+='<i class="pin"></i>'; const f=n%1; if(f>=.45) h+='<i class="pin half"></i>'; else if(f>.01) h+='<i class="pin tiny"></i>'; return h; }
 function burst(){ let h=""; for(let i=0;i<10;i++){ const a=i/10*Math.PI*2; h+=`<i style="--dx:${Math.round(Math.cos(a)*90)}px;--dy:${Math.round(Math.sin(a)*60-30)}px"></i>`; } return h; }
 
 // ================= NUDGES =================
@@ -506,13 +514,13 @@ function burst(){ let h=""; for(let i=0;i<10;i++){ const a=i/10*Math.PI*2; h+=`<
 function needNudge(){
   const st=STEPS[S.step];
   if(st==="eat" && CHECK.food && !S.asked.food && S.eat < FOOD.askBelow*typicalEat()) return "food";
-  if(st==="remember" && CATS[S.catIdx].id==="school" && CHECK.school && !S.asked.school && S.school>0
+  if(st==="remember" && CATS[S.catIdx].id==="school" && CHECK.school && !S.asked.school
      && !Object.keys(S.picks).some(k=>ITEM[k].cat==="school")) return "school";
   if(st==="remember" && CATS[S.catIdx].surprise && CHECK.keepSafe && !S.asked.keepSafe && reserve()===0) return "keepSafe";
   return null;
 }
 function nudgeView(){
-  const v = {s:nb(suggestEat()), b:nb(S.eat), a:S.adults, k:S.kids, n:S.school};
+  const v = {s:nb(suggestEat()), b:nb(S.eat), p:S.people};
   const K = {food:["nudge_food","nudge_food_yes","nudge_food_no"], school:["nudge_school","nudge_school_yes","nudge_school_no"], keepSafe:["nudge_safe","nudge_safe_yes","nudge_safe_no"]}[nudge];
   return { say:t(K[0],v), card:`<div class="nudgecard"><button class="pill strong" data-a="nudgeYes">${t(K[1],v)}</button><button class="pill" data-a="nudgeNo">${t(K[2],v)}</button></div>` };
 }
@@ -548,8 +556,8 @@ function sheetHtml(){
   const it = ITEM[sheet.id];
   return `<div class="scrim" data-a="close"></div><div class="sheet" role="dialog" aria-label="${iName(it.id)}">
     <h3><span style="font-size:36px">${it.ic}</span>${iName(it.id)}<button class="x" data-a="close" aria-label="${t("close")}">✕</button></h3>
-    ${stepper("s-","s+",fmt(sheet.b), (sheet.b>0&&sheet.b<=1?t("bag_one",{n:""}):t("bag_other",{n:""})).trim()+(S.showPrice||S.example?" · "+t("k",{n:Math.round(sheet.b*S.price)}):""))}
-    ${sheet.b===0?"":it.surprise?`<div class="small">${t("sheet_surprise")}</div>`:`<div class="small" id="pickmsg">${sheet.warn?`<b style="color:var(--hungry)">${t("sheet_pick")}</b>`:t("sheet_which")}</div>${moonGrid(i=>sheet.m===i?"sel":"","sm")}`}
+    ${stepper("s-","s+",fmt(sheet.b), (sheet.b>0&&sheet.b<=1?t("bag_one",{n:""}):t("bag_other",{n:""})).trim()+(sheet.m===ALL?" "+t("sheet_year"):"")+(S.showPrice||S.example?" · "+t("k",{n:Math.round(sheet.b*S.price)}):""))}
+    ${sheet.b===0?"":it.surprise?`<div class="small">${t("sheet_surprise")}</div>`:`<div class="small" id="pickmsg">${sheet.warn?`<b style="color:var(--hungry)">${t("sheet_pick")}</b>`:t("sheet_which")}</div>${moonGrid(i=>sheet.m===i?"sel":"","sm")}<button class="m wide ${sheet.m===ALL?"sel":""}" data-a="sm" data-i="all"><span class="nm">${t("spread")}</span></button>`}
     <div class="pfoot" style="padding:0;border:none">${sheet.had?`<button class="big back" data-a="sdel" aria-label="remove">🗑️</button>`:""}
       <button class="big go" data-a="sok">${sheet.b===0?t("sheet_none"):t("sheet_ok")}</button></div></div>`;
 }
@@ -571,20 +579,20 @@ const ACTIONS = {
   "keep":()=>ui.toast=true,
   "recheck":()=>{ clearInterval(playing); playing=null; S.step=STEPS.indexOf("remember"); S.catIdx=0; $("#pbody").scrollTop=0; },
   "g":el=>S.guess=+el.dataset.i,
-  "fam":el=>{ const k=el.dataset.k, min=k==="adults"?1:0; S[k]=Math.max(min,Math.min(20,S[k]+ +el.dataset.d)); S.school=Math.min(S.school,S.kids); },
+  "ppl":el=>{ S.people=Math.max(0,Math.min(20,S.people+ +el.dataset.d)); },
   "nudgeYes":()=>{ S.asked[nudge]=true; if(nudge==="food"){ S.eat=suggestEat(); } nudge=null; },
   "nudgeNo":()=>{ S.asked[nudge]=true; nudge=null; return ACTIONS.next({getAttribute:()=>null}); },
   "e+":()=>{S.eat=Math.min(6,S.eat+.5); ui.added=true;}, "e-":()=>S.eat=Math.max(.5,S.eat-.5),
   "cat":el=>{markDone(); S.catIdx=+el.dataset.i; if(CATS[S.catIdx].surprise) ui.ratRun=true;},
-  "item":el=>{const p=S.picks[el.dataset.id]; sheet={id:el.dataset.id, b:p?p.b:1, m:p?p.m:null, had:!!p};},
+  "item":el=>{const id=el.dataset.id, p=S.picks[id]; sheet={id, b:p?p.b:1, m:p?p.m:(SPREAD_BY_DEFAULT.includes(ITEM[id].cat)?ALL:null), had:!!p};},
   "s+":()=>sheet.b=Math.min(20,sheet.b+.5), "s-":()=>sheet.b=Math.max(0,sheet.b-.5),
-  "sm":el=>{sheet.m=+el.dataset.i; sheet.warn=false;},
+  "sm":el=>{sheet.m=el.dataset.i==="all"?ALL:+el.dataset.i; sheet.warn=false;},
   "sok":()=>{ if(sheet.b===0){ delete S.picks[sheet.id]; sheet=null; return; } if(ITEM[sheet.id].surprise||sheet.m!==null){ S.picks[sheet.id]={b:sheet.b,m:sheet.m}; sheet=null; }
     else { sheet.warn=true; render(); const g=$("#moons"); g.classList.add("nudge"); return "skip"; } },
   "sdel":()=>{ delete S.picks[sheet.id]; sheet=null; }, "close":()=>sheet=null,
   "fx-":el=>{ const id=el.dataset.id, p=S.picks[id]; p.b-=.5; if(p.b<=0) delete S.picks[id]; else flashRow(id); },
-  "fx<":el=>{ const p=S.picks[el.dataset.id]; p.m=Math.max(0,p.m-1); flashRow(el.dataset.id); },
-  "fx>":el=>{ const p=S.picks[el.dataset.id]; p.m=Math.min(11,p.m+1); flashRow(el.dataset.id); },
+  "fx<":el=>{ const p=S.picks[el.dataset.id]; if(p.m===ALL) return; p.m=Math.max(0,p.m-1); flashRow(el.dataset.id); },
+  "fx>":el=>{ const p=S.picks[el.dataset.id]; if(p.m===ALL) return; p.m=Math.min(11,p.m+1); flashRow(el.dataset.id); },
   "r+":()=>{ const k=Object.keys(S.picks).find(k=>ITEM[k].surprise)||"other"; S.picks[k]={b:(S.picks[k]?.b||0)+.5,m:null}; },
   "r-":()=>{ const k=Object.keys(S.picks).find(k=>ITEM[k].surprise); if(k){ S.picks[k].b-=.5; if(S.picks[k].b<=0) delete S.picks[k]; } },
   "next":el=>{ if(el.getAttribute("aria-disabled")==="true") return "skip";
