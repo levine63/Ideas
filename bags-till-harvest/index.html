@@ -3,229 +3,279 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Bags Till Harvest Play</title>
+<title>Bags Till Harvest</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
 <style>
-body{margin:0}
 :root{
-  --ground:#E9ECE1; --panel:#F7F8F2; --ink:#1E2A1B; --ink2:#4B5746; --muted:#6E7868;
-  --line:#CBD1C0; --maize:#E9A800; --maize-soft:#F7E2A3; --sack:#B98A4E; --sack-dk:#8A6231;
-  --leaf:#2F6B34; --leaf-soft:#D5E6CF; --hungry:#B3402A; --hungry-soft:#F2D3CA;
-  --rain:#2F5F93; --phone:#FFFFFF; --phone-edge:#1E2A1B; --chip:#EEF1E6;
+  --ground:#EFE6D2; --phone:#FFFCF4; --panel:#FBF6E9; --chip:#F3ECDA;
+  --ink:#1E2A1B; --ink2:#3F4A3A; --muted:#57594C; --line:#B5AC96;
+  --maize:#E9A800; --maize-soft:#FBE7B0; --sack:#B07F45; --sack-dk:#7A5428; --soil:#9A6A42; --thatch:#C9A25A;
+  --leaf:#2F6B34; --leaf-soft:#D5E6CF; --on-leaf:#FFFFFF; --hungry:#B3402A; --hungry-soft:#F6D6CC;
+  --rain:#2F5F93; --dry:#EAD7A4; --hot:#E9A15B; --rain-soft:#BFD8EC; --phone-edge:#2A2418;
   --display:"Baloo 2", "Trebuchet MS", system-ui, sans-serif;
   --body:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
     color-scheme:dark;
-    --ground:#141A13; --panel:#1C241B; --ink:#E8EDE2; --ink2:#B9C3B1; --muted:#8E9986;
-    --line:#34402F; --maize:#F2B92A; --maize-soft:#4A3C12; --sack:#C79A5F; --sack-dk:#E0B880;
-    --leaf:#7DBB73; --leaf-soft:#233A22; --hungry:#EE7A62; --hungry-soft:#4A2219;
-    --rain:#8DB6E4; --phone:#101610; --phone-edge:#3C4A36; --chip:#232D21;
+    --ground:#0F120B; --phone:#15170F; --panel:#20231A; --chip:#262A1E;
+    --ink:#EDEFE4; --ink2:#C9CFBD; --muted:#A4AD99; --line:#4A5040;
+    --maize:#F2B92A; --maize-soft:#4A3C12; --sack:#C79A5F; --sack-dk:#E6C08A; --soil:#B98A5E; --thatch:#8E7440;
+    --leaf:#7DBB73; --leaf-soft:#233A22; --on-leaf:#0F1A0E; --hungry:#EE7A62; --hungry-soft:#4A2219;
+    --rain:#8DB6E4; --dry:#5A4A22; --hot:#7A4A22; --rain-soft:#23405C; --phone-edge:#3A3A2C;
   }
 }
 :root[data-theme="dark"]{
   color-scheme:dark;
-  --ground:#141A13; --panel:#1C241B; --ink:#E8EDE2; --ink2:#B9C3B1; --muted:#8E9986;
-  --line:#34402F; --maize:#F2B92A; --maize-soft:#4A3C12; --sack:#C79A5F; --sack-dk:#E0B880;
-  --leaf:#7DBB73; --leaf-soft:#233A22; --hungry:#EE7A62; --hungry-soft:#4A2219;
-  --rain:#8DB6E4; --phone:#101610; --phone-edge:#3C4A36; --chip:#232D21;
+  --ground:#0F120B; --phone:#15170F; --panel:#20231A; --chip:#262A1E;
+  --ink:#EDEFE4; --ink2:#C9CFBD; --muted:#A4AD99; --line:#4A5040;
+  --maize:#F2B92A; --maize-soft:#4A3C12; --sack:#C79A5F; --sack-dk:#E6C08A; --soil:#B98A5E; --thatch:#8E7440;
+  --leaf:#7DBB73; --leaf-soft:#233A22; --on-leaf:#0F1A0E; --hungry:#EE7A62; --hungry-soft:#4A2219;
+  --rain:#8DB6E4; --dry:#5A4A22; --hot:#7A4A22; --rain-soft:#23405C; --phone-edge:#3A3A2C;
 }
 *{box-sizing:border-box}
-body{background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;padding-inline:16px;padding-block:20px 48px}
-button{font:inherit;color:inherit;cursor:pointer}
+html,body{height:100%}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.45;
+  padding-inline:16px;padding-block:20px;display:grid;justify-items:center;align-items:start}
+button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
 button:focus-visible{outline:3px solid var(--rain);outline-offset:2px}
-.wrap{max-width:1180px;margin:0 auto;display:grid;gap:28px}
-header.top{display:grid;gap:6px;max-width:72ch}
-header.top h1{font-family:var(--display);font-weight:800;font-size:clamp(30px,4.4vw,44px);line-height:1.05;margin:0;text-wrap:balance}
-header.top p{margin:0;color:var(--ink2)}
-.eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700}
-.stage{display:grid;grid-template-columns:400px 1fr;gap:32px;align-items:start}
-@media (max-width:900px){.stage{grid-template-columns:1fr}}
 
-/* ---------- phone ---------- */
-.phone{width:100%;max-width:400px;margin:0 auto;background:var(--phone);border:10px solid var(--phone-edge);border-radius:34px;height:760px;display:flex;flex-direction:column;overflow:hidden;position:relative}
-@media (max-width:900px){.phone{height:720px}}
-.pbar{display:flex;align-items:center;gap:8px;padding:10px 12px 6px}
+/* ---------- phone shell ---------- */
+.phone{width:100%;max-width:400px;background:var(--phone);border:10px solid var(--phone-edge);border-radius:34px;
+  height:min(800px, calc(100dvh - 40px));display:flex;flex-direction:column;overflow:hidden;position:relative}
+@media (max-width:440px){body{padding:0}.phone{border:none;border-radius:0;height:100dvh;max-width:none}}
+.pbar{display:flex;align-items:center;gap:10px;padding:10px 12px 4px}
 .dots{display:flex;gap:5px;flex:1}
-.dots i{height:8px;flex:1;border-radius:4px;background:var(--line)}
-.dots i.on{background:var(--maize)}
-.dots i.done{background:var(--leaf)}
-.iconbtn{width:44px;height:44px;border-radius:50%;border:2px solid var(--line);background:var(--panel);display:grid;place-items:center;font-size:20px;line-height:1}
-.guide{display:flex;gap:10px;align-items:flex-start;padding:4px 14px 10px}
-.guide .face{flex:none;width:52px;height:52px}
-.bubble{position:relative;background:var(--maize-soft);border-radius:16px;padding:9px 12px;font-size:16px;line-height:1.35;flex:1}
+.dots i{height:8px;flex:1;border-radius:4px;background:var(--line);opacity:.6}
+.dots i.on{background:var(--maize);opacity:1}
+.dots i.done{background:var(--leaf);opacity:1}
+.speak{width:52px;height:52px;border-radius:50%;border:none;background:var(--maize);display:grid;place-items:center;font-size:24px;box-shadow:0 2px 0 var(--sack-dk)}
+.speak:active{transform:translateY(2px);box-shadow:none}
+
+.guide{display:flex;gap:8px;align-items:flex-start;padding:4px 14px 10px}
+.guide .face{flex:none;width:56px;height:64px}
+.bubble{position:relative;background:var(--maize-soft);border-radius:18px;padding:10px 14px;font-size:18px;line-height:1.35;flex:1;min-height:56px}
+.bubble::before{content:"";position:absolute;left:-9px;top:20px;border:10px solid transparent;border-right-color:var(--maize-soft);border-left:0}
 .bubble b{font-weight:700}
-.say{border:none;background:none;font-size:18px;padding:0 0 0 6px;vertical-align:middle}
-.pbody{flex:1;overflow-y:auto;padding:4px 14px 14px;display:flex;flex-direction:column;gap:12px}
-.pfoot{display:flex;gap:10px;padding:10px 14px 14px;border-top:1px solid var(--line)}
-.big{flex:1;min-height:58px;border-radius:16px;border:none;font-family:var(--display);font-weight:700;font-size:21px;display:flex;align-items:center;justify-content:center;gap:8px}
-.big.go{background:var(--leaf);color:#fff}
-:root[data-theme="dark"] .big.go{color:#0F1A0E}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .big.go{color:#0F1A0E}}
-.big.back{flex:0 0 64px;background:var(--chip);border:2px solid var(--line)}
+.bubble .chipi{display:inline-grid;place-items:center;min-width:28px;height:28px;border-radius:8px;border:2px solid var(--line);background:var(--phone);font-size:15px;vertical-align:middle;margin:0 1px}
 
-.granary{display:flex;justify-content:center}
-.sacks{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;min-height:40px}
-.sacks svg{width:30px;height:34px}
-.stepper{display:flex;align-items:center;justify-content:center;gap:14px}
-.stepper button{width:64px;height:64px;border-radius:50%;border:3px solid var(--sack);background:var(--panel);font-size:32px;font-weight:700;line-height:1}
-.stepper .n{font-family:var(--display);font-size:46px;font-weight:800;min-width:92px;text-align:center;font-variant-numeric:tabular-nums;line-height:1}
-.unit{text-align:center;color:var(--ink2);font-size:15px;margin-top:-6px}
+.pbody{flex:1;overflow-y:auto;padding:4px 14px 16px;display:flex;flex-direction:column;gap:12px}
+.pbody>*{flex-shrink:0}
+.pfoot{display:flex;gap:10px;padding:10px 14px 14px;border-top:2px solid var(--chip);padding-bottom:calc(14px + env(safe-area-inset-bottom,0px))}
+.big{flex:1;min-height:60px;border-radius:18px;border:none;font-family:var(--display);font-weight:700;font-size:22px;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 3px 0 rgb(0 0 0/.18)}
+.big:active{transform:translateY(3px);box-shadow:none}
+.big.go{background:var(--leaf);color:var(--on-leaf)}
+.big.go[aria-disabled="true"]{opacity:.5}
+.big.back{flex:0 0 64px;background:var(--chip);box-shadow:0 3px 0 var(--line)}
+.big.gold{background:var(--maize);color:#2A1E00}
+
+/* ---------- shared pieces ---------- */
+.small{font-size:15px;color:var(--ink2);text-align:center}
 .row{display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap}
-.small{font-size:14px;color:var(--muted);text-align:center}
-.money{display:flex;align-items:center;gap:10px;justify-content:center;background:var(--chip);border-radius:14px;padding:8px}
-.money button{width:40px;height:40px;border-radius:50%;border:2px solid var(--line);background:var(--panel);font-size:20px}
-.money .n{font-family:var(--display);font-weight:700;font-size:20px;font-variant-numeric:tabular-nums}
+.pill{border:2px solid var(--line);background:var(--panel);border-radius:999px;padding:8px 14px;font-size:15px;min-height:44px;display:inline-flex;align-items:center;gap:6px}
+.pill.strong{border-color:var(--sack);background:var(--maize-soft);font-weight:700}
+.banner{background:var(--maize-soft);border:2px dashed var(--sack);border-radius:14px;padding:8px 12px;font-size:15px;display:flex;gap:8px;align-items:center;justify-content:space-between}
+.banner button{border:none;background:none;font-weight:700;text-decoration:underline;padding:6px}
 
-.months{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
-.m{border:2px solid var(--line);background:var(--panel);border-radius:12px;padding:6px 2px;display:grid;justify-items:center;gap:0;min-height:62px}
+.stepper{display:flex;align-items:center;justify-content:center;gap:16px}
+.stepper button{width:68px;height:68px;border-radius:50%;border:3px solid var(--sack);background:var(--panel);font-size:34px;font-weight:700;line-height:1;box-shadow:0 3px 0 var(--sack-dk)}
+.stepper button:active{transform:translateY(3px);box-shadow:none}
+.stepper .n{font-family:var(--display);font-size:52px;font-weight:800;min-width:100px;text-align:center;font-variant-numeric:tabular-nums;line-height:1}
+.unit{text-align:center;color:var(--ink2);font-size:16px;margin-top:-6px}
+
+.store-row{display:flex;align-items:flex-end;justify-content:center;gap:12px}
+.granary{width:120px;height:120px;flex:none}
+.granary .lvl{transition:y .45s ease, height .45s ease}
+.sacks{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;align-content:flex-end;min-height:40px;max-width:230px}
+.sacks .s{width:30px;height:34px;position:relative}
+.sacks .s.ten{width:40px;height:44px}
+.sacks .s.ten b{position:absolute;inset:14px 0 0;text-align:center;font-family:var(--display);font-size:14px;color:#fff;text-shadow:0 1px 0 var(--sack-dk)}
+
+.moons{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.m{border:2px solid var(--line);border-top-width:6px;background:var(--panel);border-radius:12px;padding:6px 2px 6px;display:grid;justify-items:center;align-content:center;gap:0;min-height:64px}
 .m .ic{font-size:20px;line-height:1.1}
-.m .nm{font-size:13px;font-weight:700}
-.m.sel{border-color:var(--maize);background:var(--maize-soft);box-shadow:0 0 0 2px var(--maize) inset}
-.m.hung{border-color:var(--hungry);background:var(--hungry-soft)}
-.m.now{outline:3px solid var(--rain);outline-offset:1px}
+.m .nm{font-size:14px;font-weight:700}
+.m.sel{border-color:var(--sack-dk);background:var(--maize-soft);box-shadow:0 0 0 3px var(--maize) inset}
+.m.wide{grid-column:1/-1;min-height:52px;border-top-width:2px}
+.s-dry{border-top-color:var(--dry)}.s-hot{border-top-color:var(--hot)}.s-rain{border-top-color:var(--rain-soft)}.s-harv{border-top-color:var(--maize)}
+.m.sel.s-dry,.m.sel.s-hot,.m.sel.s-rain,.m.sel.s-harv{border-top-color:var(--sack-dk)}
+.nudge{animation:nudge .45s}
+@keyframes nudge{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 
-.cats{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px}
-.cat{flex:none;border:2px solid var(--line);background:var(--panel);border-radius:999px;padding:4px 10px;font-size:14px;display:flex;align-items:center;gap:4px}
-.cat.on{border-color:var(--ink);background:var(--ink);color:var(--phone)}
-.cat.done::after{content:"✓";color:var(--leaf);font-weight:700}
+.band{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:3px}
+.band span{height:6px;border-radius:3px}
+.band .s-dry{background:var(--dry)}.band .s-hot{background:var(--hot)}.band .s-rain{background:var(--rain-soft)}.band .s-harv{background:var(--maize)}
+.mlab{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:3px;font-size:11px;white-space:nowrap;text-align:center;color:var(--ink2);font-weight:700;letter-spacing:-.02em}
+.legend{display:flex;justify-content:center;gap:14px;font-size:13px;color:var(--ink2)}
+.legend i{display:inline-block;width:14px;height:6px;border-radius:3px;margin-right:4px;vertical-align:middle}
+
+/* remember */
+.cats{display:flex;flex-wrap:wrap;gap:6px}
+.cat{border:2px solid var(--line);background:var(--panel);border-radius:999px;padding:6px 12px;font-size:15px;min-height:44px;display:flex;align-items:center;gap:5px}
+.cat.on{border-color:var(--ink);background:var(--ink);color:var(--phone);font-weight:700}
+.cat.done::after{content:"✓";color:var(--leaf);font-weight:800}
 .cat.on.done::after{color:var(--maize)}
 .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.card{border:2px solid var(--line);background:var(--panel);border-radius:16px;padding:10px 4px 8px;display:grid;justify-items:center;gap:2px;position:relative;min-height:96px}
-.card .ic{font-size:34px;line-height:1.1}
-.card .lb{font-size:13px;line-height:1.2;text-align:center}
+.card{border:2px solid var(--line);background:var(--panel);border-radius:16px;padding:10px 4px 8px;display:grid;justify-items:center;gap:2px;position:relative;min-height:98px;box-shadow:0 3px 0 var(--chip)}
+.card:active{transform:translateY(2px)}
+.card .ic{font-size:36px;line-height:1.1}
+.card .lb{font-size:14px;line-height:1.2;text-align:center}
 .card.picked{border-color:var(--leaf);background:var(--leaf-soft)}
-.card .tag{position:absolute;top:-8px;right:-4px;background:var(--leaf);color:#fff;border-radius:999px;font-size:12px;font-weight:700;padding:1px 7px;font-variant-numeric:tabular-nums}
-:root[data-theme="dark"] .card .tag{color:#0F1A0E}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .card .tag{color:#0F1A0E}}
+.card .tag{position:absolute;top:-9px;right:-5px;background:var(--leaf);color:var(--on-leaf);border-radius:999px;font-size:13px;font-weight:700;padding:1px 8px;font-variant-numeric:tabular-nums}
+.boardwrap{background:var(--panel);border-radius:16px;padding:10px 8px 8px;display:grid;gap:4px;position:relative;overflow:hidden}
+.boardwrap .ttl{font-size:14px;color:var(--ink2);font-weight:700}
+.board{display:grid;grid-template-columns:repeat(12,1fr);gap:3px;align-items:end;border-bottom:3px solid var(--soil);min-height:52px}
+.board .col{display:flex;flex-direction:column-reverse;align-items:center;gap:2px;padding-bottom:2px}
+.board .pin{width:14px;height:12px;border-radius:5px 5px 3px 3px;background:var(--sack);border:1.5px solid var(--sack-dk)}
+.board .pin.half{height:7px}
+.rat{position:absolute;right:8px;top:6px;font-size:22px}
+.keepsafe{font-size:14px;color:var(--ink2);display:flex;gap:6px;align-items:center}
 
-.board{display:grid;grid-template-columns:repeat(12,1fr);gap:3px;align-items:end}
-.board .col{display:flex;flex-direction:column-reverse;align-items:center;gap:1px;min-height:44px;border-bottom:2px solid var(--line);padding-bottom:2px}
-.board .pin{width:12px;height:12px;border-radius:50%;background:var(--sack);border:2px solid var(--phone)}
-.board .pin.half{width:9px;height:9px}
-.board .ml{font-size:10px;text-align:center;color:var(--muted)}
-.boardlab{display:grid;grid-template-columns:repeat(12,1fr);gap:3px}
+.sheet{position:absolute;inset:auto 0 0 0;background:var(--phone);border-top:4px solid var(--maize);border-radius:24px 24px 0 0;padding:14px 14px calc(14px + env(safe-area-inset-bottom,0px));display:grid;gap:10px;box-shadow:0 -12px 30px rgb(0 0 0/.22);z-index:5;max-height:90%;overflow-y:auto}
+.sheet h3{margin:0;font-family:var(--display);font-size:24px;display:flex;align-items:center;gap:8px}
+.sheet .x{margin-left:auto;width:44px;height:44px;border-radius:50%;border:2px solid var(--line);background:var(--panel);font-size:18px}
+.scrim{position:absolute;inset:0;background:rgb(20 20 10/.4);z-index:4}
 
-.sheet{position:absolute;inset:auto 0 0 0;background:var(--phone);border-top:3px solid var(--maize);border-radius:22px 22px 0 0;padding:14px;display:grid;gap:10px;box-shadow:0 -12px 30px rgba(0,0,0,.18);z-index:5;max-height:88%;overflow-y:auto}
-.sheet h3{margin:0;font-family:var(--display);font-size:22px;display:flex;align-items:center;gap:8px}
-.scrim{position:absolute;inset:0;background:rgba(20,26,19,.35);z-index:4}
-
-/* play */
-.meter{display:grid;grid-template-columns:repeat(12,1fr);gap:3px;align-items:end;height:150px;padding-top:14px;position:relative}
-.meter .b{position:relative;height:100%;display:flex;align-items:flex-end}
-.meter .b span{display:block;width:100%;background:var(--maize);border-radius:4px 4px 0 0;min-height:0;transition:height .35s ease}
+/* play + fix meter */
+.meter{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:3px;align-items:end;height:140px;padding-top:18px;border-bottom:3px solid var(--soil)}
+.meter .b{position:relative;height:100%;display:flex;align-items:flex-end;border-radius:4px 4px 0 0}
+.meter .b span{display:block;width:100%;background:var(--maize);border-radius:4px 4px 0 0;transition:height .35s ease}
+.meter .b.low{background:var(--hungry-soft)}
 .meter .b.low span{background:var(--hungry)}
-.meter .b .v{position:absolute;left:0;right:0;text-align:center;font-size:11px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--ink2)}
-.meter .b.hungry::after{content:"!";position:absolute;bottom:2px;left:0;right:0;text-align:center;font-weight:800;color:var(--hungry);font-size:16px}
-.meter .b:hover span,.meter .b:focus span{outline:2px solid var(--ink)}
-.meter-lab{display:grid;grid-template-columns:repeat(12,1fr);gap:3px;font-size:10px;text-align:center;color:var(--muted);border-top:2px solid var(--line);padding-top:3px}
-.tip{min-height:22px;font-size:14px;text-align:center;color:var(--ink2)}
-.verdict{border-radius:16px;padding:12px;display:grid;gap:6px}
-.verdict.bad{background:var(--hungry-soft)}
-.verdict.good{background:var(--leaf-soft)}
+.meter .b.fut span{background:var(--line);opacity:.5}
+.meter .b.now span{box-shadow:0 0 0 2px var(--ink)}
+.meter .b .v{position:absolute;left:-2px;right:-2px;text-align:center;font-size:11px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--ink2);font-style:normal}
+.meter .b.low::after{content:"!";position:absolute;bottom:2px;left:0;right:0;text-align:center;font-weight:800;color:var(--hungry);font-size:16px}
+.meter .b.low span + .v{display:none}
+.tip{min-height:24px;font-size:15px;text-align:center;color:var(--ink2);font-weight:700}
+.playrow{display:grid;grid-template-columns:64px minmax(0,1fr);gap:10px;align-items:end}
+.playrow .granary{width:64px;height:64px}
+.playrow .mlab{font-size:10px;letter-spacing:-.04em}
+.playrow>div{min-width:0}
+
+.verdict{border-radius:18px;padding:12px;display:grid;gap:8px;font-size:17px;
+  background-image:repeating-linear-gradient(45deg,transparent 0 6px,rgb(0 0 0/.03) 6px 7px)}
+.verdict.bad{background-color:var(--hungry-soft)}
+.verdict.good{background-color:var(--leaf-soft)}
+.verdict .note{font-size:15px;color:var(--ink)}
 .vs{display:grid;grid-template-columns:1fr 1fr;gap:8px;text-align:center}
-.vs div{background:var(--panel);border-radius:12px;padding:6px}
-.vs .k{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
-.vs .v{font-family:var(--display);font-size:22px;font-weight:800}
+.vs div{background:var(--phone);border-radius:12px;padding:6px}
+.vs .k{font-size:13px;color:var(--ink2);font-weight:700}
+.vs .v{font-family:var(--display);font-size:24px;font-weight:800}
+.burst{position:relative;height:0}
+.burst i{position:absolute;left:50%;top:-20px;width:10px;height:12px;border-radius:50%;background:var(--maize);border:1.5px solid var(--sack-dk)}
 
+/* fix */
 .fixlist{display:grid;gap:6px}
-.fx{display:grid;grid-template-columns:34px 1fr auto;gap:8px;align-items:center;background:var(--panel);border:2px solid var(--line);border-radius:14px;padding:6px 8px}
-.fx .ic{font-size:24px;text-align:center}
-.fx .t{font-size:14px;line-height:1.25}
-.fx .t small{color:var(--muted);display:block}
-.fx .ctl{display:flex;gap:4px}
-.fx .ctl button{width:36px;height:36px;border-radius:10px;border:2px solid var(--line);background:var(--phone);font-size:16px}
+.fx{display:grid;grid-template-columns:36px 1fr auto;gap:8px;align-items:center;background:var(--panel);border:2px solid var(--line);border-radius:14px;padding:6px 8px}
+.fx.red{border-color:var(--hungry);background:var(--hungry-soft)}
+.fx .ic{font-size:26px;text-align:center}
+.fx .t{font-size:15px;line-height:1.25}
+.fx .t small{color:var(--ink2);display:block;font-size:13px}
+.fx .ctl{display:flex;gap:6px}
+.fx .ctl button{width:46px;height:46px;border-radius:12px;border:2px solid var(--line);background:var(--phone);font-size:17px;display:grid;place-items:center;line-height:1;padding:0}
+.fx .ctl button small{display:block;font-size:9px;color:var(--ink2);margin-top:1px}
+.flash{animation:flash .6s}
+@keyframes flash{0%{background:var(--leaf-soft)}100%{}}
+.eatnote{font-size:14px;color:var(--ink2);padding:0 4px}
 
-.plancard{border:3px dashed var(--sack);border-radius:18px;padding:10px;display:grid;gap:8px;background:var(--panel)}
+/* card */
+.plancard{border:3px dashed var(--sack);border-radius:18px;padding:10px;display:grid;gap:8px;background-color:var(--panel);
+  background-image:repeating-linear-gradient(45deg,transparent 0 6px,rgb(0 0 0/.03) 6px 7px)}
 .pc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
-.pc{border-radius:12px;background:var(--phone);border:2px solid var(--line);padding:4px;text-align:center;display:grid;gap:0}
-.pc .nm{font-size:12px;font-weight:700}
-.pc .cnt{font-family:var(--display);font-size:24px;font-weight:800;line-height:1.1;font-variant-numeric:tabular-nums}
+.pc{border-radius:12px;background:var(--phone);border:2px solid var(--line);border-top-width:6px;padding:4px 2px;text-align:center;display:grid;position:relative}
+.pc .nm{font-size:13px;font-weight:700}
+.pc .cnt{font-family:var(--display);font-size:26px;font-weight:800;line-height:1.1;font-variant-numeric:tabular-nums}
 .pc .it{font-size:14px;min-height:18px}
-.pc.check{border-color:var(--leaf);background:var(--leaf-soft)}
-.pc.hung{border-color:var(--hungry);background:var(--hungry-soft)}
+.pc.low{background:var(--hungry-soft)}
+.pc.low .cnt{color:var(--hungry)}
+.pc.check{box-shadow:0 0 0 3px var(--leaf)}
+.pc.check::after{content:"✓";position:absolute;top:-10px;right:-6px;width:22px;height:22px;border-radius:50%;background:var(--leaf);color:var(--on-leaf);font-weight:800;font-size:13px;display:grid;place-items:center}
+.pc.check.low{box-shadow:0 0 0 3px var(--hungry)}
+.pc.check.low::after{background:var(--hungry)}
+.pc.harv{box-shadow:0 0 0 3px var(--maize)}
+.cardnote{font-size:15px;text-align:center}
+.cardnote.bad{color:var(--hungry);font-weight:700}
+.toast{background:var(--ink);color:var(--phone);border-radius:14px;padding:10px 12px;font-size:15px;text-align:center}
 
-.cover{position:absolute;inset:0;background:var(--phone);z-index:20;display:grid;place-items:center;text-align:center;padding:30px}
-.cover .w{font-size:64px}
-.cover p{color:var(--muted)}
-
-.khoswe{display:inline-block}
-@keyframes scurry{0%{transform:translateX(-30px);opacity:0}30%{opacity:1}100%{transform:translateX(0);opacity:1}}
-.scurry{animation:scurry .8s ease-out}
-@keyframes drop{from{transform:translateY(-14px);opacity:0}to{transform:none;opacity:1}}
-.sacks svg:last-child{animation:drop .25s ease-out}
-@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
-
-body{display:grid;justify-items:center}
-.phone{height:min(780px, calc(100dvh - 40px))}
-@media (max-width:440px){body{padding-inline:0;padding-block:0}.phone{border:none;border-radius:0;height:100dvh;max-width:none}}
+/* ---------- motion (only when allowed) ---------- */
+@media (prefers-reduced-motion: no-preference){
+  .sacks .s.new{animation:drop .25s ease-out}
+  @keyframes drop{0%{transform:translateY(-16px);opacity:0}80%{transform:translateY(0) scaleY(.94)}100%{transform:none;opacity:1}}
+  .speak.hello{animation:pulse 1.2s 2}
+  @keyframes pulse{50%{box-shadow:0 0 0 10px rgb(233 168 0/.25)}}
+  .rat.run{animation:scurry 1s ease-out}
+  @keyframes scurry{0%{transform:translateX(-300px) scaleX(-1)}70%{transform:translateX(10px) scaleX(-1)}100%{transform:none}}
+  .burst i{animation:pop .8s ease-out forwards}
+  @keyframes pop{from{transform:translate(-50%,0) scale(.4);opacity:1}to{transform:translate(calc(-50% + var(--dx)),var(--dy)) scale(1);opacity:0}}
+  .face .blink{animation:blink 4s infinite}
+  @keyframes blink{0%,94%,100%{transform:scaleY(1)}97%{transform:scaleY(.1)}}
+  .face{transform-origin:50% 90%}
+  .face.bob{animation:bob .5s}
+  @keyframes bob{40%{transform:rotate(-6deg)}80%{transform:rotate(4deg)}}
+}
 </style>
 </head>
 <body>
 <div class="phone" id="phone" aria-label="Bags Till Harvest">
   <div class="pbar">
     <div class="dots" id="dots"></div>
-    <button class="iconbtn" id="soundBtn" title="Read aloud" aria-label="Read aloud">🔊</button>
+    <button class="speak hello" id="soundBtn" aria-label="Read aloud">🔊</button>
   </div>
-  <div class="guide">
-    <svg class="face" viewBox="0 0 52 52" aria-hidden="true">
-      <circle cx="26" cy="28" r="22" fill="var(--maize)"/>
-      <path d="M26 4 C22 10 22 14 26 16 C30 14 30 10 26 4Z" fill="var(--leaf)"/>
-      <circle cx="19" cy="26" r="3" fill="var(--ink)"/><circle cx="33" cy="26" r="3" fill="var(--ink)"/>
-      <path d="M18 35 Q26 42 34 35" stroke="var(--ink)" stroke-width="3" fill="none" stroke-linecap="round"/>
-    </svg>
-    <div class="bubble" id="bubble"></div>
-  </div>
+  <div class="guide"><span id="face"></span><div class="bubble" id="bubble" aria-live="polite"></div></div>
   <div class="pbody" id="pbody"></div>
   <div class="pfoot" id="pfoot"></div>
 </div>
+
 <script>
 (() => {
 // ================= PHRASE BANK (English only for now) =================
 // Every word the farmer sees lives here. {name} placeholders are filled in by t().
+// {b} always means "a number of bags" and is already worded ("1 bag", "3½ bags").
 // To add a language later, copy this object and translate the values.
 const PHRASES = {
   en: {
-    next:"Next ▸", done:"Done ▸", back:"◀", bags:"bags", bag:"bag", bagsEachMoon:"bags each moon",
-    empty:"empty", k:"K{n}",
+    bag_one:"{n} bag", bag_other:"{n} bags",
+    next:"Next ▸", done:"Done ▸", back:"◀", bagsEachMoon:"bags each moon", empty:"empty", k:"K{n}",
     harvest_say:"Hello! Let's see if your maize lasts <b>until next harvest</b>. How many <b>bags</b> did you bring home?",
     harvest_unit:"bags of maize",
-    harvest_sell:"Bags you <b>sell</b> for money stay in this pile for now. We will count what the money is for.",
-    harvest_price:"1 bag sells for",
-    newPlan:"✨ New plan", example:"👀 Example", exampleShown:"Example family shown.",
-    guess_say:"Quick guess! <b>Before we count</b>: in which moon will the bags run out? Tap one. There is no wrong answer.",
+    harvest_price:"💵 1 bag sells for", price_btn:"💵 Price of a bag?",
+    example:"👀 Try an example family", exampleBanner:"Example family. These are not your numbers.", mine:"Start mine",
+    guess_say:"Quick guess! <b>Before we count</b>: in which moon will the bags run out? There is no wrong answer.",
     guess_lasts:"🌽 They will last until the next harvest",
-    eat_say:"How much maize does your family <b>eat in one moon</b>? Count in bags. Half bags are fine.",
-    eat_year:"Over 12 moons that is <b>{n} bags</b> for eating.",
+    eat_say:"How much maize does your family <b>eat in one moon</b>? Half bags are fine.",
+    eat_year:"For the whole year that is <b>{b}</b>.",
     cat_school:"School", cat_home:"Home", cat_farm:"Farm", cat_people:"People", cat_surprise:"Surprises",
     say_school:"Now let's walk through the year. <b>School</b>: fees, uniforms, books… Tap each thing your family will pay for.",
-    say_home:"<b>Home</b>: salt, soap, oil, grinding… the small things add up. Tap what you buy.",
+    say_home:"<b>Home</b>: salt, soap, oil, grinding… small things add up. Tap what you buy.",
     say_farm:"<b>Farm</b>: seed and fertiliser for next season. Hired help. Tap what you need.",
-    say_people:"<b>People</b>: funerals, weddings, church, relatives who ask for help. Tap what might come.",
-    say_surprise:"🐀 This is <b>Khoswe the rat</b>. He eats bags for things nobody plans, like the clinic or a broken bike. Keep some bags safe from him?",
-    board:"Your year · each dot is a bag", keepSafe:"🐀 Keep-safe: {n} bags",
-    sheet_which:"Which moon?", sheet_surprise:"🐀 No moon: these bags stay in the store, safe from Khoswe.",
-    sheet_ok:"✓ Put it on the board",
+    say_people:"<b>People</b>: funerals, weddings, church, relatives who ask. Tap what might come.",
+    say_surprise:"This is <b>Khoswe the rat</b> 🐀. He eats bags for things nobody plans: the clinic, a broken bike. Keep some bags safe from him?",
+    board:"Your year", keepSafe:"🐀 Keep-safe: {b}",
+    sheet_which:"Which moon?", sheet_pick:"Tap a moon first", sheet_surprise:"🐀 No moon: these bags stay in the store, safe from Khoswe.",
+    sheet_ok:"✓ Put it on the board", close:"Close",
     play_say:"Now watch your store, <b>one moon at a time</b>.", play_done_say:"That was your year. Let's look at it together.",
     play_btn:"▶ Play the year", play_again:"↻ Play again", play_tap:"Tap ▶ to play the year", play_tip:"Tap a bar to see the count",
-    tip_left:"{m}: {n} bags left", tip_none:"{m}: no maize left",
-    guessed:"You guessed", counted:"Counted", harvestWord:"Harvest",
-    good:"🎉 The bags last until harvest!", good_spare:"{n} bags spare, plus {r} keep-safe.",
+    tip_left:"{m}: {b} in the store", tip_none:"{m}: no maize left",
+    guessed:"Your guess", counted:"The count", harvestWord:"Harvest",
+    good:"🎉 The bags last until harvest!", good_spare:"{b} spare, plus {r} keep-safe.",
     bad:"The bags run out in <b>{m}</b>. That leaves <b>{h} hungry moons</b>.",
     bad_one:"The bags run out in <b>{m}</b>. That leaves <b>1 hungry moon</b>.",
-    bad_comfort:"This is normal. Most families forget small costs. Let's fix it together.",
-    fix_say:"Try changes: <b>smaller</b> (−), <b>earlier</b> (◀), <b>later</b> (▶). Watch the red moons.",
-    fix_ok_say:"Your plan reaches harvest. You can still move things around.",
-    fix_ok:"✓ Food until harvest", fix_short:"{h} hungry moons · short {n} bags",
+    bad_comfort:"Most families guess later than the count. Small costs are easy to forget. Let's fix it together.",
+    fix_say:"Try the buttons {minus} {earlier} {later} on each cost. Watch the red moons turn gold.",
+    fix_ok_say:"Your plan reaches harvest! 🎉 You can still move things around.",
+    fix_ok:"✓ Food until harvest", fix_short:"Short by {b}", earlier:"earlier", later:"later",
     eating:"Eating", keepSafeRow:"Keep-safe from Khoswe", noCosts:"No costs added yet.",
+    eat_less:"Eating less is hard. Try moving costs first.",
     tooSmall:"If the harvest is too small, no plan can cover it. That is not your fault. <b>Ask your group leader about help.</b>",
-    card_say:"Here is your plan. At the <b>green</b> moons, count your bags. If you have fewer, slow down before it's too late.",
-    card_legend:"Big number = bags in store at the start of that moon, keep-safe bags included.",
-    card_short:"Red moons: short {n} bags. Go back and fix, or ask for help.",
-    startAgain:"↻ Start again", erase:"🗑️ Erase plan",
+    card_say:"Here is your plan. At the moons with a <b>✓</b>, count your bags. If you have fewer, slow down early.",
+    card_legend:"Big number = bags in the store at the start of the moon. Keep-safe bags are extra: {b}.",
+    card_short:"Short by {b}. Go back and fix, or ask for help.",
+    keep:"📷 Keep this plan", keep_toast:"Take a photo of this screen, or copy the ✓ numbers onto your store wall.",
+    startAgain:"↻ Start again", erase:"🗑️ Erase", erase_sure:"Tap again to erase",
     months:["May","Jun","Jul","Aug","Sep","Oct","Nov","Dec","Jan","Feb","Mar","Apr"],
+    seasons:{harv:"harvest", dry:"cool", hot:"hot", rain:"rains"},
     items:{ fees:"School fees", uniform:"Uniform", shoes:"Shoes", books:"Books, pens", exam:"Exam fees", bus:"Travel to school",
       salt:"Salt, sugar", soap:"Soap", oil:"Cooking oil", light:"Paraffin, candles", mill:"Grinding", roof:"Roof, repairs",
       phone:"Phone talk-time", blanket:"Blankets", relish:"Relish, fish",
@@ -236,127 +286,194 @@ const PHRASES = {
 };
 let LANG = "en";
 function t(key, vars={}){ const s = PHRASES[LANG][key] ?? PHRASES.en[key] ?? key; return String(s).replace(/\{(\w+)\}/g,(_,k)=>vars[k]??""); }
+const nb = n => t(n>0 && n<=1 ? "bag_one" : "bag_other", {n:fmt(n)});
 const mName = i => PHRASES[LANG].months[i];
 const iName = id => PHRASES[LANG].items[id];
 
 // ================= DATA (no words here) =================
-const MONTH_IC = ["🌾","🌾","☀️","☀️","🎒","🔥","🌱","⭐","🎒","🌧️","🌧️","🌽"];
+const MONTH_IC = ["🌾","🌾","☀️","☀️","🎒","☀️","🌱","🎄","🎒","🌧️","🌧️","🌽"];
+const SEASON = ["harv","dry","dry","hot","hot","hot","rain","rain","rain","rain","rain","harv"];
 const CATS = [
   {id:"school", ic:"🎒", items:[["fees","🏫"],["uniform","👕"],["shoes","👟"],["books","✏️"],["exam","📝"],["bus","🚌"]]},
   {id:"home", ic:"🏠", items:[["salt","🧂"],["soap","🧼"],["oil","🛢️"],["light","🕯️"],["mill","⚙️"],["roof","🛖"],["phone","📱"],["blanket","🛏️"],["relish","🐟"]]},
   {id:"farm", ic:"🌱", items:[["seed","🌽"],["fert","🧪"],["labour","🧑‍🌾"],["tools","⛏️"],["store","🧺"],["transport","🚲"]]},
-  {id:"people", ic:"👪", items:[["funeral","🕊️"],["wedding","💍"],["church","⛪"],["relatives","🤲"],["loan","💵"],["group","🪙"]]},
+  {id:"people", ic:"👪", items:[["funeral","🕊️"],["wedding","💍"],["church","⛪"],["relatives","🤲"],["loan","📒"],["group","🪙"]]},
   {id:"surprise", ic:"🐀", surprise:true, items:[["sick","🏥"],["medicine","💊"],["animal","🐐"],["bike","🔧"],["pests","🐛"],["other","❔"]]}
 ];
 const ITEM = {}; CATS.forEach(c=>c.items.forEach(([id,ic])=>ITEM[id]={id,ic,cat:c.id,surprise:!!c.surprise}));
 const STEPS = ["harvest","guess","eat","remember","play","fix","card"];
 const CHECKS = [5,7,9]; // Oct, Dec, Feb
+const FACE_FOR = {harvest:"happy", guess:"think", eat:"happy", remember:"think", play:"think", fix:"think", card:"happy"};
 
-function example(){ return { harvest:18, price:300, guess:10, eat:1.5, catIdx:0, catsDone:["school","home","farm","people","surprise"],
+function example(){ return { harvest:18, price:300, guess:10, eat:1.5, eat0:1.5, catIdx:0, catsDone:["school","home","farm","people","surprise"],
   picks:{ fees:{b:1,m:8}, uniform:{b:.5,m:8}, books:{b:.5,m:4}, salt:{b:.5,m:2}, soap:{b:.5,m:5}, mill:{b:.5,m:7},
     seed:{b:1,m:5}, fert:{b:2,m:6}, labour:{b:1,m:7}, funeral:{b:1,m:3}, church:{b:.5,m:7}, loan:{b:1,m:1}, sick:{b:1,m:null} },
-  step:0, example:true }; }
-function blank(){ return {harvest:0, price:300, guess:null, eat:1, catIdx:0, catsDone:[], picks:{}, step:0, example:false}; }
-let S = example(), sheet = null, playing = null, playMonth = -1;
+  step:0, example:true, showPrice:true }; }
+function blank(){ return {harvest:0, price:300, guess:null, eat:1, eat0:null, catIdx:0, catsDone:[], picks:{}, step:0, example:false, showPrice:false}; }
+let S = blank(), sheet = null, playing = null, playMonth = -1, ui = {};
 
 // ================= MODEL =================
 const reserve = () => Object.entries(S.picks).filter(([k])=>ITEM[k].surprise).reduce((a,[,p])=>a+p.b,0);
 const spendIn = m => Object.entries(S.picks).filter(([k,p])=>!ITEM[k].surprise && p.m===m).reduce((a,[,p])=>a+p.b,0);
+// For each moon: bags in the store at the START (not counting keep-safe), and whether the moon runs short.
 function run(){
   let stock = S.harvest - reserve(); const out=[]; let runOut=null, hungry=0;
   for(let m=0;m<12;m++){ const start=stock; stock -= S.eat + spendIn(m); const low=stock<0;
-    if(low){ if(runOut===null) runOut=m; hungry++; } out.push({start,end:stock,low}); }
+    if(low){ if(runOut===null) runOut=m; hungry++; } out.push({start:Math.max(0,start), low}); }
   return {out, runOut, hungry, short:Math.max(0,-stock), end:stock};
 }
-const fmt = x => (Math.round(x*2)/2).toString().replace(".5","½").replace(/^0½/,"½");
+function fmt(x){ const r=Math.round(x*2)/2, w=Math.floor(r); return r%1 ? (w?w+"½":"½") : String(w); }
 
-// ================= VIEW HELPERS =================
+// ================= DRAWING =================
 const $ = s => document.querySelector(s);
-const sackSvg = half => `<svg viewBox="0 0 30 34" aria-hidden="true"><path d="M8 6 L22 6 L20 10 C27 14 28 22 26 30 C22 33 8 33 4 30 C2 22 3 14 10 10Z" fill="var(--sack)" stroke="var(--sack-dk)" stroke-width="1.5" ${half?'opacity=".45"':''}/><path d="M9 6 Q15 2 21 6" stroke="var(--sack-dk)" stroke-width="2" fill="none"/><path d="M10 18 H20" stroke="var(--sack-dk)" stroke-width="1.5"/></svg>`;
-const sacks = n => { let h=""; for(let i=1;i<=Math.floor(n);i++) h+=sackSvg(false); if(n%1) h+=sackSvg(true); return `<div class="sacks">${h||`<span class="small">${t("empty")}</span>`}</div>`; };
+const SACK = `<path d="M8 6 L22 6 L20 10 C27 14 28 22 26 30 C22 33 8 33 4 30 C2 22 3 14 10 10Z"/>`;
+function sack(kind, isNew){
+  const id = "h"+Math.random().toString(36).slice(2,7);
+  if(kind==="half") return `<svg class="s ${isNew?"new":""}" viewBox="0 0 30 34" aria-hidden="true"><defs><clipPath id="${id}"><rect x="0" y="18" width="30" height="16"/></clipPath></defs>
+    <g fill="none" stroke="var(--sack-dk)" stroke-width="1.5" stroke-dasharray="2 2">${SACK}</g><g clip-path="url(#${id})" fill="var(--sack)" stroke="var(--sack-dk)" stroke-width="1.5">${SACK}</g></svg>`;
+  return `<svg class="s ${kind==="ten"?"ten":""} ${isNew?"new":""}" viewBox="0 0 30 34" aria-hidden="true"><g fill="var(--sack)" stroke="var(--sack-dk)" stroke-width="1.5">${SACK}</g>
+    <path d="M9 6 Q15 2 21 6" stroke="var(--sack-dk)" stroke-width="2" fill="none"/>${kind==="ten"?`<text x="15" y="25" text-anchor="middle" font-size="10" font-weight="800" fill="#fff" font-family="Baloo 2, sans-serif">10</text>`:`<path d="M10 18 H20" stroke="var(--sack-dk)" stroke-width="1.5"/>`}</svg>`;
+}
+function sacks(n, animateLast){
+  if(n<=0) return `<div class="sacks"><span class="small">${t("empty")}</span></div>`;
+  const tens=Math.floor(n/10), ones=Math.floor(n%10), half=n%1; let h="";
+  for(let i=0;i<tens;i++) h+=sack("ten");
+  for(let i=0;i<ones;i++) h+=sack("one", animateLast && !half && i===ones-1);
+  if(half) h+=sack("half", animateLast);
+  return `<div class="sacks" aria-label="${nb(n)}">${h}</div>`;
+}
+// Round mud granary on stilts (nkokwe). frac = how full, 0..1
+function granary(frac, cls=""){
+  frac = Math.max(0, Math.min(1, frac)); const top=40, bot=100, y = bot - (bot-top)*frac;
+  return `<svg class="granary ${cls}" viewBox="0 0 120 120" aria-hidden="true">
+    <defs><clipPath id="gbody"><path d="M26 40 Q24 72 30 100 Q60 108 90 100 Q96 72 94 40 Z"/></clipPath></defs>
+    <rect x="34" y="100" width="7" height="16" rx="2" fill="var(--soil)"/><rect x="79" y="100" width="7" height="16" rx="2" fill="var(--soil)"/>
+    <path d="M26 40 Q24 72 30 100 Q60 108 90 100 Q96 72 94 40 Z" fill="var(--soil)" opacity=".35"/>
+    <g clip-path="url(#gbody)">
+      <rect class="lvl" x="20" y="${y}" width="80" height="${bot-y+10}" fill="${frac>0?"var(--maize)":"var(--hungry-soft)"}"/>
+      ${frac>0?`<rect class="lvl" x="20" y="${y}" width="80" height="2.5" fill="var(--sack-dk)"/>`:""}
+      <g fill="var(--sack-dk)" opacity=".18">${[0,1,2,3,4,5].map(i=>`<circle cx="${36+i*9}" cy="${y+8}" r="2"/><circle cx="${40+i*9}" cy="${y+16}" r="2"/>`).join("")}</g>
+    </g>
+    <path d="M26 40 Q24 72 30 100 Q60 108 90 100 Q96 72 94 40" fill="none" stroke="var(--soil)" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M60 4 L110 44 Q60 52 10 44 Z" fill="var(--thatch)" stroke="var(--sack-dk)" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M60 4 L40 46 M60 4 L60 49 M60 4 L80 46" stroke="var(--sack-dk)" stroke-width="1.5" opacity=".55"/>
+  </svg>`;
+}
+// Maize-cob guide with three moods
+function face(mood){
+  const eyes = mood==="worried"
+    ? `<path d="M19 30 L25 28 M37 28 L43 30" stroke="var(--ink)" stroke-width="2.5" stroke-linecap="round"/><g class="blink" style="transform-origin:31px 34px"><circle cx="23" cy="34" r="3" fill="var(--ink)"/><circle cx="39" cy="34" r="3" fill="var(--ink)"/></g>`
+    : `<g class="blink" style="transform-origin:31px 32px"><circle cx="23" cy="${mood==="think"?31:33}" r="3" fill="var(--ink)"/><circle cx="39" cy="${mood==="think"?31:33}" r="3" fill="var(--ink)"/></g>`;
+  const mouth = mood==="happy" ? `<path d="M23 42 Q31 49 39 42" stroke="var(--ink)" stroke-width="3" fill="none" stroke-linecap="round"/>`
+    : mood==="think" ? `<path d="M25 44 H37" stroke="var(--ink)" stroke-width="3" stroke-linecap="round"/>`
+    : `<path d="M24 46 Q31 41 38 46" stroke="var(--ink)" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+  let kernels=""; for(let r=0;r<7;r++) for(let c=0;c<4;c++){ const x=19+c*8+(r%2?4:0), y=12+r*7; if(x<46) kernels+=`<circle cx="${x}" cy="${y}" r="2.2"/>`; }
+  return `<svg class="face" viewBox="0 0 62 72" aria-hidden="true">
+    <ellipse cx="31" cy="34" rx="18" ry="28" fill="var(--maize)" stroke="var(--sack-dk)" stroke-width="1.5"/>
+    <g fill="var(--sack-dk)" opacity=".22">${kernels}</g>
+    <path d="M13 40 Q4 58 22 70 Q18 56 22 44 Z" fill="var(--leaf)"/><path d="M49 40 Q58 58 40 70 Q44 56 40 44 Z" fill="var(--leaf)"/>
+    <path d="M31 6 Q27 0 22 2 M31 6 Q35 -1 40 2" stroke="var(--sack-dk)" stroke-width="1.5" fill="none"/>
+    ${eyes}${mouth}${mood==="happy"?`<circle cx="18" cy="41" r="3" fill="var(--hot)" opacity=".5"/><circle cx="44" cy="41" r="3" fill="var(--hot)" opacity=".5"/>`:""}
+  </svg>`;
+}
+const band = () => `<div class="band" aria-hidden="true">${SEASON.map(s=>`<span class="s-${s}"></span>`).join("")}</div>`;
+const labels = () => `<div class="mlab">${MONTH_IC.map((_,i)=>`<span>${mName(i)}</span>`).join("")}</div>`;
+const legend = () => { const L=PHRASES[LANG].seasons||PHRASES.en.seasons; return `<div class="legend">${["harv","dry","hot","rain"].map(s=>`<span><i class="s-${s}" style="background:var(--${s==="harv"?"maize":s==="rain"?"rain-soft":s})"></i>${L[s]}</span>`).join("")}</div>`; };
 const stepper = (minus, plus, val, unit) => `<div class="stepper"><button data-a="${minus}" aria-label="less">−</button><div class="n">${val}</div><button data-a="${plus}" aria-label="more">+</button></div><div class="unit">${unit}</div>`;
-const monthGrid = (cls, act) => `<div class="months">${MONTH_IC.map((ic,i)=>`<button class="m ${cls(i)}" data-a="${act}" data-i="${i}"><span class="ic">${ic}</span><span class="nm">${mName(i)}</span></button>`).join("")}</div>`;
-const initials = () => `<div class="meter-lab">${MONTH_IC.map((_,i)=>`<span title="${mName(i)}">${mName(i)[0]}</span>`).join("")}</div>`;
-const tip = (i,o) => o.low ? t("tip_none",{m:mName(i)}) : t("tip_left",{m:mName(i),n:fmt(o.end)});
+const moonGrid = (cls, act) => `<div class="moons" id="moons">${MONTH_IC.map((ic,i)=>`<button class="m s-${SEASON[i]} ${cls(i)}" data-a="${act}" data-i="${i}"><span class="ic">${ic}</span><span class="nm">${mName(i)}</span></button>`).join("")}</div>`;
+const tip = (i,o) => o.low && o.start<=0 ? t("tip_none",{m:mName(i)}) : t("tip_left",{m:mName(i),b:nb(o.start)});
 const guessName = () => S.guess===12 ? t("harvestWord") : mName(S.guess);
+const chip = s => `<span class="chipi">${s}</span>`;
+function bars(r, upto){ const base=Math.max(1,S.harvest-reserve());
+  return r.out.map((o,i)=>{ const vis=i<=upto, pct=Math.min(100,o.start/base*100);
+    return `<div class="b ${vis?(o.low?"low":""):"fut"} ${i===upto&&upto<11?"now":""}" tabindex="0" data-tip="${vis?tip(i,o):mName(i)}"><span style="height:${pct}%"></span>${vis?`<em class="v" style="bottom:calc(${pct}% + 2px)">${fmt(o.start)}</em>`:""}</div>`; }).join(""); }
 function speak(s){ try{ speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(s.replace(/<[^>]+>/g,"")); u.rate=.92; u.lang="en"; speechSynthesis.speak(u);}catch(e){} }
 
 // ================= SCREENS =================
 const SCREENS = {
   harvest: () => ({ say:t("harvest_say"), next:S.harvest>0, body:`
-    <div class="granary">${sacks(S.harvest)}</div>${stepper("h-","h+",S.harvest,t("harvest_unit"))}
-    <div class="small">${t("harvest_sell")}</div>
-    <div class="money"><span aria-hidden="true">💵</span><span class="small" style="margin:0">${t("harvest_price")}</span>
-      <button data-a="p-">−</button><span class="n">${t("k",{n:S.price})}</span><button data-a="p+">+</button></div>
-    <div class="row">${S.example?`<span class="small">${t("exampleShown")}</span>`:""}<button class="cat" data-a="new">${t("newPlan")}</button><button class="cat" data-a="ex">${t("example")}</button></div>` }),
+    ${S.example?`<div class="banner"><span>👀 ${t("exampleBanner")}</span><button data-a="new">${t("mine")}</button></div>`:""}
+    <div class="store-row">${granary(S.harvest/30)}${sacks(S.harvest, ui.added)}</div>
+    ${stepper("h-","h+",S.harvest,t("harvest_unit"))}
+    ${S.showPrice?`<div class="row"><span class="small">${t("harvest_price")}</span><button class="pill" data-a="p-">−</button><b class="small" style="font-size:18px">${t("k",{n:S.price})}</b><button class="pill" data-a="p+">+</button></div>`
+      :`<div class="row"><button class="pill" data-a="price">${t("price_btn")}</button></div>`}
+    ${S.example?"":`<div class="row"><button class="pill strong" data-a="ex">${t("example")}</button></div>`}` }),
 
-  guess: () => ({ say:t("guess_say"), next:S.guess!==null, body:`${monthGrid(i=>S.guess===i?"sel":"","g")}
-    <button class="m ${S.guess===12?"sel":""}" data-a="g" data-i="12" style="min-height:48px"><span class="nm">${t("guess_lasts")}</span></button>` }),
+  guess: () => ({ say:t("guess_say"), next:S.guess!==null, body:`${moonGrid(i=>S.guess===i?"sel":"","g")}
+    <button class="m wide ${S.guess===12?"sel":""}" data-a="g" data-i="12"><span class="nm">${t("guess_lasts")}</span></button>${legend()}` }),
 
-  eat: () => ({ say:t("eat_say"), next:S.eat>0, body:`<div class="granary">${sacks(S.eat)}</div>${stepper("e-","e+",fmt(S.eat),t("bagsEachMoon"))}
-    <div class="small">${t("eat_year",{n:fmt(S.eat*12)})}</div>` }),
+  eat: () => ({ say:t("eat_say"), next:S.eat>0, body:`<div class="store-row">${sacks(S.eat, ui.added)}</div>
+    ${stepper("e-","e+",fmt(S.eat),t("bagsEachMoon"))}
+    <div class="boardwrap"><div class="board">${MONTH_IC.map(()=>`<div class="col">${pins(S.eat)}</div>`).join("")}</div>${band()}${labels()}</div>
+    <div class="small">${t("eat_year",{b:nb(S.eat*12)})}</div>` }),
 
   remember: () => { const c = CATS[S.catIdx]; return { say:t("say_"+c.id), next:true, nextLabel:S.catIdx<CATS.length-1?t("next"):t("done"), body:`
     <div class="cats">${CATS.map((k,i)=>`<button class="cat ${i===S.catIdx?"on":""} ${S.catsDone.includes(k.id)?"done":""}" data-a="cat" data-i="${i}">${k.ic} ${t("cat_"+k.id)}</button>`).join("")}</div>
     <div class="cards">${c.items.map(([id,ic])=>{const p=S.picks[id];return `<button class="card ${p?"picked":""}" data-a="item" data-id="${id}">${p?`<span class="tag">${fmt(p.b)}</span>`:""}<span class="ic">${ic}</span><span class="lb">${iName(id)}</span></button>`}).join("")}</div>
-    <div><div class="small" style="text-align:left;margin-bottom:4px">${t("board")}</div>
-      <div class="board">${MONTH_IC.map((_,i)=>{const s=spendIn(i);let pins="";for(let k=0;k<Math.floor(s);k++)pins+='<i class="pin"></i>';if(s%1)pins+='<i class="pin half"></i>';return `<div class="col" title="${mName(i)}">${pins}</div>`}).join("")}</div>
-      ${initials()}${reserve()?`<div class="small" style="text-align:left">${t("keepSafe",{n:fmt(reserve())})}</div>`:""}</div>` }; },
+    <div class="boardwrap"><span class="ttl">${t("board")}</span>
+      ${c.surprise?`<span class="rat ${ui.ratRun?"run":""}" aria-hidden="true">🐀</span>`:""}
+      <div class="board">${MONTH_IC.map((_,i)=>`<div class="col" title="${mName(i)}">${pins(spendIn(i))}</div>`).join("")}</div>
+      ${band()}${labels()}
+      ${reserve()?`<div class="keepsafe">${t("keepSafe",{b:nb(reserve())})}</div>`:""}</div>` }; },
 
-  play: () => { const r=run(), done=playMonth>=11, base=Math.max(1,S.harvest);
-    const bars = r.out.map((o,i)=>{ const vis=i<=playMonth, v=Math.max(0,o.end);
-      const pct = vis ? Math.min(100,v/base*100) : Math.min(100,(S.harvest-reserve())/base*100);
-      return `<div class="b ${vis&&o.low?"low hungry":""}" tabindex="0" data-tip="${vis?tip(i,o):mName(i)}"><span style="height:${pct}%"></span>${vis&&!o.low?`<em class="v" style="bottom:calc(${pct}% + 2px);font-style:normal">${fmt(v)}</em>`:""}</div>`; }).join("");
+  play: () => { const r=run(), done=playMonth>=11, shown=Math.max(-1,playMonth);
+    const cur = shown<0 ? 1 : (r.out[shown].low && r.out[shown].start<=0 ? 0 : r.out[shown].start/Math.max(1,S.harvest-reserve()));
     const vs = c => `<div class="vs"><div><div class="k">${t("guessed")}</div><div class="v">${guessName()}</div></div><div><div class="k">${t("counted")}</div><div class="v">${c}</div></div></div>`;
     const verdict = !done ? "" : r.runOut===null
-      ? `<div class="verdict good"><b>${t("good")}</b>${vs("🌽 "+t("harvestWord"))}<span class="small">${t("good_spare",{n:fmt(r.end),r:fmt(reserve())})}</span></div>`
-      : `<div class="verdict bad"><span>${t(r.hungry===1?"bad_one":"bad",{m:mName(r.runOut),h:r.hungry})}</span>${vs(mName(r.runOut))}<span class="small">${t("bad_comfort")}</span></div>`;
-    return { say:done?t("play_done_say"):t("play_say"), next:done, body:`
-      <div class="meter">${bars}</div>${initials()}
-      <div class="tip" id="tip">${playMonth<0?t("play_tap"):t("play_tip")}</div>${verdict}
-      ${done?`<button class="cat" data-a="play" style="align-self:center">${t("play_again")}</button>`:`<button class="big go" data-a="play" style="flex:none">${t("play_btn")}</button>`}` }; },
+      ? `<div class="burst">${burst()}</div><div class="verdict good"><b>${t("good")}</b>${vs("🌽 "+t("harvestWord"))}<span class="note">${t("good_spare",{b:nb(r.end),r:nb(reserve())})}</span></div>`
+      : `<div class="verdict bad"><span>${t(r.hungry===1?"bad_one":"bad",{m:mName(r.runOut),h:r.hungry})}</span>${vs(mName(r.runOut))}<span class="note">${t("bad_comfort")}</span></div>`;
+    return { say:done?t("play_done_say"):t("play_say"), mood: done ? (r.runOut===null?"happy":"worried") : "think", next:done, body:`
+      <div class="playrow">${granary(cur)}<div><div class="meter">${bars(r, shown)}</div>${band()}${labels()}</div></div>
+      <div class="tip" id="tip">${shown<0?t("play_tap"):t("play_tip")}</div>${verdict}
+      ${done?`<div class="row"><button class="pill" data-a="play">${t("play_again")}</button></div>`:(playing?"":`<button class="big gold" data-a="play" style="flex:none">${t("play_btn")}</button>`)}` }; },
 
-  fix: () => { const r=run(), base=Math.max(1,S.harvest);
-    const bars = r.out.map((o,i)=>{const pct=Math.min(100,Math.max(0,o.end)/base*100);return `<div class="b ${o.low?"low hungry":""}" tabindex="0" data-tip="${tip(i,o)}"><span style="height:${pct}%"></span></div>`}).join("");
-    const row = (ic,label,sub,minus,plus,id="") => `<div class="fx"><span class="ic">${ic}</span><span class="t">${label}<small>${sub}</small></span><span class="ctl">${minus}${plus}</span></div>`;
-    const btn = (a,l,id="") => `<button data-a="${a}" ${id?`data-id="${id}"`:""}>${l}</button>`;
+  fix: () => { const r=run();
+    const btn = (a,l,cap,id) => `<button data-a="${a}" data-id="${id||""}" aria-label="${cap||l}">${l}${cap?`<small>${cap}</small>`:""}</button>`;
+    const row = (ic,label,sub,ctl,cls="",id="") => `<div class="fx ${cls}" ${id?`id="fx-${id}"`:""}><span class="ic">${ic}</span><span class="t">${label}<small>${sub}</small></span><span class="ctl">${ctl}</span></div>`;
     const items = Object.entries(S.picks).filter(([k])=>!ITEM[k].surprise).sort((a,b)=>a[1].m-b[1].m)
-      .map(([k,p])=>row(ITEM[k].ic, iName(k), `${fmt(p.b)} ${p.b>1?t("bags"):t("bag")} · ${mName(p.m)}`, btn("fx-","−",k), btn("fx<","◀",k)+btn("fx>","▶",k))).join("");
-    return { say:r.runOut===null?t("fix_ok_say"):t("fix_say"), next:true, body:`
-      <div class="meter" style="height:96px">${bars}</div>${initials()}
-      <div class="tip" id="tip">${r.runOut===null?t("fix_ok"):t("fix_short",{h:r.hungry,n:fmt(r.short)})}</div>
-      ${row("🍲",t("eating"),`${fmt(S.eat)} ${t("bagsEachMoon")}`,btn("e-","−"),btn("e+","+"))}
-      ${row("🐀",t("keepSafeRow"),`${fmt(reserve())} ${t("bags")}`,btn("r-","−"),btn("r+","+"))}
+      .map(([k,p])=>row(ITEM[k].ic, iName(k), `${nb(p.b)} · ${mName(p.m)}`, btn("fx-","−","",k)+btn("fx<","◀",t("earlier"),k)+btn("fx>","▶",t("later"),k), r.out[p.m].low?"red":"", k)).join("");
+    return { say: r.runOut===null ? t("fix_ok_say") : t("fix_say",{minus:chip("−"),earlier:chip("◀"),later:chip("▶")}), mood:r.runOut===null?"happy":"think", next:true, body:`
+      <div><div class="meter" style="height:100px">${bars(r, 11)}</div>${band()}${labels()}</div>
+      <div class="tip" id="tip" style="color:var(${r.runOut===null?"--leaf":"--hungry"})">${r.runOut===null?t("fix_ok"):t("fix_short",{b:nb(r.short)})}</div>
       <div class="fixlist">${items||`<span class="small">${t("noCosts")}</span>`}</div>
-      ${r.short>0?`<div class="verdict bad small" style="text-align:left">${t("tooSmall")}</div>`:""}` }; },
+      ${row("🐀",t("keepSafeRow"),nb(reserve()),btn("r-","−")+btn("r+","+"))}
+      ${row("🍲",t("eating"),`${fmt(S.eat)} ${t("bagsEachMoon")}`,btn("e-","−")+btn("e+","+"))}
+      ${S.eat0!==null && S.eat<S.eat0 ? `<div class="eatnote">${t("eat_less")}</div>`:""}
+      ${r.short>0?`<div class="verdict bad"><span class="note">${t("tooSmall")}</span></div>`:""}` }; },
 
-  card: () => { const r=run(); return { say:t("card_say"), next:false, body:`
-    <div class="plancard"><div class="pc-grid">${r.out.map((o,i)=>`<div class="pc ${CHECKS.includes(i)&&!o.low?"check":""} ${o.low?"hung":""}"><span class="nm">${MONTH_IC[i]} ${mName(i)}</span><span class="cnt">${fmt(Math.max(0,o.start)+reserve())}</span><span class="it">${Object.entries(S.picks).filter(([k,p])=>p.m===i&&!ITEM[k].surprise).map(([k])=>ITEM[k].ic).join("")}</span></div>`).join("")}</div>
-      ${r.short>0?`<div class="small" style="color:var(--hungry);font-weight:700">${t("card_short",{n:fmt(r.short)})}</div>`:""}
-      <div class="small">${t("card_legend")}</div></div>
-    <div class="row"><button class="cat" data-a="erase">${t("erase")}</button><button class="cat" data-a="restart">${t("startAgain")}</button></div>` }; }
+  card: () => { const r=run(); return { say:t("card_say"), mood:r.runOut===null?"happy":"think", foot:`<button class="big gold" data-a="keep">${t("keep")}</button>`, body:`
+    <div class="plancard"><div class="pc-grid">${r.out.map((o,i)=>`<div class="pc s-${SEASON[i]} ${o.low?"low":""} ${CHECKS.includes(i)?"check":""} ${i===11&&r.runOut===null?"harv":""}"><span class="nm">${MONTH_IC[i]} ${mName(i)}</span><span class="cnt">${o.low&&o.start<=0?"0":fmt(o.start)}</span><span class="it">${o.low&&o.start<=0?"🥣":Object.entries(S.picks).filter(([k,p])=>p.m===i&&!ITEM[k].surprise).map(([k])=>ITEM[k].ic).join("")}</span></div>`).join("")}</div>
+      ${r.short>0?`<div class="cardnote bad">${t("card_short",{b:nb(r.short)})}</div>`:""}
+      <div class="cardnote">${t("card_legend",{b:"🐀 "+nb(reserve())})}</div></div>
+    ${ui.toast?`<div class="toast">${t("keep_toast")}</div>`:""}
+    <div class="row"><button class="pill" data-a="restart">${t("startAgain")}</button><button class="pill" data-a="erase">${ui.eraseArmed?t("erase_sure"):t("erase")}</button></div>` }; }
 };
+function pins(n){ let h=""; for(let k=0;k<Math.floor(Math.min(n,8));k++) h+='<i class="pin"></i>'; if(n%1) h+='<i class="pin half"></i>'; return h; }
+function burst(){ let h=""; for(let i=0;i<10;i++){ const a=i/10*Math.PI*2; h+=`<i style="--dx:${Math.round(Math.cos(a)*90)}px;--dy:${Math.round(Math.sin(a)*60-30)}px"></i>`; } return h; }
 
 // ================= RENDER =================
+let lastMood = null;
 function render(){
-  const sc = SCREENS[STEPS[S.step]]();
+  const st = STEPS[S.step], sc = SCREENS[st](), mood = sc.mood || FACE_FOR[st];
   $("#dots").innerHTML = STEPS.map((_,i)=>`<i class="${i<S.step?"done":i===S.step?"on":""}"></i>`).join("");
+  if(mood!==lastMood){ $("#face").innerHTML = face(mood); const f=$("#face .face"); if(lastMood) f.classList.add("bob"); lastMood=mood; }
   $("#bubble").innerHTML = sc.say;
-  $("#pbody").innerHTML = sc.body;
+  const scroll = $("#pbody").scrollTop; $("#pbody").innerHTML = sc.body; $("#pbody").scrollTop = scroll;
   $("#pfoot").innerHTML = (S.step>0?`<button class="big back" data-a="back" aria-label="back">${t("back")}</button>`:"")
-    + (STEPS[S.step]==="card" ? "" : `<button class="big go" data-a="next" ${sc.next?"":'disabled style="opacity:.45"'}>${sc.nextLabel||t("next")}</button>`);
+    + (sc.foot || `<button class="big go" data-a="next" aria-disabled="${!sc.next}">${sc.nextLabel||t("next")}</button>`);
   $("#phone").querySelectorAll(".sheet,.scrim").forEach(e=>e.remove());
   if(sheet) $("#phone").insertAdjacentHTML("beforeend", sheetHtml());
   $("#phone").dataset.say = sc.say;
+  ui = {};
 }
 function sheetHtml(){
   const it = ITEM[sheet.id];
-  return `<div class="scrim" data-a="close"></div><div class="sheet" role="dialog">
-    <h3><span style="font-size:34px">${it.ic}</span>${iName(it.id)}</h3>
-    ${stepper("s-","s+",fmt(sheet.b), t("bags")+(S.price?" · "+t("k",{n:Math.round(sheet.b*S.price)}):""))}
-    ${it.surprise?`<div class="small">${t("sheet_surprise")}</div>`:`<div class="small">${t("sheet_which")}</div>${monthGrid(i=>sheet.m===i?"sel":"","sm")}`}
+  return `<div class="scrim" data-a="close"></div><div class="sheet" role="dialog" aria-label="${iName(it.id)}">
+    <h3><span style="font-size:36px">${it.ic}</span>${iName(it.id)}<button class="x" data-a="close" aria-label="${t("close")}">✕</button></h3>
+    ${stepper("s-","s+",fmt(sheet.b), (sheet.b<=1?t("bag_one",{n:""}):t("bag_other",{n:""})).trim()+(S.showPrice||S.example?" · "+t("k",{n:Math.round(sheet.b*S.price)}):""))}
+    ${it.surprise?`<div class="small">${t("sheet_surprise")}</div>`:`<div class="small" id="pickmsg">${sheet.warn?`<b style="color:var(--hungry)">${t("sheet_pick")}</b>`:t("sheet_which")}</div>${moonGrid(i=>sheet.m===i?"sel":"","sm")}`}
     <div class="pfoot" style="padding:0;border:none">${sheet.had?`<button class="big back" data-a="sdel" aria-label="remove">🗑️</button>`:""}
-      <button class="big go" data-a="sok" ${!it.surprise&&sheet.m===null?'disabled style="opacity:.45"':""}>${t("sheet_ok")}</button></div></div>`;
+      <button class="big go" data-a="sok">${t("sheet_ok")}</button></div></div>`;
 }
 
 // ================= ACTIONS =================
@@ -364,37 +481,45 @@ const markDone = () => { const id=CATS[S.catIdx].id; if(!S.catsDone.includes(id)
 function startPlay(){
   clearInterval(playing); playMonth=-1;
   if(matchMedia("(prefers-reduced-motion: reduce)").matches){ playMonth=11; render(); return; }
-  playing = setInterval(()=>{ playMonth++; render(); if(playMonth>=11) clearInterval(playing); }, 520);
+  playing = setInterval(()=>{ playMonth++; if(playMonth>=11){ clearInterval(playing); playing=null; } render(); }, 520);
+  render();
 }
+function flashRow(id){ requestAnimationFrame(()=>{ const el=document.getElementById("fx-"+id); if(el) el.classList.add("flash"); }); }
 const ACTIONS = {
-  "h+":()=>S.harvest=Math.min(60,S.harvest+1), "h-":()=>S.harvest=Math.max(0,S.harvest-1),
-  "p+":()=>S.price=Math.min(2000,S.price+25), "p-":()=>S.price=Math.max(0,S.price-25),
-  "new":()=>S=blank(), "ex":()=>S=example(), "erase":()=>S=blank(), "restart":()=>{S.step=0;playMonth=-1;},
+  "h+":()=>{S.harvest=Math.min(60,S.harvest+1); ui.added=true;}, "h-":()=>S.harvest=Math.max(0,S.harvest-1),
+  "p+":()=>S.price=Math.min(2000,S.price+25), "p-":()=>S.price=Math.max(0,S.price-25), "price":()=>S.showPrice=true,
+  "new":()=>S=blank(), "ex":()=>S=example(), "restart":()=>{S.step=0;playMonth=-1;},
+  "erase":()=>{ if(eraseArmed){ S=blank(); eraseArmed=false; } else { eraseArmed=true; ui.eraseArmed=true; setTimeout(()=>eraseArmed=false,3000); } },
+  "keep":()=>ui.toast=true,
   "g":el=>S.guess=+el.dataset.i,
-  "e+":()=>S.eat=Math.min(6,S.eat+.5), "e-":()=>S.eat=Math.max(.5,S.eat-.5),
-  "cat":el=>{markDone(); S.catIdx=+el.dataset.i;},
+  "e+":()=>{S.eat=Math.min(6,S.eat+.5); ui.added=true;}, "e-":()=>S.eat=Math.max(.5,S.eat-.5),
+  "cat":el=>{markDone(); S.catIdx=+el.dataset.i; if(CATS[S.catIdx].surprise) ui.ratRun=true;},
   "item":el=>{const p=S.picks[el.dataset.id]; sheet={id:el.dataset.id, b:p?p.b:1, m:p?p.m:null, had:!!p};},
   "s+":()=>sheet.b=Math.min(20,sheet.b+.5), "s-":()=>sheet.b=Math.max(.5,sheet.b-.5),
-  "sm":el=>sheet.m=+el.dataset.i,
-  "sok":()=>{ if(ITEM[sheet.id].surprise||sheet.m!==null){ S.picks[sheet.id]={b:sheet.b,m:sheet.m}; sheet=null; } },
+  "sm":el=>{sheet.m=+el.dataset.i; sheet.warn=false;},
+  "sok":()=>{ if(ITEM[sheet.id].surprise||sheet.m!==null){ S.picks[sheet.id]={b:sheet.b,m:sheet.m}; sheet=null; }
+    else { sheet.warn=true; render(); const g=$("#moons"); g.classList.add("nudge"); return "skip"; } },
   "sdel":()=>{ delete S.picks[sheet.id]; sheet=null; }, "close":()=>sheet=null,
-  "fx-":el=>{ const p=S.picks[el.dataset.id]; p.b-=.5; if(p.b<=0) delete S.picks[el.dataset.id]; },
-  "fx<":el=>{ const p=S.picks[el.dataset.id]; p.m=Math.max(0,p.m-1); },
-  "fx>":el=>{ const p=S.picks[el.dataset.id]; p.m=Math.min(11,p.m+1); },
+  "fx-":el=>{ const id=el.dataset.id, p=S.picks[id]; p.b-=.5; if(p.b<=0) delete S.picks[id]; else flashRow(id); },
+  "fx<":el=>{ const p=S.picks[el.dataset.id]; p.m=Math.max(0,p.m-1); flashRow(el.dataset.id); },
+  "fx>":el=>{ const p=S.picks[el.dataset.id]; p.m=Math.min(11,p.m+1); flashRow(el.dataset.id); },
   "r+":()=>{ const k=Object.keys(S.picks).find(k=>ITEM[k].surprise)||"other"; S.picks[k]={b:(S.picks[k]?.b||0)+.5,m:null}; },
   "r-":()=>{ const k=Object.keys(S.picks).find(k=>ITEM[k].surprise); if(k){ S.picks[k].b-=.5; if(S.picks[k].b<=0) delete S.picks[k]; } },
-  "next":()=>{ if(STEPS[S.step]==="remember"){ markDone(); if(S.catIdx<CATS.length-1){ S.catIdx++; return; } }
-    S.step=Math.min(STEPS.length-1,S.step+1); if(STEPS[S.step]==="play") playMonth=-1; },
-  "back":()=>{ if(STEPS[S.step]==="remember" && S.catIdx>0){ S.catIdx--; return; } clearInterval(playing); S.step=Math.max(0,S.step-1); },
+  "next":el=>{ if(el.getAttribute("aria-disabled")==="true") return "skip";
+    if(STEPS[S.step]==="eat" && S.eat0===null) S.eat0=S.eat;
+    if(STEPS[S.step]==="remember"){ markDone(); if(S.catIdx<CATS.length-1){ S.catIdx++; if(CATS[S.catIdx].surprise) ui.ratRun=true; $("#pbody").scrollTop=0; return; } }
+    S.step=Math.min(STEPS.length-1,S.step+1); $("#pbody").scrollTop=0; if(STEPS[S.step]==="play"){ playMonth=-1; clearInterval(playing); playing=null; } },
+  "back":()=>{ if(STEPS[S.step]==="remember" && S.catIdx>0){ S.catIdx--; return; } clearInterval(playing); playing=null; S.step=Math.max(0,S.step-1); $("#pbody").scrollTop=0; },
   "play":()=>{ startPlay(); return "skip"; }
 };
+let eraseArmed = false;
 document.addEventListener("click", e=>{
-  const b = e.target.closest("[data-a]"); if(!b || b.disabled) return;
+  const b = e.target.closest("[data-a]"); if(!b) return;
   const f = ACTIONS[b.dataset.a]; if(f && f(b)==="skip") return; render();
 });
 const showTip = e => { const b=e.target.closest(".meter .b"); if(b && $("#tip")) $("#tip").textContent=b.dataset.tip; };
 document.addEventListener("pointerover", showTip); document.addEventListener("focusin", showTip);
-$("#soundBtn").addEventListener("click", ()=>speak($("#phone").dataset.say));
+$("#soundBtn").addEventListener("click", ()=>{ $("#soundBtn").classList.remove("hello"); speak($("#phone").dataset.say); });
 render();
 })();
 </script>

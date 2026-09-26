@@ -23,12 +23,12 @@ spending-category boxes, prompted one category at a time by a surveyor. Farmers 
 
 ## Run it
 
-Live: https://levine63.github.io/ideas/bags-till-harvest/ (design sketch: `design-sketch.html` in the same folder).
+Live: https://levine63.github.io/Ideas/bags-till-harvest/ (design sketch: `design-sketch.html` in the same folder).
 
 Or open `index.html` in any browser, on a phone or a laptop. It needs no server. It fetches
 two Google Fonts and falls back to system fonts when offline.
 
-It opens with an **example family** filled in. Tap **✨ New plan** to start empty.
+It opens **empty**. Tap **👀 Try an example family** to load made-up numbers; a banner marks them as an example.
 
 ## The seven screens
 
@@ -57,6 +57,10 @@ It opens with an **example family** filled in. Tap **✨ New plan** to start emp
 - Live fixing of the plan
 - Plan card with checkpoint months
 - Read-aloud button (🔊) using the phone's built-in text-to-speech
+- Visuals: a drawn granary that fills and drains, a maize-cob guide whose face changes (happy, thinking, worried), a season band under every month row (harvest, cool, hot, rains), sacks grouped in 10s
+- Small animations: sacks drop in, Khoswe the rat runs in on the Surprises tab, a burst of maize when the plan lasts, rows flash when you change them. All off when the phone asks for reduced motion.
+- Costs that fall in red months are marked red on the Fix screen. Eating is at the bottom, with a gentle note if the family cuts it.
+- Plan card: check months keep their ✓ even when red; empty months show 0 and a bowl; "Keep this plan" tells people to take a photo; Erase needs two taps.
 - Every word the user sees comes from one phrase bank
 - Works at phone width and on a laptop; light and dark themes; honours "reduce motion"
 
@@ -99,12 +103,15 @@ question.
 1. Copy the whole `en: { ... }` block and paste it below as a new block, for example `ny:`
    for Nyanja or `bem:` for Bemba.
 2. Translate the **values** only. Never rename the keys (`harvest_say`, `fees`, ...).
-3. Keep `{placeholders}` exactly as written, for example `{n}`, `{m}`, `{h}`, `{r}`. The
-   app fills them with numbers and month names. You can move them within the sentence.
-4. `months` must stay a list of **12** names, in harvest order starting with May.
-5. `items` must keep all 33 keys. Their order doesn't matter.
-6. `<b>…</b>` marks a word in bold. Keep it or drop it.
-7. Set `LANG = "ny"` (your new code) and reload.
+3. Keep `{placeholders}` exactly as written, for example `{b}`, `{m}`, `{h}`, `{r}`. The
+   app fills them in. You can move them within the sentence. `{b}` is always an amount of
+   bags that is already worded, like "1 bag" or "3½ bags".
+4. Word amounts of bags with `bag_one` ("{n} bag", for ½ or 1) and `bag_other`
+   ("{n} bags"). If your language has different plural rules, change `nb()` in the script.
+5. `months` must stay a list of **12** names, in harvest order starting with May.
+6. `items` must keep all 33 keys. Their order doesn't matter.
+7. `<b>…</b>` marks a word in bold. Keep it or drop it.
+8. Set `LANG = "ny"` (your new code) and reload.
 
 Anything you leave out falls back to English, so you can translate a little at a time.
 Most phrases show up in the bubble at the top of the screen. Check each screen at phone
@@ -117,14 +124,14 @@ Many phones have no voice for Nyanja or Bemba, so expect recorded audio to be ne
 
 | Screen | Keys |
 |---|---|
-| All | `next`, `done`, `back`, `bags`, `bag`, `bagsEachMoon`, `empty`, `k` |
-| Harvest | `harvest_say`, `harvest_unit`, `harvest_sell`, `harvest_price`, `newPlan`, `example`, `exampleShown` |
+| All | `bag_one`, `bag_other`, `next`, `done`, `back`, `bagsEachMoon`, `empty`, `k`, `months`, `seasons` |
+| Harvest | `harvest_say`, `harvest_unit`, `harvest_price`, `price_btn`, `example`, `exampleBanner`, `mine` |
 | Guess | `guess_say`, `guess_lasts` |
 | Eating | `eat_say`, `eat_year` |
-| Remember | `cat_*` (5 category names), `say_*` (5 category prompts), `board`, `keepSafe`, `sheet_which`, `sheet_surprise`, `sheet_ok`, `items` |
+| Remember | `cat_*` (5 category names), `say_*` (5 category prompts), `board`, `keepSafe`, `sheet_which`, `sheet_pick`, `sheet_surprise`, `sheet_ok`, `close`, `items` |
 | Play | `play_say`, `play_done_say`, `play_btn`, `play_again`, `play_tap`, `play_tip`, `tip_left`, `tip_none`, `guessed`, `counted`, `harvestWord`, `good`, `good_spare`, `bad`, `bad_one`, `bad_comfort` |
-| Fix | `fix_say`, `fix_ok_say`, `fix_ok`, `fix_short`, `eating`, `keepSafeRow`, `noCosts`, `tooSmall` |
-| Plan card | `card_say`, `card_legend`, `card_short`, `startAgain`, `erase` |
+| Fix | `fix_say` (uses `{minus}` `{earlier}` `{later}` button pictures), `fix_ok_say`, `fix_ok`, `fix_short`, `earlier`, `later`, `eating`, `keepSafeRow`, `noCosts`, `eat_less`, `tooSmall` |
+| Plan card | `card_say`, `card_legend`, `card_short`, `keep`, `keep_toast`, `startAgain`, `erase`, `erase_sure` |
 
 ## Editing anything else
 
@@ -132,7 +139,8 @@ Below the phrase bank, the script has no user-facing words:
 
 - **Items and categories:** `CATS`. Each item is `[key, emoji]`. Adding an item means adding
   it to `CATS` *and* adding its name under `items` in every language.
-- **Month icons:** `MONTH_IC`, 12 entries starting in May.
+- **Month icons and seasons:** `MONTH_IC` and `SEASON`, 12 entries each starting in May.
+- **Guide's mood per screen:** `FACE_FOR`.
 - **Checkpoint months:** `CHECKS = [5,7,9]`, which counts from May = 0, so Oct, Dec, Feb.
 - **Example family:** `example()`.
 - **Limits:** in `ACTIONS`, for example a harvest of up to 60 bags and eating of up to 6
