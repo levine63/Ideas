@@ -167,6 +167,7 @@ button:focus-visible{outline:3px solid var(--rain);outline-offset:2px}
   background-image:repeating-linear-gradient(45deg,transparent 0 6px,rgb(0 0 0/.03) 6px 7px)}
 .verdict.bad{background-color:var(--hungry-soft)}
 .verdict.good{background-color:var(--leaf-soft)}
+.cutlist{margin:0;padding-left:20px;display:grid;gap:2px}
 .verdict.quiet{background-color:var(--panel);border:2px solid var(--line)}
 .verdict .note{font-size:15px;color:var(--ink)}
 .vs{display:grid;grid-template-columns:1fr 1fr;gap:8px;text-align:center}
@@ -290,22 +291,25 @@ const PHRASES = {
     board:"Your year", keepSafe:"🐀 Keep-safe: {b}",
     sheet_which:"Which moon?", sheet_pick:"Tap a moon first", sheet_surprise:"🐀 No moon: these bags stay in the store, safe from Khoswe.",
     sheet_ok:"✓ Put it on the board", spread:"🔁 Spread over the year", spread_short:"spread over the year", sheet_year:"for the whole year", card_spread:"Spread over the year: {ic}", sheet_none:"✓ Not needed this year", close:"Close",
-    play_say:"Now watch your store, <b>one moon at a time</b>.", play_done_bad:"Now you can see the hungry moons. Let's fix them together.", play_done_good:"Well done! 🎉 But Khoswe is sneaky…",
+    play_say:"Now watch your store, <b>one moon at a time</b>.", play_done_bad:"Now you can see the moons with no maize. Let's fix them together.", play_done_good:"Well done! 🎉 But Khoswe is sneaky…",
     recheck_q:"Plans that last on the first try often miss something. Clinic? Exam fees? A funeral? Relatives asking?", recheck_btn:"🔎 Check my costs again", bagkey:"each sack = {n} bags",
     play_btn:"▶ Play the year", play_again:"↻ Play again", play_tap:"Tap ▶ to play the year", play_tip:"Tap a bar to see the count",
     tip_left:"{m}: {b} in the store", tip_none:"{m}: no maize left",
     guessed:"Your guess", counted:"The count", harvestWord:"Harvest",
     good:"🎉 The bags last until harvest!", good_spare:"{b} spare.", good_spare_r:"{b} spare, plus {r} keep-safe.",
-    bad:"The bags run out in <b>{m}</b>. That leaves <b>{h} hungry moons</b>.",
-    bad_one:"The bags run out in <b>{m}</b>. That leaves <b>1 hungry moon</b>.",
+    bad:"The bags run out in <b>{m}</b>. That leaves <b>{h} moons with no maize</b> in the store.",
+    bad_one:"The bags run out in <b>{m}</b>. That leaves <b>1 moon with no maize</b> in the store.",
     bad_comfort:"Most families guess later than the count. Small costs are easy to forget. Let's fix it together.",
     fix_say:"Try the buttons {minus} {earlier} {later} on each cost. Watch the red moons turn gold.",
     fix_ok_say:"Your plan reaches harvest! 🎉 You can still move things around.",
-    cut_say:"The bags last now, but only because eating went down. Is that realistic?",
-    cut_head:"The bags last, but eating was cut.",
-    cut_q:"You first said {a} a moon. Now it is {b}. Is that enough for {p} people, every moon until harvest?",
-    cut_back:"🍲 Put eating back to {a}", cut_tip:"Lasts, but eating was cut",
-    cut_card:"Eating was cut from {a} to {b} a moon to make this last.",
+    cut_say:"The bags last now, but only because you cut something. Is that realistic?",
+    cut_head:"The bags last, but only after cutting:",
+    cut_q:"Can your family really do without this, every moon until harvest?",
+    cut_back:"↩ Put them back", cut_tip:"Lasts, but only after cuts",
+    cut_card:"To make this last you cut: {list}.", cut_eat:"eating {a} → {b} a moon", keepSafeShort:"keep-safe bags",
+    remembered:"You remembered <b>{n} costs</b>: {b} in all.", remembered_one:"You remembered <b>1 cost</b>: {b}.",
+    ex_reveal:"👀 What did the example family remember here?",
+    sr_less:"Make {x} smaller by half a bag", sr_more:"Make {x} bigger by half a bag", sr_earlier:"Move {x} one moon earlier", sr_later:"Move {x} one moon later",
     fix_ok:"✓ Food until harvest", fix_short:"Short by {b}", earlier:"earlier", later:"later",
     eating:"Eating", keepSafeRow:"Keep-safe from Khoswe", noCosts:"No costs added yet.",
     eat_less:"Eating less is hard. Try moving costs first.",
@@ -355,12 +359,19 @@ const CHECK = { food:true, school:true, keepSafe:true };
 const FOOD = { kgPerPersonYear:150, bagKg:50, askBelow:.75 };
 const typicalEat = () => S.people * FOOD.kgPerPersonYear / 12 / FOOD.bagKg;
 // A plan that only lasts because eating went below the family's first answer gets no party.
-const eatCut = () => S.eat0!==null && S.eat < S.eat0;
+// "First list" = costs and keep-safe when the family first leaves the cost walk. Moving a cost is fine;
+// cutting eating, keep-safe, or any first-list cost means the plan only lasts after cuts: no party.
+function cuts(){ const out=[];
+  if(S.eat0!==null && S.eat<S.eat0) out.push("🍲 "+t("cut_eat",{a:nb(S.eat0),b:nb(S.eat)}));
+  if(S.first){ if(reserve()<S.first.reserve-1e-9) out.push("🐀 "+t("keepSafeShort"));
+    for(const [k,p] of Object.entries(S.first.picks)) if(!ITEM[k].surprise && (!S.picks[k] || S.picks[k].b<p.b-1e-9)) out.push(ITEM[k].ic+" "+iName(k)); }
+  return out; }
+const eatCut = () => cuts().length>0;
 const suggestEat = () => Math.max(.5, Math.ceil(typicalEat()*2)/2);
 const FACE_FOR = {harvest:"happy", guess:"think", eat:"happy", remember:"think", play:"think", fix:"think", card:"happy"};
 
-function example(){ return { harvest:18, price:300, guess:10, eat:1.5, eat0:1.5, people:6, asked:{}, catIdx:0, catsDone:["school","home","farm","people","surprise"],
-  picks:{ fees:{b:1,m:8}, uniform:{b:.5,m:8}, books:{b:.5,m:4}, salt:{b:1,m:ALL}, soap:{b:.5,m:ALL}, mill:{b:1,m:ALL},
+function example(){ return { harvest:18, price:300, guess:10, eat:1.5, eat0:1.5, people:6, asked:{}, catIdx:0, catsDone:[], picks:{}, first:null,
+  exPicks:{ fees:{b:1,m:8}, uniform:{b:.5,m:8}, books:{b:.5,m:4}, salt:{b:1,m:ALL}, soap:{b:.5,m:ALL}, mill:{b:1,m:ALL},
     seed:{b:1,m:5}, fert:{b:2,m:6}, labour:{b:1,m:7}, church:{b:.5,m:7}, loan:{b:1,m:1}, sick:{b:1,m:null}, funeral:{b:1,m:null} },
   step:0, example:true, showPrice:true }; }
 function blank(){ return {harvest:0, price:300, guess:null, eat:1, eat0:null, people:0, asked:{}, catIdx:0, catsDone:[], picks:{}, step:0, example:false, showPrice:false}; }
@@ -469,6 +480,7 @@ const SCREENS = {
 
   remember: () => { const c = CATS[S.catIdx]; return { say:t("say_"+c.id), next:true, nextLabel:S.catIdx<CATS.length-1?t("next"):t("done"), body:`
     <div class="cats">${CATS.map((k,i)=>`<button class="cat ${i===S.catIdx?"on":""} ${S.catsDone.includes(k.id)?"done":""}" data-a="cat" data-i="${i}">${k.ic} ${t("cat_"+k.id)}</button>`).join("")}</div>
+    ${S.example && c.items.some(([id])=>S.exPicks[id] && !S.picks[id]) ? `<button class="pill strong" data-a="exReveal" style="align-self:center">${t("ex_reveal")}</button>` : ""}
     <div class="cards">${c.items.map(([id,ic])=>{const p=S.picks[id];return `<button class="card ${p?"picked":""}" data-a="item" data-id="${id}">${p?`<span class="tag">${fmt(p.b)}</span>`:""}<span class="ic">${ic}</span><span class="lb">${iName(id)}</span></button>`}).join("")}</div>
     <div class="boardwrap"><span class="ttl">${t("board")}</span>
       ${c.surprise?`<span class="rat ${ui.ratRun?"run":""}" aria-hidden="true">🐀</span>`:""}
@@ -479,40 +491,43 @@ const SCREENS = {
   play: () => { const r=run(), done=playMonth>=11, shown=Math.max(-1,playMonth);
     const cur = shown<0 ? 1 : (r.out[shown].low && r.out[shown].start<=0 ? 0 : r.out[shown].start/Math.max(1,S.harvest-reserve()));
     const vs = c => `<div class="vs"><div><div class="k">${t("guessed")}</div><div class="v">${guessName()}</div></div><div><div class="k">${t("counted")}</div><div class="v">${c}</div></div></div>`;
-    const cutV = {a:nb(S.eat0||0), b:nb(S.eat), p:S.people};
+    const nPicks=Object.keys(S.picks).length, totB=Object.values(S.picks).reduce((a,p)=>a+p.b,0);
+    const rem = nPicks ? `<span class="note">${t(nPicks===1?"remembered_one":"remembered",{n:nPicks,b:nb(totB)})}</span>` : "";
     const verdict = !done ? "" : r.runOut===null && eatCut()
-      ? `<div class="verdict quiet"><b>${t("cut_head")}</b><span class="note">${t("cut_q",cutV)}</span><button class="pill strong" data-a="eatBack" style="justify-self:center">${t("cut_back",cutV)}</button></div>`
+      ? `<div class="verdict quiet"><b>${t("cut_head")}</b><ul class="cutlist">${cuts().map(c=>`<li>${c}</li>`).join("")}</ul><span class="note">${t("cut_q")}</span><button class="pill strong" data-a="cutBack" style="justify-self:center">${t("cut_back")}</button></div>`
       : r.runOut===null
-      ? `<div class="burst">${burst()}</div><div class="verdict good"><b>${t("good")}</b>${vs("🌽 "+t("harvestWord"))}<span class="note">${t(reserve()?"good_spare_r":"good_spare",{b:nb(r.end),r:nb(reserve())})}</span><span class="note">${t("recheck_q")}</span><button class="pill strong" data-a="recheck" style="justify-self:center">${t("recheck_btn")}</button></div>`
-      : `<div class="verdict bad"><span>${t(r.hungry===1?"bad_one":"bad",{m:mName(r.runOut),h:r.hungry})}</span>${vs(mName(r.runOut))}<span class="note">${t("bad_comfort")}</span></div>`;
+      ? `<div class="burst">${burst()}</div><div class="verdict good"><b>${t("good")}</b>${rem}${vs("🌽 "+t("harvestWord"))}<span class="note">${t(reserve()?"good_spare_r":"good_spare",{b:nb(r.end),r:nb(reserve())})}</span><span class="note">${t("recheck_q")}</span><button class="pill strong" data-a="recheck" style="justify-self:center">${t("recheck_btn")}</button></div>`
+      : `<div class="verdict bad"><span>${t(r.hungry===1?"bad_one":"bad",{m:mName(r.runOut),h:r.hungry})}</span>${rem}${vs(mName(r.runOut))}<span class="note">${t("bad_comfort")}</span></div>`;
     return { say:done?(r.runOut===null?(eatCut()?t("cut_say"):t("play_done_good")):t("play_done_bad")):t("play_say"), mood: done ? (r.runOut===null&&!eatCut()?"happy":"think") : "think", next:done, body:`
       <div class="playrow">${granary(cur)}<div><div class="meter" style="${meterStyle()}">${bars(r, shown)}</div>${band()}${labels()}</div></div>${bagKey()}
       <div class="tip" id="tip">${shown<0?t("play_tap"):t("play_tip")}</div>${verdict}
       ${done?`<div class="row"><button class="pill" data-a="play">${t("play_again")}</button></div>`:(playing?"":`<button class="big gold" data-a="play" style="flex:none">${t("play_btn")}</button>`)}` }; },
 
   fix: () => { const r=run();
-    const btn = (a,l,cap,id,flag) => `<button data-a="${a}" data-id="${id||""}" aria-label="${cap||l}" ${flag&&flag.includes("min")?'aria-disabled="true"':""}>${l}${cap?`<small>${cap}</small>`:""}</button>`;
+    const btn = (a,l,cap,id,flag,sr) => `<button data-a="${a}" data-id="${id||""}" aria-label="${sr||cap||l}" ${flag&&flag.includes("min")?'aria-disabled="true"':""}>${l}${cap?`<small>${cap}</small>`:""}</button>`;
+    const sr = (key,x) => t(key,{x});
     const row = (ic,label,sub,ctl,cls="",id="") => `<div class="fx ${cls}" ${id?`id="fx-${id}"`:""}><span class="ic">${ic}</span><span class="t">${label}<small>${sub}</small></span><span class="ctl">${ctl}</span></div>`;
     const ord = m => m===ALL ? -1 : m;
     const items = Object.entries(S.picks).filter(([k])=>!ITEM[k].surprise).sort((a,b)=>ord(a[1].m)-ord(b[1].m))
       .map(([k,p])=> p.m===ALL
-        ? row(ITEM[k].ic, iName(k), `${nb(p.b)} · ${t("spread_short")}`, btn("fx-","−","",k), "", k)
-        : row(ITEM[k].ic, iName(k), `${nb(p.b)} · ${mName(p.m)}`, btn("fx-","−","",k)+btn("fx<","◀",t("earlier"),k)+btn("fx>","▶",t("later"),k), r.out[p.m].low?"red":"", k)).join("");
+        ? row(ITEM[k].ic, iName(k), `${nb(p.b)} · ${t("spread_short")}`, btn("fx-","−","",k,"",sr("sr_less",iName(k))), "", k)
+        : row(ITEM[k].ic, iName(k), `${nb(p.b)} · ${mName(p.m)}`, btn("fx-","−","",k,"",sr("sr_less",iName(k)))+btn("fx<","◀",t("earlier"),k,"",sr("sr_earlier",iName(k)))+btn("fx>","▶",t("later"),k,"",sr("sr_later",iName(k))), r.out[p.m].low?"red":"", k)).join("");
     const ok = r.runOut===null, cut = ok && eatCut();
     return { say: cut ? t("cut_say") : ok ? t("fix_ok_say") : t("fix_say",{minus:chip("−"),earlier:chip("◀"),later:chip("▶")}), mood:ok&&!cut?"happy":"think", next:true, body:`
       <div><div class="meter" style="--mh:100px;${meterStyle()}">${bars(r, 11)}</div>${band()}${labels()}${bagKey()}</div>
       <div class="tip" id="tip" style="color:var(${cut?"--ink2":ok?"--leaf":"--hungry"})">${cut?t("cut_tip"):ok?t("fix_ok"):t("fix_short",{b:nb(r.short)})}</div>
       <div class="fixlist">${items||`<span class="small">${t("noCosts")}</span>`}</div>
-      ${row("🐀",t("keepSafeRow"),nb(reserve()),btn("r-","−")+btn("r+","+"))}
-      ${row("🍲",t("eating"),`${fmt(S.eat)} ${t("bagsEachMoon")}`,btn("e-","−","",""," "+(S.eat<=.5?"min":""))+btn("e+","+"))}
+      ${row("🐀",t("keepSafeRow"),nb(reserve()),btn("r-","−","","","",sr("sr_less",t("keepSafeShort")))+btn("r+","+","","","",sr("sr_more",t("keepSafeShort"))))}
+      ${row("🍲",t("eating"),`${fmt(S.eat)} ${t("bagsEachMoon")}`,btn("e-","−","",""," "+(S.eat<=.5?"min":""),sr("sr_less",t("eating")))+btn("e+","+","","","",sr("sr_more",t("eating"))))}
       ${S.eat0!==null && S.eat<S.eat0 ? `<div class="eatnote">${t("eat_less")}</div>`:""}
+      ${cut?`<div class="verdict quiet"><b>${t("cut_head")}</b><ul class="cutlist">${cuts().map(c=>`<li>${c}</li>`).join("")}</ul><button class="pill strong" data-a="cutBack" style="justify-self:center">${t("cut_back")}</button></div>`:""}
       ${r.short>0?`<div class="verdict bad"><span class="note">${t("tooSmall")}</span></div>`:""}` }; },
 
   card: () => { const r=run(); return { say:t("card_say"), mood:r.runOut===null&&!eatCut()?"happy":"think", foot:`<button class="big gold" data-a="keep">${t("keep")}</button>`, body:`
     <div class="plancard"><div class="pc-grid">${r.out.map((o,i)=>`<div class="pc s-${SEASON[i]} ${o.low?"low":""} ${CHECKS.includes(i)?"check":""} ${i===11&&r.runOut===null?"harv":""}"><span class="nm">${MONTH_IC[i]} ${mName(i)}</span><span class="cnt">${o.low&&o.start<=0?"0":fmt(o.start)}</span><span class="it">${o.low&&o.start<=0?"🥣":Object.entries(S.picks).filter(([k,p])=>p.m===i&&!ITEM[k].surprise).map(([k])=>ITEM[k].ic).join("")}</span></div>`).join("")}</div>
       ${(()=>{ const ic=Object.entries(S.picks).filter(([k,p])=>p.m===ALL).map(([k])=>ITEM[k].ic).join(" "); return ic?`<div class="cardnote">${t("card_spread",{ic})}</div>`:""; })()}
       ${r.short>0?`<div class="cardnote bad">${t("card_short",{b:nb(r.short)})}</div>`:""}
-      ${eatCut()?`<div class="cardnote"><b>${t("cut_card",{a:nb(S.eat0),b:nb(S.eat)})}</b></div>`:""}
+      ${eatCut()?`<div class="cardnote"><b>${t("cut_card",{list:cuts().join(", ")})}</b></div>`:""}
       <div class="cardnote">${t("card_legend",{b:"🐀 "+nb(reserve())})}</div></div>
     ${ui.toast?`<div class="toast">${t("keep_toast")}</div>`:""}
     <div class="row"><button class="pill" data-a="restart">${t("startAgain")}</button><button class="pill" data-a="erase">${ui.eraseArmed?t("erase_sure"):t("erase")}</button></div>` }; }
@@ -587,10 +602,13 @@ function flashRow(id){ requestAnimationFrame(()=>{ const el=document.getElementB
 const ACTIONS = {
   "h+":()=>{S.harvest=Math.min(60,S.harvest+1); ui.added=true;}, "h-":()=>S.harvest=Math.max(0,S.harvest-1),
   "p+":()=>S.price=Math.min(2000,S.price+25), "p-":()=>S.price=Math.max(0,S.price-25), "price":()=>S.showPrice=true,
-  "new":()=>S=blank(), "ex":()=>S=example(), "restart":()=>{S.step=0; S.catIdx=0; S.asked={}; playMonth=-1; clearInterval(playing); playing=null;},
+  "new":()=>S=blank(), "ex":()=>S=example(), "restart":()=>{S.step=0; S.catIdx=0; S.asked={}; S.first=null; playMonth=-1; clearInterval(playing); playing=null;},
   "erase":()=>{ if(eraseArmed){ S=blank(); eraseArmed=false; } else { eraseArmed=true; ui.eraseArmed=true; setTimeout(()=>eraseArmed=false,3000); } },
   "keep":()=>ui.toast=true,
-  "eatBack":()=>{ S.eat=S.eat0; S.step=STEPS.indexOf("fix"); $("#pbody").scrollTop=0; },
+  "cutBack":()=>{ if(S.eat0!==null) S.eat=Math.max(S.eat,S.eat0);
+    if(S.first) for(const [k,p] of Object.entries(S.first.picks)){ const c=S.picks[k]; if(!c) S.picks[k]={...p}; else if(c.b<p.b) c.b=p.b; }
+    S.step=STEPS.indexOf("fix"); $("#pbody").scrollTop=0; },
+  "exReveal":()=>{ const c=CATS[S.catIdx]; for(const [id] of c.items) if(S.exPicks[id]) S.picks[id]={...S.exPicks[id]}; },
   "recheck":()=>{ clearInterval(playing); playing=null; S.step=STEPS.indexOf("remember"); S.catIdx=0; $("#pbody").scrollTop=0; },
   "g":el=>S.guess=+el.dataset.i,
   "ppl":el=>{ S.people=Math.max(0,Math.min(20,S.people+ +el.dataset.d)); },
@@ -614,6 +632,7 @@ const ACTIONS = {
     else { const n=needNudge(); if(n){ nudge=n; if(n==="keepSafe") ui.ratRun=true; return; } }
     if(STEPS[S.step]==="eat"){ if(S.eat0===null) S.eat0=S.eat; S.catIdx=0; }
     if(STEPS[S.step]==="remember"){ markDone(); if(S.catIdx<CATS.length-1){ S.catIdx++; if(CATS[S.catIdx].surprise) ui.ratRun=true; $("#pbody").scrollTop=0; return; } }
+    if(STEPS[S.step]==="remember" && !S.first) S.first={picks:JSON.parse(JSON.stringify(S.picks)), reserve:reserve()};
     S.step=Math.min(STEPS.length-1,S.step+1); $("#pbody").scrollTop=0; if(STEPS[S.step]==="play"){ playMonth=-1; clearInterval(playing); playing=null; } },
   "back":()=>{ if(STEPS[S.step]==="remember" && S.catIdx>0){ S.catIdx--; return; } clearInterval(playing); playing=null; S.step=Math.max(0,S.step-1); $("#pbody").scrollTop=0; },
   "play":()=>{ startPlay(); return "skip"; }
