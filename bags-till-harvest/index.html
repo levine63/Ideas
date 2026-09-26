@@ -167,6 +167,7 @@ button:focus-visible{outline:3px solid var(--rain);outline-offset:2px}
   background-image:repeating-linear-gradient(45deg,transparent 0 6px,rgb(0 0 0/.03) 6px 7px)}
 .verdict.bad{background-color:var(--hungry-soft)}
 .verdict.good{background-color:var(--leaf-soft)}
+.verdict.quiet{background-color:var(--panel);border:2px solid var(--line)}
 .verdict .note{font-size:15px;color:var(--ink)}
 .vs{display:grid;grid-template-columns:1fr 1fr;gap:8px;text-align:center}
 .vs div{background:var(--phone);border-radius:12px;padding:6px}
@@ -300,6 +301,11 @@ const PHRASES = {
     bad_comfort:"Most families guess later than the count. Small costs are easy to forget. Let's fix it together.",
     fix_say:"Try the buttons {minus} {earlier} {later} on each cost. Watch the red moons turn gold.",
     fix_ok_say:"Your plan reaches harvest! 🎉 You can still move things around.",
+    cut_say:"The bags last now, but only because eating went down. Is that realistic?",
+    cut_head:"The bags last, but eating was cut.",
+    cut_q:"You first said {a} a moon. Now it is {b}. Is that enough for {p} people, every moon until harvest?",
+    cut_back:"🍲 Put eating back to {a}", cut_tip:"Lasts, but eating was cut",
+    cut_card:"Eating was cut from {a} to {b} a moon to make this last.",
     fix_ok:"✓ Food until harvest", fix_short:"Short by {b}", earlier:"earlier", later:"later",
     eating:"Eating", keepSafeRow:"Keep-safe from Khoswe", noCosts:"No costs added yet.",
     eat_less:"Eating less is hard. Try moving costs first.",
@@ -348,6 +354,8 @@ const SPREAD_BY_DEFAULT = ["home"];
 const CHECK = { food:true, school:true, keepSafe:true };
 const FOOD = { kgPerPersonYear:150, bagKg:50, askBelow:.75 };
 const typicalEat = () => S.people * FOOD.kgPerPersonYear / 12 / FOOD.bagKg;
+// A plan that only lasts because eating went below the family's first answer gets no party.
+const eatCut = () => S.eat0!==null && S.eat < S.eat0;
 const suggestEat = () => Math.max(.5, Math.ceil(typicalEat()*2)/2);
 const FACE_FOR = {harvest:"happy", guess:"think", eat:"happy", remember:"think", play:"think", fix:"think", card:"happy"};
 
@@ -366,7 +374,7 @@ function run(){
   let stock = S.harvest - reserve(); const out=[]; let runOut=null, hungry=0;
   for(let m=0;m<12;m++){ const start=stock; stock -= S.eat + spendIn(m); const low=stock<0;
     if(low){ if(runOut===null) runOut=m; hungry++; } out.push({start:Math.max(0,start), low}); }
-  return {out, runOut, hungry, short:Math.max(0,-stock), end:stock};
+  return {out, runOut, hungry, short:runOut===null?0:Math.max(.5,Math.ceil(-stock*2-1e-9)/2), end:stock};
 }
 function fmt(x){ const r=Math.round(x*2)/2, w=Math.floor(r); return r%1 ? (w?w+"½":"½") : String(w); }
 
@@ -471,10 +479,13 @@ const SCREENS = {
   play: () => { const r=run(), done=playMonth>=11, shown=Math.max(-1,playMonth);
     const cur = shown<0 ? 1 : (r.out[shown].low && r.out[shown].start<=0 ? 0 : r.out[shown].start/Math.max(1,S.harvest-reserve()));
     const vs = c => `<div class="vs"><div><div class="k">${t("guessed")}</div><div class="v">${guessName()}</div></div><div><div class="k">${t("counted")}</div><div class="v">${c}</div></div></div>`;
-    const verdict = !done ? "" : r.runOut===null
+    const cutV = {a:nb(S.eat0||0), b:nb(S.eat), p:S.people};
+    const verdict = !done ? "" : r.runOut===null && eatCut()
+      ? `<div class="verdict quiet"><b>${t("cut_head")}</b><span class="note">${t("cut_q",cutV)}</span><button class="pill strong" data-a="eatBack" style="justify-self:center">${t("cut_back",cutV)}</button></div>`
+      : r.runOut===null
       ? `<div class="burst">${burst()}</div><div class="verdict good"><b>${t("good")}</b>${vs("🌽 "+t("harvestWord"))}<span class="note">${t(reserve()?"good_spare_r":"good_spare",{b:nb(r.end),r:nb(reserve())})}</span><span class="note">${t("recheck_q")}</span><button class="pill strong" data-a="recheck" style="justify-self:center">${t("recheck_btn")}</button></div>`
       : `<div class="verdict bad"><span>${t(r.hungry===1?"bad_one":"bad",{m:mName(r.runOut),h:r.hungry})}</span>${vs(mName(r.runOut))}<span class="note">${t("bad_comfort")}</span></div>`;
-    return { say:done?(r.runOut===null?t("play_done_good"):t("play_done_bad")):t("play_say"), mood: done ? (r.runOut===null?"happy":"think") : "think", next:done, body:`
+    return { say:done?(r.runOut===null?(eatCut()?t("cut_say"):t("play_done_good")):t("play_done_bad")):t("play_say"), mood: done ? (r.runOut===null&&!eatCut()?"happy":"think") : "think", next:done, body:`
       <div class="playrow">${granary(cur)}<div><div class="meter" style="${meterStyle()}">${bars(r, shown)}</div>${band()}${labels()}</div></div>${bagKey()}
       <div class="tip" id="tip">${shown<0?t("play_tap"):t("play_tip")}</div>${verdict}
       ${done?`<div class="row"><button class="pill" data-a="play">${t("play_again")}</button></div>`:(playing?"":`<button class="big gold" data-a="play" style="flex:none">${t("play_btn")}</button>`)}` }; },
@@ -487,19 +498,21 @@ const SCREENS = {
       .map(([k,p])=> p.m===ALL
         ? row(ITEM[k].ic, iName(k), `${nb(p.b)} · ${t("spread_short")}`, btn("fx-","−","",k), "", k)
         : row(ITEM[k].ic, iName(k), `${nb(p.b)} · ${mName(p.m)}`, btn("fx-","−","",k)+btn("fx<","◀",t("earlier"),k)+btn("fx>","▶",t("later"),k), r.out[p.m].low?"red":"", k)).join("");
-    return { say: r.runOut===null ? t("fix_ok_say") : t("fix_say",{minus:chip("−"),earlier:chip("◀"),later:chip("▶")}), mood:r.runOut===null?"happy":"think", next:true, body:`
+    const ok = r.runOut===null, cut = ok && eatCut();
+    return { say: cut ? t("cut_say") : ok ? t("fix_ok_say") : t("fix_say",{minus:chip("−"),earlier:chip("◀"),later:chip("▶")}), mood:ok&&!cut?"happy":"think", next:true, body:`
       <div><div class="meter" style="--mh:100px;${meterStyle()}">${bars(r, 11)}</div>${band()}${labels()}${bagKey()}</div>
-      <div class="tip" id="tip" style="color:var(${r.runOut===null?"--leaf":"--hungry"})">${r.runOut===null?t("fix_ok"):t("fix_short",{b:nb(r.short)})}</div>
+      <div class="tip" id="tip" style="color:var(${cut?"--ink2":ok?"--leaf":"--hungry"})">${cut?t("cut_tip"):ok?t("fix_ok"):t("fix_short",{b:nb(r.short)})}</div>
       <div class="fixlist">${items||`<span class="small">${t("noCosts")}</span>`}</div>
       ${row("🐀",t("keepSafeRow"),nb(reserve()),btn("r-","−")+btn("r+","+"))}
       ${row("🍲",t("eating"),`${fmt(S.eat)} ${t("bagsEachMoon")}`,btn("e-","−","",""," "+(S.eat<=.5?"min":""))+btn("e+","+"))}
       ${S.eat0!==null && S.eat<S.eat0 ? `<div class="eatnote">${t("eat_less")}</div>`:""}
       ${r.short>0?`<div class="verdict bad"><span class="note">${t("tooSmall")}</span></div>`:""}` }; },
 
-  card: () => { const r=run(); return { say:t("card_say"), mood:r.runOut===null?"happy":"think", foot:`<button class="big gold" data-a="keep">${t("keep")}</button>`, body:`
+  card: () => { const r=run(); return { say:t("card_say"), mood:r.runOut===null&&!eatCut()?"happy":"think", foot:`<button class="big gold" data-a="keep">${t("keep")}</button>`, body:`
     <div class="plancard"><div class="pc-grid">${r.out.map((o,i)=>`<div class="pc s-${SEASON[i]} ${o.low?"low":""} ${CHECKS.includes(i)?"check":""} ${i===11&&r.runOut===null?"harv":""}"><span class="nm">${MONTH_IC[i]} ${mName(i)}</span><span class="cnt">${o.low&&o.start<=0?"0":fmt(o.start)}</span><span class="it">${o.low&&o.start<=0?"🥣":Object.entries(S.picks).filter(([k,p])=>p.m===i&&!ITEM[k].surprise).map(([k])=>ITEM[k].ic).join("")}</span></div>`).join("")}</div>
       ${(()=>{ const ic=Object.entries(S.picks).filter(([k,p])=>p.m===ALL).map(([k])=>ITEM[k].ic).join(" "); return ic?`<div class="cardnote">${t("card_spread",{ic})}</div>`:""; })()}
       ${r.short>0?`<div class="cardnote bad">${t("card_short",{b:nb(r.short)})}</div>`:""}
+      ${eatCut()?`<div class="cardnote"><b>${t("cut_card",{a:nb(S.eat0),b:nb(S.eat)})}</b></div>`:""}
       <div class="cardnote">${t("card_legend",{b:"🐀 "+nb(reserve())})}</div></div>
     ${ui.toast?`<div class="toast">${t("keep_toast")}</div>`:""}
     <div class="row"><button class="pill" data-a="restart">${t("startAgain")}</button><button class="pill" data-a="erase">${ui.eraseArmed?t("erase_sure"):t("erase")}</button></div>` }; }
@@ -566,8 +579,8 @@ function sheetHtml(){
 const markDone = () => { const id=CATS[S.catIdx].id; if(!S.catsDone.includes(id)) S.catsDone.push(id); };
 function startPlay(){
   clearInterval(playing); playMonth=-1;
-  if(matchMedia("(prefers-reduced-motion: reduce)").matches){ playMonth=11; render(); if(run().runOut===null) party(); return; }
-  playing = setInterval(()=>{ playMonth++; if(playMonth>=11){ clearInterval(playing); playing=null; } render(); if(playMonth>=11 && run().runOut===null) party(); }, 520);
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches){ playMonth=11; render(); if(run().runOut===null && !eatCut()) party(); return; }
+  playing = setInterval(()=>{ playMonth++; if(playMonth>=11){ clearInterval(playing); playing=null; } render(); if(playMonth>=11 && run().runOut===null && !eatCut()) party(); }, 520);
   render();
 }
 function flashRow(id){ requestAnimationFrame(()=>{ const el=document.getElementById("fx-"+id); if(el) el.classList.add("flash"); }); }
@@ -577,6 +590,7 @@ const ACTIONS = {
   "new":()=>S=blank(), "ex":()=>S=example(), "restart":()=>{S.step=0; S.catIdx=0; S.asked={}; playMonth=-1; clearInterval(playing); playing=null;},
   "erase":()=>{ if(eraseArmed){ S=blank(); eraseArmed=false; } else { eraseArmed=true; ui.eraseArmed=true; setTimeout(()=>eraseArmed=false,3000); } },
   "keep":()=>ui.toast=true,
+  "eatBack":()=>{ S.eat=S.eat0; S.step=STEPS.indexOf("fix"); $("#pbody").scrollTop=0; },
   "recheck":()=>{ clearInterval(playing); playing=null; S.step=STEPS.indexOf("remember"); S.catIdx=0; $("#pbody").scrollTop=0; },
   "g":el=>S.guess=+el.dataset.i,
   "ppl":el=>{ S.people=Math.max(0,Math.min(20,S.people+ +el.dataset.d)); },
@@ -611,7 +625,7 @@ document.addEventListener("click", e=>{
   if(nudge && !["next","nudgeYes","nudgeNo"].includes(a)) nudge=null;
   const wasShort = STEPS[S.step]==="fix" && run().runOut!==null;
   const f = ACTIONS[a]; if(f && f(b)==="skip") return; render();
-  if(wasShort && STEPS[S.step]==="fix" && run().runOut===null) party();
+  if(wasShort && STEPS[S.step]==="fix" && run().runOut===null && !eatCut()) party();
 });
 const showTip = e => { const b=e.target.closest(".meter .b"); if(b && $("#tip")) $("#tip").textContent=b.dataset.tip; };
 document.addEventListener("pointerover", showTip); document.addEventListener("focusin", showTip);
