@@ -1,7 +1,13 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Bags Till Harvest Play</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
 <style>
+body{margin:0}
 :root{
   --ground:#E9ECE1; --panel:#F7F8F2; --ink:#1E2A1B; --ink2:#4B5746; --muted:#6E7868;
   --line:#CBD1C0; --maize:#E9A800; --maize-soft:#F7E2A3; --sack:#B98A4E; --sack-dk:#8A6231;
@@ -156,6 +162,8 @@ body{display:grid;justify-items:center}
 .phone{height:min(780px, calc(100dvh - 40px))}
 @media (max-width:440px){body{padding-inline:0;padding-block:0}.phone{border:none;border-radius:0;height:100dvh;max-width:none}}
 </style>
+</head>
+<body>
 <div class="phone" id="phone" aria-label="Bags Till Harvest">
   <div class="pbar">
     <div class="dots" id="dots"></div>
@@ -390,3 +398,5 @@ $("#soundBtn").addEventListener("click", ()=>speak($("#phone").dataset.say));
 render();
 })();
 </script>
+</body>
+</html>

@@ -23,7 +23,9 @@ spending-category boxes, prompted one category at a time by a surveyor. Farmers 
 
 ## Run it
 
-Open `index.html` in any browser, on a phone or a laptop. It needs no server. It fetches
+Live: https://levine63.github.io/ideas/bags-till-harvest/ (design sketch: `design-sketch.html` in the same folder).
+
+Or open `index.html` in any browser, on a phone or a laptop. It needs no server. It fetches
 two Google Fonts and falls back to system fonts when offline.
 
 It opens with an **example family** filled in. Tap **✨ New plan** to start empty.
