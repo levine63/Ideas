@@ -1,0 +1,554 @@
+<title>Bags Till Harvest</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+:root{
+  --ground:#E9ECE1; --panel:#F7F8F2; --ink:#1E2A1B; --ink2:#4B5746; --muted:#6E7868;
+  --line:#CBD1C0; --maize:#E9A800; --maize-soft:#F7E2A3; --sack:#B98A4E; --sack-dk:#8A6231;
+  --leaf:#2F6B34; --leaf-soft:#D5E6CF; --hungry:#B3402A; --hungry-soft:#F2D3CA;
+  --rain:#2F5F93; --phone:#FFFFFF; --phone-edge:#1E2A1B; --chip:#EEF1E6;
+  --display:"Baloo 2", "Trebuchet MS", system-ui, sans-serif;
+  --body:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --ground:#141A13; --panel:#1C241B; --ink:#E8EDE2; --ink2:#B9C3B1; --muted:#8E9986;
+    --line:#34402F; --maize:#F2B92A; --maize-soft:#4A3C12; --sack:#C79A5F; --sack-dk:#E0B880;
+    --leaf:#7DBB73; --leaf-soft:#233A22; --hungry:#EE7A62; --hungry-soft:#4A2219;
+    --rain:#8DB6E4; --phone:#101610; --phone-edge:#3C4A36; --chip:#232D21;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --ground:#141A13; --panel:#1C241B; --ink:#E8EDE2; --ink2:#B9C3B1; --muted:#8E9986;
+  --line:#34402F; --maize:#F2B92A; --maize-soft:#4A3C12; --sack:#C79A5F; --sack-dk:#E0B880;
+  --leaf:#7DBB73; --leaf-soft:#233A22; --hungry:#EE7A62; --hungry-soft:#4A2219;
+  --rain:#8DB6E4; --phone:#101610; --phone-edge:#3C4A36; --chip:#232D21;
+}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;padding-inline:16px;padding-block:20px 48px}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:3px solid var(--rain);outline-offset:2px}
+.wrap{max-width:1180px;margin:0 auto;display:grid;gap:28px}
+header.top{display:grid;gap:6px;max-width:72ch}
+header.top h1{font-family:var(--display);font-weight:800;font-size:clamp(30px,4.4vw,44px);line-height:1.05;margin:0;text-wrap:balance}
+header.top p{margin:0;color:var(--ink2)}
+.eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.stage{display:grid;grid-template-columns:400px 1fr;gap:32px;align-items:start}
+@media (max-width:900px){.stage{grid-template-columns:1fr}}
+
+/* ---------- phone ---------- */
+.phone{width:100%;max-width:400px;margin:0 auto;background:var(--phone);border:10px solid var(--phone-edge);border-radius:34px;height:760px;display:flex;flex-direction:column;overflow:hidden;position:relative}
+@media (max-width:900px){.phone{height:720px}}
+.pbar{display:flex;align-items:center;gap:8px;padding:10px 12px 6px}
+.dots{display:flex;gap:5px;flex:1}
+.dots i{height:8px;flex:1;border-radius:4px;background:var(--line)}
+.dots i.on{background:var(--maize)}
+.dots i.done{background:var(--leaf)}
+.iconbtn{width:44px;height:44px;border-radius:50%;border:2px solid var(--line);background:var(--panel);display:grid;place-items:center;font-size:20px;line-height:1}
+.guide{display:flex;gap:10px;align-items:flex-start;padding:4px 14px 10px}
+.guide .face{flex:none;width:52px;height:52px}
+.bubble{position:relative;background:var(--maize-soft);border-radius:16px;padding:9px 12px;font-size:16px;line-height:1.35;flex:1}
+.bubble b{font-weight:700}
+.say{border:none;background:none;font-size:18px;padding:0 0 0 6px;vertical-align:middle}
+.pbody{flex:1;overflow-y:auto;padding:4px 14px 14px;display:flex;flex-direction:column;gap:12px}
+.pfoot{display:flex;gap:10px;padding:10px 14px 14px;border-top:1px solid var(--line)}
+.big{flex:1;min-height:58px;border-radius:16px;border:none;font-family:var(--display);font-weight:700;font-size:21px;display:flex;align-items:center;justify-content:center;gap:8px}
+.big.go{background:var(--leaf);color:#fff}
+:root[data-theme="dark"] .big.go{color:#0F1A0E}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .big.go{color:#0F1A0E}}
+.big.back{flex:0 0 64px;background:var(--chip);border:2px solid var(--line)}
+
+.granary{display:flex;justify-content:center}
+.sacks{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;min-height:40px}
+.sacks svg{width:30px;height:34px}
+.stepper{display:flex;align-items:center;justify-content:center;gap:14px}
+.stepper button{width:64px;height:64px;border-radius:50%;border:3px solid var(--sack);background:var(--panel);font-size:32px;font-weight:700;line-height:1}
+.stepper .n{font-family:var(--display);font-size:46px;font-weight:800;min-width:92px;text-align:center;font-variant-numeric:tabular-nums;line-height:1}
+.unit{text-align:center;color:var(--ink2);font-size:15px;margin-top:-6px}
+.row{display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap}
+.small{font-size:14px;color:var(--muted);text-align:center}
+.money{display:flex;align-items:center;gap:10px;justify-content:center;background:var(--chip);border-radius:14px;padding:8px}
+.money button{width:40px;height:40px;border-radius:50%;border:2px solid var(--line);background:var(--panel);font-size:20px}
+.money .n{font-family:var(--display);font-weight:700;font-size:20px;font-variant-numeric:tabular-nums}
+
+.months{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.m{border:2px solid var(--line);background:var(--panel);border-radius:12px;padding:6px 2px;display:grid;justify-items:center;gap:0;min-height:62px}
+.m .ic{font-size:20px;line-height:1.1}
+.m .nm{font-size:13px;font-weight:700}
+.m.sel{border-color:var(--maize);background:var(--maize-soft);box-shadow:0 0 0 2px var(--maize) inset}
+.m.hung{border-color:var(--hungry);background:var(--hungry-soft)}
+.m.now{outline:3px solid var(--rain);outline-offset:1px}
+
+.cats{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px}
+.cat{flex:none;border:2px solid var(--line);background:var(--panel);border-radius:999px;padding:4px 10px;font-size:14px;display:flex;align-items:center;gap:4px}
+.cat.on{border-color:var(--ink);background:var(--ink);color:var(--phone)}
+.cat.done::after{content:"✓";color:var(--leaf);font-weight:700}
+.cat.on.done::after{color:var(--maize)}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.card{border:2px solid var(--line);background:var(--panel);border-radius:16px;padding:10px 4px 8px;display:grid;justify-items:center;gap:2px;position:relative;min-height:96px}
+.card .ic{font-size:34px;line-height:1.1}
+.card .lb{font-size:13px;line-height:1.2;text-align:center}
+.card.picked{border-color:var(--leaf);background:var(--leaf-soft)}
+.card .tag{position:absolute;top:-8px;right:-4px;background:var(--leaf);color:#fff;border-radius:999px;font-size:12px;font-weight:700;padding:1px 7px;font-variant-numeric:tabular-nums}
+:root[data-theme="dark"] .card .tag{color:#0F1A0E}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .card .tag{color:#0F1A0E}}
+
+.board{display:grid;grid-template-columns:repeat(12,1fr);gap:3px;align-items:end}
+.board .col{display:flex;flex-direction:column-reverse;align-items:center;gap:1px;min-height:44px;border-bottom:2px solid var(--line);padding-bottom:2px}
+.board .pin{width:12px;height:12px;border-radius:50%;background:var(--sack);border:2px solid var(--phone)}
+.board .pin.half{width:9px;height:9px}
+.board .ml{font-size:10px;text-align:center;color:var(--muted)}
+.boardlab{display:grid;grid-template-columns:repeat(12,1fr);gap:3px}
+
+.sheet{position:absolute;inset:auto 0 0 0;background:var(--phone);border-top:3px solid var(--maize);border-radius:22px 22px 0 0;padding:14px;display:grid;gap:10px;box-shadow:0 -12px 30px rgba(0,0,0,.18);z-index:5;max-height:88%;overflow-y:auto}
+.sheet h3{margin:0;font-family:var(--display);font-size:22px;display:flex;align-items:center;gap:8px}
+.scrim{position:absolute;inset:0;background:rgba(20,26,19,.35);z-index:4}
+
+/* play */
+.meter{display:grid;grid-template-columns:repeat(12,1fr);gap:3px;align-items:end;height:150px;padding-top:14px;position:relative}
+.meter .b{position:relative;height:100%;display:flex;align-items:flex-end}
+.meter .b span{display:block;width:100%;background:var(--maize);border-radius:4px 4px 0 0;min-height:0;transition:height .35s ease}
+.meter .b.low span{background:var(--hungry)}
+.meter .b .v{position:absolute;left:0;right:0;text-align:center;font-size:11px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--ink2)}
+.meter .b.hungry::after{content:"!";position:absolute;bottom:2px;left:0;right:0;text-align:center;font-weight:800;color:var(--hungry);font-size:16px}
+.meter .b:hover span,.meter .b:focus span{outline:2px solid var(--ink)}
+.meter-lab{display:grid;grid-template-columns:repeat(12,1fr);gap:3px;font-size:10px;text-align:center;color:var(--muted);border-top:2px solid var(--line);padding-top:3px}
+.tip{min-height:22px;font-size:14px;text-align:center;color:var(--ink2)}
+.verdict{border-radius:16px;padding:12px;display:grid;gap:6px}
+.verdict.bad{background:var(--hungry-soft)}
+.verdict.good{background:var(--leaf-soft)}
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:8px;text-align:center}
+.vs div{background:var(--panel);border-radius:12px;padding:6px}
+.vs .k{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.vs .v{font-family:var(--display);font-size:22px;font-weight:800}
+
+.fixlist{display:grid;gap:6px}
+.fx{display:grid;grid-template-columns:34px 1fr auto;gap:8px;align-items:center;background:var(--panel);border:2px solid var(--line);border-radius:14px;padding:6px 8px}
+.fx .ic{font-size:24px;text-align:center}
+.fx .t{font-size:14px;line-height:1.25}
+.fx .t small{color:var(--muted);display:block}
+.fx .ctl{display:flex;gap:4px}
+.fx .ctl button{width:36px;height:36px;border-radius:10px;border:2px solid var(--line);background:var(--phone);font-size:16px}
+
+.plancard{border:3px dashed var(--sack);border-radius:18px;padding:10px;display:grid;gap:8px;background:var(--panel)}
+.pc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.pc{border-radius:12px;background:var(--phone);border:2px solid var(--line);padding:4px;text-align:center;display:grid;gap:0}
+.pc .nm{font-size:12px;font-weight:700}
+.pc .cnt{font-family:var(--display);font-size:24px;font-weight:800;line-height:1.1;font-variant-numeric:tabular-nums}
+.pc .it{font-size:14px;min-height:18px}
+.pc.check{border-color:var(--leaf);background:var(--leaf-soft)}
+.pc.hung{border-color:var(--hungry);background:var(--hungry-soft)}
+
+.cover{position:absolute;inset:0;background:var(--phone);z-index:20;display:grid;place-items:center;text-align:center;padding:30px}
+.cover .w{font-size:64px}
+.cover p{color:var(--muted)}
+
+.khoswe{display:inline-block}
+@keyframes scurry{0%{transform:translateX(-30px);opacity:0}30%{opacity:1}100%{transform:translateX(0);opacity:1}}
+.scurry{animation:scurry .8s ease-out}
+@keyframes drop{from{transform:translateY(-14px);opacity:0}to{transform:none;opacity:1}}
+.sacks svg:last-child{animation:drop .25s ease-out}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ---------- notes ---------- */
+.notes{display:grid;gap:18px;min-width:0}
+.now-card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px 20px;display:grid;gap:12px}
+.now-card h2{font-family:var(--display);font-weight:800;font-size:26px;margin:0;line-height:1.1}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:560px){.cmp{grid-template-columns:1fr}}
+.cmp section{display:grid;gap:4px;align-content:start}
+.cmp h4{margin:0;font-size:12px;letter-spacing:.12em;text-transform:uppercase}
+.cmp .src h4{color:var(--muted)}
+.cmp .dev h4{color:var(--leaf)}
+.cmp p{margin:0;font-size:15px;color:var(--ink2)}
+.test{font-size:14px;border-top:1px solid var(--line);padding-top:10px;color:var(--ink2)}
+.test b{color:var(--ink)}
+.steplist{display:flex;flex-wrap:wrap;gap:6px}
+.steplist button{border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:4px 12px;font-size:14px}
+.steplist button.on{background:var(--ink);color:var(--ground);border-color:var(--ink)}
+.long{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px 20px;display:grid;gap:10px}
+.long h3{font-family:var(--display);font-size:21px;margin:6px 0 0;line-height:1.15}
+.long h3:first-child{margin-top:0}
+.long p,.long li{font-size:15px;color:var(--ink2);max-width:70ch}
+.long ul{margin:0;padding-left:20px;display:grid;gap:4px}
+.long b{color:var(--ink)}
+.flag{font-size:13px;background:var(--maize-soft);border-radius:10px;padding:8px 12px;color:var(--ink)}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <span class="eyebrow">Sketch · harvest-allocation exercise as a phone app</span>
+    <h1>Bags Till Harvest</h1>
+    <p>A clickable sketch of the Augenblick, Jack, Kaur, Masiye &amp; Swanson planning exercise, rebuilt for low-literacy farmers and families. Tap through the phone. The panel beside it shows, for each screen, what the original script did and what this version changes. It opens with an example family already filled in; tap <b>New plan</b> on the first screen to start empty.</p>
+  </header>
+
+  <div class="stage">
+    <div class="phone" id="phone" aria-label="Prototype phone">
+      <div class="pbar">
+        <button class="iconbtn" id="hideBtn" title="Hide my plan (privacy)" aria-label="Hide my plan">🛡️</button>
+        <div class="dots" id="dots"></div>
+        <button class="iconbtn" id="soundBtn" title="Hear it" aria-label="Read aloud">🔊</button>
+      </div>
+      <div class="guide">
+        <svg class="face" viewBox="0 0 52 52" aria-hidden="true">
+          <circle cx="26" cy="28" r="22" fill="var(--maize)"/>
+          <path d="M26 4 C22 10 22 14 26 16 C30 14 30 10 26 4Z" fill="var(--leaf)"/>
+          <circle cx="19" cy="26" r="3" fill="var(--ink)"/><circle cx="33" cy="26" r="3" fill="var(--ink)"/>
+          <path d="M18 35 Q26 42 34 35" stroke="var(--ink)" stroke-width="3" fill="none" stroke-linecap="round"/>
+        </svg>
+        <div class="bubble" id="bubble"></div>
+      </div>
+      <div class="pbody" id="pbody"></div>
+      <div class="pfoot" id="pfoot"></div>
+    </div>
+
+    <div class="notes">
+      <div class="steplist" id="steplist" aria-label="Jump to screen"></div>
+      <div class="now-card" id="nowcard"></div>
+      <div class="long">
+        <h3>What the study did</h3>
+        <p>Zambian maize farmers live on one harvest a year, and most households run out before the next one. In the Augenblick, Jack, Kaur, Masiye &amp; Swanson field experiment, people underestimated their upcoming spending by about half. Treated households spent about an hour with a trained surveyor at harvest time, going through six expense categories one at a time (food, education, groceries and household goods, farm inputs, transfers, emergencies). They set pins standing for bags of grain into category boxes. The surveyor gave no advice and no outside information. Remembered expenses went up 42%, mostly small, irregular and uncertain items. Two months later savings were 15% higher, and households went into the hungry season with roughly one extra month of savings. The food-insecurity index moved in the right direction but was not statistically significant.</p>
+        <p class="flag">I couldn't read the study's surveyor script word for word: the paper PDF, J-PAL, CEGA and VoxDev were all blocked from this workspace. Before this goes to a partner, check the category order, the subcategories, the control condition, and whether the unprompted total came first against the paper appendix.</p>
+
+        <h3>Rules this sketch keeps from the study</h3>
+        <ul>
+          <li><b>Recall, not advice.</b> The app never says how much anything costs or what to cut. Every number comes from the family. That is what the trial tested. A version that adds price lists or advice is a different treatment and needs its own study arm.</li>
+          <li><b>One category at a time, with picture cues.</b> The memory mechanism depends on the cues, not on the arithmetic.</li>
+          <li><b>Bags are the unit.</b> Food, school fees and fertiliser are all counted in the same sacks, just like the pins.</li>
+        </ul>
+
+        <h3>Main changes, and why</h3>
+        <ul>
+          <li><b>The board is a calendar, not a set of category boxes.</b> Categories still drive the recall, but each pin lands on the month it is due. The family then sees <i>when</i> the store empties, not just that the total is too big. Running out is a timing problem, so timing should be what they see.</li>
+          <li><b>Guess first, then count.</b> The family guesses the month the bags run out, before any recall. After the recall, the app plays the year and shows the gap between the guess and the count. It makes the study's "budget neglect" visible to the family, and people enjoy finding out whether they guessed right.</li>
+          <li><b>Play the year.</b> The granary empties one moon at a time. The hungry months light up. This is the scene people remember and tell their neighbours about.</li>
+          <li><b>Khoswe the rat for forgotten costs.</b> Emergencies become a "keep-safe bag" you guard against the rat. It is a friendly way to plan for costs nobody can put a date on. The name and the character need local testing.</li>
+          <li><b>Take home checkpoints, not a spreadsheet.</b> The result is three dates and a bag count for each ("at Christmas, still have 7 bags"). You can check that against the store by looking. People stopped using the take-home supplies in year two, and a rule of thumb is more likely to get used than a budget.</li>
+          <li><b>Private by design.</b> A hide button is always one tap away. There is no account, and nothing is uploaded. There is an Erase button. The plan can be done behind a screen in a group session.</li>
+          <li><b>Next harvest: "What surprised you?"</b> The second-year version opens on last year's checkpoints and asks what was missing. That is a five-minute refresher, not the full hour.</li>
+        </ul>
+
+        <h3>Risks to design around</h3>
+        <ul>
+          <li><b>Planning can't make grain.</b> If the harvest is too small, the honest result is "short by N bags". The app must not shame the family or suggest the plan failed. That screen should point to real help (VSLA, safety-net contacts) that the deployer sets up.</li>
+          <li><b>Shame and gender.</b> Who holds the phone decides whose costs get remembered. Test a mode where two members of the household plan together.</li>
+          <li><b>Adding information by accident.</b> Default amounts, example families and "most people spend…" hints all change the treatment. In a research arm, the example family below must only show how the screens work, never real amounts.</li>
+          <li><b>Humour doesn't travel.</b> The rat, the guide and the month symbols are placeholders to test locally. Nyanja/Bemba names still need checking.</li>
+        </ul>
+
+        <h3>Suggested first test</h3>
+        <p>Twenty households, one-on-one, split between the facilitated pin exercise and this app with a facilitator beside them. Measure: what they understand at each screen (ask them to explain it back), how many expenses they remember compared with the pin version, time taken, whether anyone could see their numbers, and whether they can still state their checkpoint two weeks later. Then check grain in store at the first checkpoint.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+const MONTHS = [ // harvest-year order, Zambian maize calendar
+  {n:"May", ic:"🌾"},{n:"Jun", ic:"🌾"},{n:"Jul", ic:"☀️"},{n:"Aug", ic:"☀️"},
+  {n:"Sep", ic:"🎒"},{n:"Oct", ic:"🔥"},{n:"Nov", ic:"🌱"},{n:"Dec", ic:"⭐"},
+  {n:"Jan", ic:"🎒"},{n:"Feb", ic:"🌧️"},{n:"Mar", ic:"🌧️"},{n:"Apr", ic:"🌽"}
+];
+const CATS = [
+  {id:"school", ic:"🎒", name:"School", items:[
+    ["fees","🏫","School fees"],["uniform","👕","Uniform"],["shoes","👟","Shoes"],
+    ["books","✏️","Books, pens"],["exam","📝","Exam fees"],["bus","🚌","Travel to school"]]},
+  {id:"home", ic:"🏠", name:"Home", items:[
+    ["salt","🧂","Salt, sugar"],["soap","🧼","Soap"],["oil","🛢️","Cooking oil"],
+    ["light","🕯️","Paraffin, candles"],["mill","⚙️","Grinding"],["roof","🛖","Roof, repairs"],
+    ["phone","📱","Phone talk-time"],["blanket","🛏️","Blankets"],["relish","🐟","Relish, fish"]]},
+  {id:"farm", ic:"🌱", name:"Farm", items:[
+    ["seed","🌽","Seed"],["fert","🧪","Fertiliser"],["labour","🧑‍🌾","Hired help"],
+    ["tools","⛏️","Hoe, tools"],["store","🧺","Sacks, storage"],["transport","🚲","Transport"]]},
+  {id:"people", ic:"👪", name:"People", items:[
+    ["funeral","🕊️","Funeral"],["wedding","💍","Wedding"],["church","⛪","Church, mosque"],
+    ["relatives","🤲","Relatives ask"],["loan","💵","Loan to repay"],["group","🪙","Savings group"]]},
+  {id:"surprise", ic:"🐀", name:"Surprises", surprise:true, items:[
+    ["sick","🏥","Clinic"],["medicine","💊","Medicine"],["animal","🐐","Animal dies"],
+    ["bike","🔧","Something breaks"],["pests","🐛","Pests, bad rain"],["other","❔","Something else"]]}
+];
+const ITEM = {}; CATS.forEach(c=>c.items.forEach(([id,ic,lb])=>ITEM[id]={id,ic,lb,cat:c.id,surprise:!!c.surprise}));
+
+const STEPS = ["harvest","guess","eat","remember","play","fix","card"];
+const STEP_LABEL = {harvest:"1 Harvest",guess:"2 Guess",eat:"3 Eating",remember:"4 Remember",play:"5 Play the year",fix:"6 Fix",card:"7 Keep"};
+
+// Example family: demonstrates the screens only. Not advice, not real amounts.
+function example(){
+  return { harvest:18, price:300, guess:10, eat:1.5, catIdx:0, catsDone:["school","home","farm","people","surprise"],
+    picks:{ fees:{b:1,m:8}, uniform:{b:0.5,m:8}, books:{b:0.5,m:4},
+      salt:{b:0.5,m:2}, soap:{b:0.5,m:5}, mill:{b:0.5,m:7},
+      seed:{b:1,m:5}, fert:{b:2,m:6}, labour:{b:1,m:7},
+      funeral:{b:1,m:3}, church:{b:0.5,m:7}, loan:{b:1,m:1},
+      sick:{b:1,m:null} },
+    step:0, played:false, example:true };
+}
+function blank(){ return {harvest:0, price:300, guess:null, eat:1, catIdx:0, catsDone:[], picks:{}, step:0, played:false, example:false}; }
+let S = example();
+let sheet = null, playing = null, playMonth = -1, hidden = false;
+
+// ---------- model ----------
+function reserve(){ return Object.entries(S.picks).filter(([k,p])=>ITEM[k].surprise).reduce((a,[k,p])=>a+p.b,0); }
+function spendIn(m){ return Object.entries(S.picks).filter(([k,p])=>!ITEM[k].surprise && p.m===m).reduce((a,[k,p])=>a+p.b,0); }
+function run(){ // bags left at start of each month, after keep-safe set aside
+  let stock = S.harvest - reserve(); const out=[]; let runOut=null, hungry=0, short=0;
+  for(let m=0;m<12;m++){
+    const start = stock, need = S.eat + spendIn(m);
+    stock -= need;
+    const low = stock < 0;
+    if(low){ if(runOut===null) runOut=m; hungry++; }
+    out.push({m,start,need,end:stock,low});
+  }
+  short = Math.max(0, -stock);
+  return {out, runOut, hungry, short, end:stock};
+}
+const fmt = x => (Math.round(x*2)/2).toString().replace(".5","½").replace(/^0½/,"½");
+
+// ---------- ui helpers ----------
+const $ = s => document.querySelector(s);
+const sack = (half) => `<svg viewBox="0 0 30 34" aria-hidden="true"><path d="M8 6 L22 6 L20 10 C27 14 28 22 26 30 C22 33 8 33 4 30 C2 22 3 14 10 10Z" fill="var(--sack)" stroke="var(--sack-dk)" stroke-width="1.5" ${half?'opacity=".45"':''}/><path d="M9 6 Q15 2 21 6" stroke="var(--sack-dk)" stroke-width="2" fill="none"/><path d="M10 18 H20" stroke="var(--sack-dk)" stroke-width="1.5"/></svg>`;
+const sacks = n => { let h=""; for(let i=1;i<=Math.floor(n);i++) h+=sack(false); if(n%1) h+=sack(true); return `<div class="sacks" aria-label="${fmt(n)} bags">${h||'<span class="small">empty</span>'}</div>`; };
+function speak(t){ try{ speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(t.replace(/<[^>]+>/g,"")); u.rate=.92; speechSynthesis.speak(u);}catch(e){} }
+
+// ---------- screens ----------
+function screen(){
+  const st = STEPS[S.step]; const r = run();
+  switch(st){
+  case "harvest": return {
+    say:`Hello! Let's see if your maize lasts <b>until next harvest</b>. First: how many <b>bags</b> did you bring home?`,
+    body:`
+      <div class="granary">${sacks(S.harvest)}</div>
+      <div class="stepper"><button data-a="h-" aria-label="one bag less">−</button><div class="n">${S.harvest}</div><button data-a="h+" aria-label="one bag more">+</button></div>
+      <div class="unit">bags of maize</div>
+      <div class="small">Bags you <b>sell</b> for money are still in this pile for now. We will count what the money is for.</div>
+      <div class="money"><span aria-hidden="true">💵</span><span class="small" style="margin:0">1 bag sells for</span>
+        <button data-a="p-" aria-label="price lower">−</button><span class="n">K${S.price}</span><button data-a="p+" aria-label="price higher">+</button></div>
+      <div class="row">${S.example?'<span class="small">Example family shown.</span>':''}<button class="cat" data-a="new">✨ New plan</button><button class="cat" data-a="ex">👀 Example</button></div>`,
+    next:S.harvest>0 };
+  case "guess": return {
+    say:`Quick guess! <b>Before we count</b>: in which moon will the bags run out? Tap one. There is no wrong answer.`,
+    body:`${monthGrid(i=>S.guess===i?"sel":"", "g")}
+      <button class="m ${S.guess===12?'sel':''}" data-a="g" data-i="12" style="grid-column:1/-1;min-height:48px"><span class="nm">🌽 They will last until the next harvest</span></button>`,
+    next:S.guess!==null };
+  case "eat": return {
+    say:`How much maize does your family <b>eat in one moon</b>? Count in bags. Half bags are fine.`,
+    body:`<div class="granary">${sacks(S.eat)}</div>
+      <div class="stepper"><button data-a="e-" aria-label="half bag less">−</button><div class="n">${fmt(S.eat)}</div><button data-a="e+" aria-label="half bag more">+</button></div>
+      <div class="unit">bags each moon</div>
+      <div class="small">Over 12 moons that is <b>${fmt(S.eat*12)} bags</b> for eating.</div>`,
+    next:S.eat>0 };
+  case "remember": {
+    const c = CATS[S.catIdx];
+    const says = {
+      school:`Now let's walk through the year. <b>School</b>: fees, uniforms, books… Tap each thing your family will pay for.`,
+      home:`<b>Home</b>: salt, soap, oil, grinding… the small things add up. Tap what you buy.`,
+      farm:`<b>Farm</b>: seed and fertiliser for next season. Hired help. Tap what you need.`,
+      people:`<b>People</b>: funerals, weddings, church, relatives who ask for help. Tap what might come.`,
+      surprise:`<span class="khoswe scurry">🐀</span> This is <b>Khoswe the rat</b>. He eats bags for things nobody plans: clinic, a broken bike. Keep some bags safe from him?`
+    };
+    return {
+      say:says[c.id],
+      body:`<div class="cats">${CATS.map((k,i)=>`<button class="cat ${i===S.catIdx?'on':''} ${S.catsDone.includes(k.id)?'done':''}" data-a="cat" data-i="${i}">${k.ic} ${k.name}</button>`).join("")}</div>
+        <div class="cards">${c.items.map(([id,ic,lb])=>{const p=S.picks[id];return `<button class="card ${p?'picked':''}" data-a="item" data-id="${id}">${p?`<span class="tag">${fmt(p.b)}</span>`:''}<span class="ic">${ic}</span><span class="lb">${lb}</span></button>`}).join("")}</div>
+        <div>
+          <div class="small" style="text-align:left;margin-bottom:4px">Your year board · each dot is a bag</div>
+          <div class="board">${MONTHS.map((mo,i)=>{const b=S.eat+spendIn(i);let pins="";for(let k=0;k<Math.floor(spendIn(i));k++)pins+='<i class="pin"></i>';if(spendIn(i)%1)pins+='<i class="pin half"></i>';return `<div class="col" title="${mo.n}: ${fmt(spendIn(i))} bags besides food">${pins}</div>`}).join("")}</div>
+          <div class="boardlab">${MONTHS.map(m=>`<div class="ml" title="${m.n}">${m.n[0]}</div>`).join("")}</div>
+          ${reserve()?`<div class="small" style="text-align:left">🐀 Keep-safe: ${fmt(reserve())} bags</div>`:''}
+        </div>`,
+      next:true, nextLabel: S.catIdx<CATS.length-1 ? "Next ▸" : "Done ▸" };
+  }
+  case "play": {
+    const shown = playMonth;
+    const bars = r.out.map((o,i)=>{
+      const vis = i<=shown; const v = Math.max(0,o.end);
+      const pct = vis ? Math.min(100, v/Math.max(1,S.harvest)*100) : Math.min(100,(S.harvest-reserve())/Math.max(1,S.harvest)*100);
+      return `<div class="b ${vis&&o.low?'low hungry':''}" tabindex="0" data-tip="${MONTHS[i].n}: ${vis?(o.low?'no maize left':fmt(o.end)+' bags left'):'…'}"><span style="height:${pct}%"></span>${vis&&!o.low?`<em class="v" style="bottom:calc(${pct}% + 2px);font-style:normal">${fmt(v)}</em>`:''}</div>`;
+    }).join("");
+    const done = shown>=11;
+    const verdict = !done ? "" : (r.runOut===null
+      ? `<div class="verdict good"><b>🎉 The bags last until harvest!</b><div class="vs"><div><div class="k">You guessed</div><div class="v">${S.guess===12?'Harvest':MONTHS[S.guess].n}</div></div><div><div class="k">Counted</div><div class="v">🌽 Apr</div></div></div><span class="small">${fmt(r.end)} bags spare, plus ${fmt(reserve())} keep-safe.</span></div>`
+      : `<div class="verdict bad"><b>The bags run out in ${MONTHS[r.runOut].n}.</b> That leaves <b>${r.hungry} hungry moon${r.hungry>1?'s':''}</b>.<div class="vs"><div><div class="k">You guessed</div><div class="v">${S.guess===12?'Harvest':MONTHS[S.guess].n}</div></div><div><div class="k">Counted</div><div class="v">${MONTHS[r.runOut].n}</div></div></div><span class="small">This is normal: most families forget small costs. Let's fix it together.</span></div>`);
+    return {
+      say: done ? `That was your year. Let's look at it together.` : `Now watch your store, <b>one moon at a time</b>.`,
+      body:`<div class="meter" id="meter">${bars}</div><div class="meter-lab">${MONTHS.map(m=>`<span title="${m.n}">${m.n[0]}</span>`).join("")}</div>
+        <div class="tip" id="tip">${shown<0?'Tap ▶ to play the year':'Tap a bar to see the count'}</div>${verdict}
+        ${!done?`<button class="big go" data-a="play" style="flex:none">▶ Play the year</button>`:`<button class="cat" data-a="play" style="justify-self:center">↻ Play again</button>`}`,
+      next:done };
+  }
+  case "fix": {
+    const rows = Object.entries(S.picks).filter(([k])=>!ITEM[k].surprise).sort((a,b)=>a[1].m-b[1].m)
+      .map(([k,p])=>`<div class="fx"><span class="ic">${ITEM[k].ic}</span><span class="t">${ITEM[k].lb}<small>${fmt(p.b)} bag${p.b>1?'s':''} · ${MONTHS[p.m].n}</small></span><span class="ctl"><button data-a="fx-" data-id="${k}" aria-label="smaller">−</button><button data-a="fx<" data-id="${k}" aria-label="earlier">◀</button><button data-a="fx>" data-id="${k}" aria-label="later">▶</button></span></div>`).join("");
+    const bars = r.out.map((o,i)=>{const v=Math.max(0,o.end);const pct=Math.min(100,v/Math.max(1,S.harvest)*100);return `<div class="b ${o.low?'low hungry':''}" tabindex="0" data-tip="${MONTHS[i].n}: ${o.low?'no maize left':fmt(o.end)+' bags left'}"><span style="height:${pct}%"></span></div>`}).join("");
+    return {
+      say: r.runOut===null ? `Your plan reaches harvest. You can still move things around.` :
+        `Your plan. Try changes: <b>smaller</b> (−), <b>earlier</b> (◀), <b>later</b> (▶). Watch the red moons.`,
+      body:`<div class="meter" style="height:96px">${bars}</div><div class="meter-lab">${MONTHS.map(m=>`<span title="${m.n}">${m.n[0]}</span>`).join("")}</div>
+        <div class="tip" id="tip">${r.runOut===null?'✓ Food until harvest':`${r.hungry} hungry moon${r.hungry>1?'s':''} · short ${fmt(r.short)} bags`}</div>
+        <div class="fx"><span class="ic">🍲</span><span class="t">Eating<small>${fmt(S.eat)} bags each moon</small></span><span class="ctl"><button data-a="e-" aria-label="less">−</button><button data-a="e+" aria-label="more">+</button></span></div>
+        <div class="fx"><span class="ic">🐀</span><span class="t">Keep-safe from Khoswe<small>${fmt(reserve())} bags</small></span><span class="ctl"><button data-a="r-" aria-label="less">−</button><button data-a="r+" aria-label="more">+</button></span></div>
+        <div class="fixlist">${rows||'<span class="small">No costs added yet.</span>'}</div>
+        ${r.short>0?`<div class="verdict bad small" style="text-align:left">If the harvest is too small, no plan can cover it. That is not your fault. <b>Ask your group leader about help.</b> (The deployer sets the contact.)</div>`:''}`,
+      next:true };
+  }
+  case "card": {
+    const checks = [5,7,9]; // Oct, Dec (Christmas), Feb
+    return {
+      say:`Here is your plan. At the <b>green</b> moons, count your bags. If you have fewer, slow down before it's late.`,
+      body:`<div class="plancard">
+          <div class="pc-grid">${r.out.map((o,i)=>`<div class="pc ${checks.includes(i)&&!o.low?'check':''} ${o.low?'hung':''}"><span class="nm">${MONTHS[i].ic} ${MONTHS[i].n}</span><span class="cnt">${fmt(Math.max(0,o.start)+reserve())}</span><span class="it">${Object.entries(S.picks).filter(([k,p])=>p.m===i&&!ITEM[k].surprise).map(([k])=>ITEM[k].ic).join("")}</span></div>`).join("")}</div>
+          ${r.short>0?`<div class="small" style="color:var(--hungry);font-weight:700">Red moons: short ${fmt(r.short)} bags. Go back to Fix, or ask for help.</div>`:''}
+          <div class="small">Big number = bags in store at the start of that moon, keep-safe bags included (🐀 ${fmt(reserve())}).</div>
+        </div>
+        <div class="row"><button class="cat" data-a="erase">🗑️ Erase plan</button><button class="cat" data-a="restart">↻ Start again</button></div>
+        <div class="small">Stays on this phone only. In the field version, the officer can print this card, or the farmer copies the three green numbers onto the store wall.</div>`,
+      next:false };
+  }}
+}
+function monthGrid(cls, act){
+  return `<div class="months">${MONTHS.map((m,i)=>`<button class="m ${cls(i)}" data-a="${act}" data-i="${i}"><span class="ic">${m.ic}</span><span class="nm">${m.n}</span></button>`).join("")}</div>`;
+}
+
+function itemSheet(id){
+  const it = ITEM[id]; const p = S.picks[id] || {b: 1, m: it.surprise?null:null};
+  sheet = {id, b:p.b, m:p.m, had:!!S.picks[id]};
+}
+function renderSheet(){
+  if(!sheet) return "";
+  const it = ITEM[sheet.id];
+  return `<div class="scrim" data-a="close"></div><div class="sheet" role="dialog" aria-label="${it.lb}">
+    <h3><span style="font-size:34px">${it.ic}</span>${it.lb}</h3>
+    <div class="stepper"><button data-a="s-" aria-label="half bag less">−</button><div class="n">${fmt(sheet.b)}</div><button data-a="s+" aria-label="half bag more">+</button></div>
+    <div class="unit">bags${S.price?` · about K${Math.round(sheet.b*S.price)}`:''}</div>
+    ${it.surprise ? `<div class="small">🐀 No month: these bags stay in the store, safe from Khoswe.</div>` :
+      `<div class="small">Which moon?</div>${monthGrid(i=>sheet.m===i?'sel':'', "sm")}`}
+    <div class="pfoot" style="padding:0;border:none">
+      ${sheet.had?`<button class="big back" data-a="sdel" aria-label="remove">🗑️</button>`:''}
+      <button class="big go" data-a="sok" ${!it.surprise&&sheet.m===null?'disabled style="opacity:.45"':''}>✓ Put it on the board</button>
+    </div></div>`;
+}
+
+// ---------- render ----------
+function render(){
+  const sc = screen();
+  $("#dots").innerHTML = STEPS.map((s,i)=>`<i class="${i<S.step?'done':i===S.step?'on':''}"></i>`).join("");
+  $("#bubble").innerHTML = sc.say + ` <button class="say" data-a="say" aria-label="read aloud">🔊</button>`;
+  $("#pbody").innerHTML = sc.body;
+  const nextBtn = STEPS[S.step]==="card" ? "" :
+    `<button class="big go" data-a="next" ${sc.next?'':'disabled style="opacity:.45"'}>${sc.nextLabel||"Next ▸"}</button>`;
+  $("#pfoot").innerHTML = (S.step>0?`<button class="big back" data-a="back" aria-label="back">◀</button>`:"") + nextBtn;
+  $("#phone").querySelectorAll(".sheet,.scrim,.cover").forEach(e=>e.remove());
+  if(sheet) $("#phone").insertAdjacentHTML("beforeend", renderSheet());
+  if(hidden) $("#phone").insertAdjacentHTML("beforeend", `<div class="cover" data-a="unhide"><div><div class="w">🌤️</div><h2 style="font-family:var(--display);margin:6px 0">28°</h2><p>Tap and hold to come back</p></div></div>`);
+  $("#phone").dataset.say = sc.say;
+  renderNotes();
+}
+
+// ---------- notes ----------
+const NOTES = {
+  harvest:{h:"Count the harvest in bags",
+    src:"The surveyor records the harvest. Pins on the board stand for bags of grain. Cash needs are converted into grain.",
+    dev:"The farmer fills the store by tapping, one sack at a time. The bags come first and money is secondary. The bag price only shows up as a K-figure on cost cards, to help people who think in kwacha. The example family is only for demos. It must be off in a research arm, because example amounts would count as information.",
+    test:"Can the farmer tell a bag they will sell from a bag they will eat? Does a half-bag icon make sense, or do we need local units such as tins or 'meda'?"},
+  guess:{h:"Guess before counting",
+    src:"The study measured budget neglect by comparing an unprompted estimate of spending with the recalled total. The farmer was never shown the gap. (Order not confirmed; check the appendix.)",
+    dev:"Ask one question anyone can answer: which moon do the bags run out? Keep the answer and show it again after the year plays. The gap becomes the family's own discovery, which is more convincing than being told.",
+    test:"Do people feel judged when their guess was wrong? Try the wording 'most families guess later than the count'. A research arm must decide whether showing the gap is part of the treatment."},
+  eat:{h:"Food first",
+    src:"Consumption is one of the six categories, alongside the others.",
+    dev:"Eating gets its own screen before the cost walk. It is the biggest item and the easiest to picture, so starting there builds confidence. It is entered per moon, which fits how families think about food.",
+    test:"Do households think about eating per week, per moon, or per bag ('a bag lasts us three weeks')? Offer whichever makes sense. The 'bag lasts N weeks' form may be easier."},
+  remember:{h:"Walk the categories; pins land on months",
+    src:"This is the core of the study. The surveyor goes through six categories one at a time and prompts subcategories. The farmer places pins in each category's box. The surveyor gives no amounts and no advice. The largest gains were in small, irregular and uncertain costs.",
+    dev:"The cue sequence stays the same: one category at a time, with picture cards as prompts. Each pin lands on the month it is due, so the board is a calendar. Emergencies have no date, so they become a keep-safe reserve guarded from Khoswe the rat. Ticks show which categories have been visited, so none get skipped.",
+    test:"Compare how many costs people remember with the pin board, one-on-one. Does the calendar dilute recall compared with category boxes? If it does, recall by category first and assign months afterwards. Local teams should replace the icons (for example grinding, relish, talk-time)."},
+  play:{h:"Play the year",
+    src:"The study had no equivalent. The board shows totals against the harvest.",
+    dev:"The store empties one moon at a time, and hungry moons turn red with a '!' mark, so they don't rely on colour alone. It ends on 'You guessed X, counted Y'. This is the fun moment and the one people will tell others about.",
+    test:"Watch faces here. Does the animation help people understand, or does it just feel like a game? Check it still makes sense with sound off and in bright sun."},
+  fix:{h:"Try changes, your own way",
+    src:"The farmer and surveyor look over the plan. The surveyor gives no advice about what to change.",
+    dev:"Every change is the family's own idea: smaller, earlier, later, eat less, keep more safe. The app never suggests cuts, which keeps it a recall exercise and not advice. If there is a real shortfall, the app says so honestly and gives a help contact the deployer sets.",
+    test:"Do families use ◀ ▶ (moving costs in time) or only −? Does anyone reduce eating so far that it's a health worry? If so, set a floor or add a message for that case."},
+  card:{h:"Take home three numbers",
+    src:"Farmers had a plan on paper. In year two, take-home supplies were little used.",
+    dev:"The whole plan comes down to a few checkpoints you can check by looking at the store. For example: at Christmas, still have 7 bags. The farmer can copy the green numbers onto the store wall or a sack tag, out of visitors' sight. Next harvest, the app opens on these numbers and asks 'What surprised you?'",
+    test:"Two weeks later, can the farmer still say their December number? Is bag count at the checkpoint a good outcome measure?"}
+};
+function renderNotes(){
+  const st = STEPS[S.step], n = NOTES[st];
+  $("#steplist").innerHTML = STEPS.map((s,i)=>`<button class="${i===S.step?'on':''}" data-jump="${i}">${STEP_LABEL[s]}</button>`).join("");
+  $("#nowcard").innerHTML = `<span class="eyebrow">Screen ${S.step+1} of ${STEPS.length}</span><h2>${n.h}</h2>
+    <div class="cmp"><section class="src"><h4>Study script</h4><p>${n.src}</p></section><section class="dev"><h4>This version</h4><p>${n.dev}</p></section></div>
+    <div class="test"><b>Test in the field:</b> ${n.test}</div>`;
+}
+
+// ---------- actions ----------
+const clampH = v => Math.max(0, Math.min(60, v));
+function act(a, el){
+  const r = run();
+  switch(a){
+    case "h+": S.harvest=clampH(S.harvest+1); break;
+    case "h-": S.harvest=clampH(S.harvest-1); break;
+    case "p+": S.price=Math.min(2000,S.price+25); break;
+    case "p-": S.price=Math.max(0,S.price-25); break;
+    case "new": S=blank(); break;
+    case "ex": S=example(); break;
+    case "g": S.guess=+el.dataset.i; break;
+    case "e+": S.eat=Math.min(6,S.eat+.5); break;
+    case "e-": S.eat=Math.max(.5,S.eat-.5); break;
+    case "cat": markDone(); S.catIdx=+el.dataset.i; break;
+    case "item": itemSheet(el.dataset.id); break;
+    case "s+": sheet.b=Math.min(20,sheet.b+.5); break;
+    case "s-": sheet.b=Math.max(.5,sheet.b-.5); break;
+    case "sm": sheet.m=+el.dataset.i; break;
+    case "sok": if(ITEM[sheet.id].surprise||sheet.m!==null){S.picks[sheet.id]={b:sheet.b,m:sheet.m}; sheet=null;} break;
+    case "sdel": delete S.picks[sheet.id]; sheet=null; break;
+    case "close": sheet=null; break;
+    case "play": startPlay(); return;
+    case "fx-": { const p=S.picks[el.dataset.id]; p.b-=.5; if(p.b<=0) delete S.picks[el.dataset.id]; break; }
+    case "fx<": S.picks[el.dataset.id].m=Math.max(0,S.picks[el.dataset.id].m-1); break;
+    case "fx>": S.picks[el.dataset.id].m=Math.min(11,S.picks[el.dataset.id].m+1); break;
+    case "r+": S.picks.sick = S.picks.sick ? {b:S.picks.sick.b+.5,m:null} : {b:.5,m:null}; break;
+    case "r-": { const k=Object.keys(S.picks).find(k=>ITEM[k].surprise); if(k){S.picks[k].b-=.5; if(S.picks[k].b<=0) delete S.picks[k];} break; }
+    case "erase": S=blank(); break;
+    case "restart": S.step=0; playMonth=-1; break;
+    case "say": speak($("#phone").dataset.say); return;
+    case "next":
+      if(STEPS[S.step]==="remember" && S.catIdx<CATS.length-1){ markDone(); S.catIdx++; break; }
+      if(STEPS[S.step]==="remember") markDone();
+      S.step=Math.min(STEPS.length-1,S.step+1); if(STEPS[S.step]==="play") playMonth=-1; break;
+    case "back":
+      if(STEPS[S.step]==="remember" && S.catIdx>0){ S.catIdx--; break; }
+      S.step=Math.max(0,S.step-1); break;
+  }
+  render();
+}
+function markDone(){ const id=CATS[S.catIdx].id; if(!S.catsDone.includes(id)) S.catsDone.push(id); }
+function startPlay(){
+  clearInterval(playing); playMonth=-1;
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if(reduce){ playMonth=11; render(); return; }
+  playing = setInterval(()=>{ playMonth++; render(); if(playMonth>=11) clearInterval(playing); }, 520);
+}
+
+document.addEventListener("click", e=>{
+  const j = e.target.closest("[data-jump]");
+  if(j){ clearInterval(playing); sheet=null; S.step=+j.dataset.jump; playMonth = STEPS[S.step]==="play"?11:-1; render(); return; }
+  const b = e.target.closest("[data-a]"); if(!b || b.disabled) return;
+  if(b.dataset.a==="unhide") return;
+  act(b.dataset.a, b);
+});
+document.addEventListener("pointerover", e=>{ const b=e.target.closest(".meter .b"); if(b && $("#tip")) $("#tip").textContent=b.dataset.tip; });
+document.addEventListener("focusin", e=>{ const b=e.target.closest(".meter .b"); if(b && $("#tip")) $("#tip").textContent=b.dataset.tip; });
+$("#hideBtn").addEventListener("click", ()=>{ hidden=true; speechSynthesis?.cancel?.(); render(); });
+$("#soundBtn").addEventListener("click", ()=>speak($("#phone").dataset.say));
+let holdT;
+document.addEventListener("pointerdown", e=>{ if(e.target.closest(".cover")) holdT=setTimeout(()=>{hidden=false;render();},700); });
+document.addEventListener("pointerup", ()=>clearTimeout(holdT));
+
+render();
+})();
+</script>
