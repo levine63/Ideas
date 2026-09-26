@@ -568,6 +568,7 @@ function icsUrl(list){
 }
 function remindersHtml(r){
   if(!FEATURES.reminders) return "";
+  if(r.runOut!==null || eatCut()) return "";   // only offer reminders for a plan that lasts without cuts
   const list=checkDates(r); if(!list.length) return "";
   if(!S.remindOn) return `<div class="row"><button class="pill" data-a="remindOn">${t("remind_ask")}</button></div>`;
   return `<div class="remind"><b>${t("remind_head")}</b><div class="row">${list.map(c=>`<a class="pill" href="${gcalUrl(c)}" target="_blank" rel="noopener">${t("remind_btn",{m:mName(c.i),b:nb(c.inStore)})}</a>`).join("")}</div>

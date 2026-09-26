@@ -47,7 +47,8 @@ It opens **empty**. Tap **👀 Try an example family** to load made-up numbers; 
    keep-safe reserve. The bars update live. These controls can make an unrealistic plan look successful; see [Priorities before field use](#priorities-before-field-use).
 7. **Plan card.** Bags in store at the start of each month. August, November and February
    (every three months) are the checkpoint months, marked as checkpoints, whether or not the
-   projected stock lasts. Reminders are **opt-in**: the farmer first taps **📅 Reminders on my
+   projected stock lasts. Reminders are offered **only when the plan lasts until harvest
+   without cuts**, and they are **opt-in**: the farmer first taps **📅 Reminders on my
    own phone?**, which explains that reminders show their bag numbers. Only then do the reminder
    buttons appear. **Remind me to count my bags** adds a reminder for each checkpoint to
    the phone's own calendar: one Google Calendar button per month, or one `.ics` file with all
