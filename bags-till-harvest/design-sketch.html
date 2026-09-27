@@ -77,91 +77,90 @@ th{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--mute
 
       <div class="card long">
         <h3>What the study did</h3>
-        <p>Augenblick, Jack, Kaur, Masiye and Swanson, <a href="https://www.nber.org/papers/w35430"><i>Retrieval Failures and Consumption Smoothing</i></a> (NBER Working Paper 35430, 2026). In Zambia, where most farm households live on one maize harvest a year, a trained surveyor prompted farmers to recall future expenses one category at a time, without advice or outside information. Farmers placed pins standing for bags of grain into category boxes. Prompted recall raised remembered expenses by 36–60%. Treated households held 15% more savings six weeks later and entered the hungry season with about one more month of savings. The <a href="https://www.povertyactionlab.org/sites/default/files/research-paper/WP4597_Retrieval-Failures-and-Consumption-Smoothing-in_Zambia_Jack-et-al_Sept2023.pdf">2023 version</a> reported 42% more remembered expenses and measured the savings difference two months later.</p>
-        <p class="flag">These results come from the facilitated exercise. This app has not been evaluated, and its prompts have not yet been checked against the study's surveyor script.</p>
+        <p>Augenblick, Jack, Kaur, Masiye and Swanson, <a href="https://www.nber.org/papers/w35430"><i>Retrieval Failures and Consumption Smoothing</i></a> (NBER Working Paper 35430, 2026). In Zambia, where most farm households live on one maize harvest a year, a trained surveyor prompted farmers to recall future expenses one category at a time, without advice or outside information, using a board with photo boxes for each category. Farmers placed pins standing for bags of grain. Prompted recall raised remembered expenses by 36–60%. Treated households held 15% more savings six weeks later and entered the hungry season with about one more month of savings. The <a href="https://www.povertyactionlab.org/sites/default/files/research-paper/WP4597_Retrieval-Failures-and-Consumption-Smoothing-in_Zambia_Jack-et-al_Sept2023.pdf">2023 version</a> reported 42% more remembered expenses and measured the savings difference two months later.</p>
+        <p class="flag">These results come from the facilitated exercise. This app has not been evaluated. The "In the study" notes for each screen are our reading of the paper; several details (timing after harvest, bags on hand, the food sheet, bag labels) came from a design review and have not been checked against the paper or the surveyor script.</p>
 
-        <h3>Kept from the study</h3>
+        <h3>This version (second pass)</h3>
         <ul>
-          <li><b>Recall, with light prompts.</b> The family chooses every amount. The exceptions are the three gentle questions (food, school, keep-safe), a default bag price, and short tips such as "slow down early". The food question adds the most outside information and can be switched off.</li>
-          <li><b>One category at a time, with picture cues.</b> School, Home, Farm, People, Surprises.</li>
-          <li><b>Bags as the unit,</b> like the pins. Cash costs count as bags that must be sold.</li>
+          <li><b>One question per screen, read aloud.</b> The question is the headline, with one control under it. Pictures are OpenMoji mock-ups until local photos exist.</li>
+          <li><b>Study order.</b> A guess in bags first, then six categories of costs other than food, then food last.</li>
+          <li><b>The guess and the recall use the same unit.</b> Play the year puts the first guess beside the remembered bags, the gap the study measured.</li>
+          <li><b>Start where the farmer is:</b> just harvested, or today with the bags on hand.</li>
+          <li><b>Take-home in steps:</b> say one number back, mark bags with labels, then reminders on your own phone, or SMS, WhatsApp or a QR code from a borrowed phone, followed by erase.</li>
+          <li><b>Kept from the first pass:</b> Khoswe the rat guarding kept-safe bags; the food check against a benchmark; no celebration and no reminders for a plan that only lasts after cuts.</li>
+          <li><b>Outside information behind one switch</b> (<code>?outside=off</code>): the example family, the empty-category hint and the food benchmark.</li>
         </ul>
 
-        <h3>Changed, and why</h3>
-        <ul>
-          <li><b>The board is a calendar.</b> Each cost lands on its month, or is spread over the year. Running out is a timing problem, so timing is what the family sees.</li>
-          <li><b>Guess first, then count.</b> The gap between the family's guess and the count is their own discovery.</li>
-          <li><b>Play the year.</b> Stacks of sacks empty month by month. Months not reached yet stay blank, so the result is a surprise.</li>
-          <li><b>Khoswe the rat.</b> Costs nobody can date (clinic, funeral, a broken bike) become keep-safe bags.</li>
-          <li><b>No celebration for a plan that only works after cuts.</b> Cuts are measured against the family's first complete list.</li>
-          <li><b>Three check months, not a spreadsheet.</b> August, November and February, with a bag count for each.</li>
-        </ul>
-
-        <h3>Group sessions: own phones and presenter phones</h3>
+        <h3>Group sessions: own phones and borrowed phones</h3>
         <div class="tbl"><table>
-          <tr><th>Situation</th><th>Link to use</th><th>What changes</th></tr>
-          <tr><td>Farmer's own smartphone</td><td><a href="./">normal link</a></td><td>Opt-in calendar reminders once the plan lasts without cuts.</td></tr>
-          <tr><td>Presenter's or shared phone</td><td><a href="./?presenter=1">?presenter=1</a></td><td>No reminders. "Open this app on another phone" shows a QR code and WhatsApp link for farmers with smartphones.</td></tr>
-          <tr><td>Taking a plan home</td><td>Plan card: "Send this plan to a phone"</td><td>QR code or WhatsApp link that carries the plan; opens the plan card on the farmer's phone. The plan travels inside the link, not through a server.</td></tr>
-          <tr><td>Farmer with a simple phone</td><td>Plan card: "Send by SMS"</td><td>A one-SMS text with the three check-month bag counts. Can't open the app.</td></tr>
+          <tr><th>Situation</th><th>What to use</th><th>What happens</th></tr>
+          <tr><td>Farmer's own smartphone</td><td><a href="./">normal link</a>, "My own phone"</td><td>Plans privately; opt-in reminders every three months once the plan lasts without cuts.</td></tr>
+          <tr><td>Presenter's or shared phone</td><td><a href="./?presenter=1">?presenter=1</a></td><td>Starts on "Borrowed phone"; no reminders. "Open this app on another phone" shows a QR code and WhatsApp link.</td></tr>
+          <tr><td>Borrowed phone, taking the plan home</td><td>Take-home screen</td><td>Type the farmer's number, then SMS or WhatsApp; or scan a QR code that opens the plan on the farmer's own phone. Then erase (two taps).</td></tr>
+          <tr><td>Farmer with a simple phone</td><td>SMS</td><td>One text with the check-month bag counts, kept-safe bags included.</td></tr>
         </table></div>
-        <p>The app cannot tell whose phone it is: presenters must use the presenter link. WhatsApp and SMS go from the presenter's account or SIM and stay in its sent messages. Scanning the QR code is more private; the code is drawn without internet, but opening it needs signal on the farmer's phone. Numbers in the SMS example are illustrative. Erase the plan before the next family. (The app says "moon" where these notes say "month".)</p>
+        <p>The app cannot tell whose phone it is, so presenters should use the presenter link. SMS and WhatsApp go from the presenter's SIM or account and stay in its sent messages. The QR code is drawn without internet; opening it needs signal on the farmer's phone.</p>
 
         <h3>Risks to design around</h3>
         <ul>
-          <li><b>Planning can't make grain.</b> A real shortfall is shown as "short by N bags", with a pointer to help; the app must not shame the family.</li>
-          <li><b>The model tracks maize only.</b> It leaves out other food, cash income and buying grain, so a month with no maize is "a moon with no maize", not proof of hunger.</li>
+          <li><b>Planning can't make grain.</b> A shortfall is shown plainly, with "Try a change"; the app must not shame the family.</li>
+          <li><b>The model tracks maize only.</b> It leaves out other food, cash income and buying grain.</li>
           <li><b>Outside information.</b> The food benchmark (150 kg per person per year) is an unvalidated assumption. The example family's amounts are invented.</li>
-          <li><b>Privacy.</b> Amounts on a screen can be seen by neighbours; shared phones keep sent messages.</li>
-          <li><b>Humour and pictures travel badly.</b> The rat, the maize guide and the emoji need local testing.</li>
+          <li><b>Privacy</b> on shared phones and in groups.</li>
+          <li><b>Pictures and humour travel badly.</b> OpenMoji placeholders and the rat need local testing.</li>
         </ul>
 
         <h3>Suggested first test</h3>
-        <p>About twenty households, one to one, comparing the facilitated pin exercise with this app used beside a facilitator. Measure costs remembered, time taken, whether each screen is understood (ask people to explain it back), privacy, and whether families can state a check-month number two weeks later. Then check grain in store at the first check month.</p>
+        <p>About twenty households, one to one, comparing the facilitated pin board with this app beside a facilitator. Measure costs remembered, the gap between guess and recall, time taken, whether each screen is understood, privacy, and whether families can say their first check-month number two weeks later.</p>
+        <p style="font-size:13px">Pictures: <a href="https://openmoji.org">OpenMoji</a>, CC BY-SA 4.0.</p>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-const STEPS = ["harvest","guess","eat","remember","play","fix","card"];
-const LABEL = {harvest:"1 Harvest",guess:"2 Guess",eat:"3 Eating",remember:"4 Remember",play:"5 Play the year",fix:"6 Fix",card:"7 Plan card"};
+const STEPS = ["phone","bags","prior","remember","food","play","teach","home"];
+const LABEL = {phone:"1 Phone",bags:"2 Bags",prior:"3 Guess",remember:"4 Remember",food:"5 Food",play:"6 Play the year",teach:"7 Say it back",home:"8 Take home"};
 const NOTES = {
-  harvest:{h:"Count the harvest in bags",
-    src:"The surveyor records the harvest. Pins on the board stand for bags of grain; cash needs are converted into grain.",
-    dev:"The family fills a drawn granary by tapping, one sack at a time; ten sacks group into one. A bag price is optional and only adds kwacha amounts in the amount picker. The app opens empty; an example family is one tap away and is marked as not the family's numbers.",
-    test:"Can families separate bags they will sell from bags they will eat? Do they think in 50 kg bags, or in tins or other local units?"},
-  guess:{h:"Guess before counting",
-    src:"As we read the paper, it compared unprompted and prompted estimates of future spending; we do not know whether farmers were shown the gap.",
-    dev:"One question: in which month will the bags run out? The answer returns after the year plays, as 'Your guess' beside 'The count'. The season band (harvest, cool, hot, rains) under the months helps people place themselves in the year.",
-    test:"Does showing the gap feel like a test? For a research arm, decide whether showing it is part of the treatment."},
-  eat:{h:"Who eats, and how much",
-    src:"As we read the paper, food consumption was one of six expense categories; the app gives food its own screen and uses five categories for the rest.",
-    dev:"One count of people who eat from the store, then bags eaten per month. If eating is under 75% of an assumed 150 kg per person per year, the guide asks once whether it is enough and offers that amount. The family can keep its own number. This is outside information and can be switched off.",
-    test:"Do families think per month, per week, or 'a bag lasts us three weeks'? Replace the 150 kg figure with a locally checked one before any field use."},
-  remember:{h:"Walk the categories",
-    src:"The core of the study. The surveyor goes through the categories one at a time and prompts subcategories; the farmer places pins in category boxes. No amounts, no advice. The paper's abstract reports that the gains were concentrated in small, irregular and uncertain costs.",
-    dev:"Five categories with picture cards. Each cost gets bags and a month, or 'spread over the year' (entered as the yearly amount; home items start this way). Surprises, including funerals, have no month and become keep-safe bags. If no school cost is picked, or nothing is kept safe, the guide asks once. The example family's costs stay hidden until revealed category by category.",
-    test:"Compare the number of costs remembered with the pin board. Does the calendar weaken recall compared with category boxes? Local teams should replace the item list and pictures."},
+  phone:{h:"Whose phone is this?",
+    src:"A surveyor ran the exercise with the head of household, one to one.",
+    dev:"The first tap decides privacy. On your own phone you can get reminders. On a borrowed presenter phone you send yourself the plan by SMS, WhatsApp or QR code, then erase it. The presenter version (?presenter=1) starts on 'Borrowed phone' and can show a QR code so farmers open the app on their own phones.",
+    test:"In a group session, do people stay private? Do they understand that sending from the presenter's phone leaves the plan in its messages?"},
+  bags:{h:"Start where the farmer is",
+    src:"Per the design review (unverified against the paper): the study ran about three months after harvest, when participants had about 15 bags left.",
+    dev:"Choose 'Just harvested' (the year starts in May) or 'From today' (bags on hand now, with a month picker). The months and check months shift to match. Every bag is drawn as a sack.",
+    test:"Do farmers count bags on hand reliably? Do they think in 50 kg bags, tins, or something else?"},
+  prior:{h:"Guess first, in bags",
+    src:"As we read the paper, it compared an unprompted estimate of non-food spending with the total after prompted recall; prompted recall raised it by 36–60%.",
+    dev:"One guess: how many bags will go to things that are not food. It replaces the first pass's 'which month will the bags run out'. The guess is in bags so Play the year can show it beside the remembered total.",
+    test:"Does showing the gap feel like being corrected? For a study arm, decide whether showing it is part of the treatment."},
+  remember:{h:"Six categories, one at a time",
+    src:"Photo boxes for school, household supplies, farm inputs, giving to others and emergencies, plus 'Other'. Surveyors gave no amounts and no advice. The paper's abstract reports that gains were concentrated in small, irregular and uncertain costs.",
+    dev:"One category per screen with large picture cards. A tap opens one bag counter and the months to harvest, or 'Every month' for costs spread over the year. Surprises have no month: Khoswe the rat runs in, and those costs become kept-safe bags. The hint for an empty category shows only when outside information is on.",
+    test:"Compare the number of costs remembered with the pin board. Replace every picture with a local photo and ask people to name each one."},
+  food:{h:"Food last, with a check",
+    src:"Per the design review (unverified): the food sheet was kept face down until the non-food costs were done.",
+    dev:"Food comes after costs: how many people eat from the store, then bags per month in half bags. If the amount is under 75% of an assumed 150 kg of maize per person per year, the app asks once whether it is enough and offers that amount; the family can keep its own number. This is outside information, so it is off in a pure-recall arm.",
+    test:"Do families think per month, or 'a bag lasts us three weeks'? Replace the 150 kg figure with a locally checked one."},
   play:{h:"Play the year",
-    src:"No equivalent. The board shows totals against the harvest.",
-    dev:"Stacks of sacks empty one month at a time and the granary drains. Months not reached yet stay blank. The result says how many costs were remembered, then compares the guess with the count. A shortfall gets calm words ('Let's fix it together'); a plan that lasts gets a big celebration, then 'Plans that last on the first try often miss something' with a button back to the costs.",
-    test:"Watch faces here. Does the animation help understanding, or only entertain? Check it with sound off and in bright sun."},
-  fix:{h:"Try changes, your own way",
-    src:"The farmer and surveyor look over the plan. No advice on what to change.",
-    dev:"Each cost can be made smaller, earlier or later (costs spread over the year can only be made smaller); eating and keep-safe bags can change. Costs landing in red months are marked. The app never suggests a cut. If the plan only lasts after cutting eating, keep-safe, or anything on the first complete list, there is no celebration: the app lists the cuts, asks whether the family can do without them, and offers to put them back. Moving a cost is not a cut.",
-    test:"Do families move costs in time, or only cut? Does anyone cut eating to an unsafe level? Should school fees and loans be marked as must-pay?"},
-  card:{h:"Take home three numbers",
-    src:"Farmers left with a plan. Per the research team's informal report (not in the paper), take-home planning supplies saw little use the following year.",
-    dev:"Bags in the store at the start of each month, with checks in August, November and February. Once the plan lasts without cuts, the family can opt into phone calendar reminders for the check months (never on presenter phones). 'Send this plan to a phone' gives a QR code, a WhatsApp link that opens the plan on the family's own phone, and a one-SMS text with the three numbers for simple phones.",
-    test:"Two weeks later, can the farmer still say the November number? Is the bag count at a check month a good outcome measure? Do families actually take the plan home, and by which route?"}
+    src:"No equivalent. The board showed the plan all at once.",
+    dev:"Each column is a stack of sacks: the bags in the store at the start of that month. Walk the year with 'Next month', or 'Play all'. Months not reached yet stay striped. Small squares mark dated costs. The result pairs the first guess with the remembered bags and offers 'Change food' or 'Change costs'. A plan that lasts gets a celebration; one that only lasts after cutting food, kept-safe bags or first-list costs gets the list of cuts and 'Put them back' instead.",
+    test:"With sound off and in bright sun, can farmers say which month turns red, and why? Does walking month by month beat watching it play?"},
+  teach:{h:"Say it back",
+    src:"Per the design review (unverified): after placing pins, the farmer repeated the plan back to the surveyor.",
+    dev:"One question: how many bags should be in the store at the first check month? Three big numbers to choose from. Then all check months, every three months, counting kept-safe bags too.",
+    test:"Two weeks later, can the farmer still say the number? Is it right when the bags are counted?"},
+  home:{h:"Take it home",
+    src:"Per the design review (unverified): surveyors offered picture labels for the bags about two months later; about 80% of treated farmers took them versus about 30% of controls.",
+    dev:"Step 1 turns the plan into labels: how many bags to tie for each purpose. Step 2 depends on the phone: opt-in reminders every three months on your own phone (only for a plan that lasts without cuts), or SMS, WhatsApp or QR code from a borrowed phone, then a two-tap erase.",
+    test:"Do families really tie the labels, and keep those bags for that purpose? Which route home gets used?"}
 };
 const app = document.getElementById("app");
-let current = "harvest";
+let current = "phone";
 function show(st){
   current = st; const n = NOTES[st];
   document.getElementById("steps").innerHTML = STEPS.map((s,i)=>`<button class="${s===st?"on":""}" data-i="${i}">${LABEL[s]}</button>`).join("");
-  document.getElementById("now").innerHTML = `<span class="eyebrow">Screen ${STEPS.indexOf(st)+1} of 7</span><h2>${n.h}</h2>
+  document.getElementById("now").innerHTML = `<span class="eyebrow">Screen ${STEPS.indexOf(st)+1} of 8</span><h2>${n.h}</h2>
     <div class="cmp"><section class="src"><h4>Study exercise</h4><p>${n.src}</p></section><section class="dev"><h4>This version</h4><p>${n.dev}</p></section></div>
     <div class="test"><b>Test with farmers:</b> ${n.test}</div>`;
 }
@@ -170,7 +169,7 @@ document.getElementById("steps").addEventListener("click", e=>{
   app.contentWindow.postMessage({bthGo:+b.dataset.i}, "*"); show(STEPS[+b.dataset.i]);
 });
 window.addEventListener("message", e=>{ if(e.source===app.contentWindow && e.data && NOTES[e.data.bthStep] && e.data.bthStep!==current) show(e.data.bthStep); });
-show("harvest");
+show("phone");
 </script>
 </body>
 </html>

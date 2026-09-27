@@ -4,764 +4,694 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Bags Till Harvest</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
 <script src="qrcode.js"></script><!-- qrcode-generator 1.4.4, MIT, Kazuhiko Arase; local so QR codes work offline -->
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
 :root{
-  --ground:#EFE6D2; --phone:#FFFCF4; --panel:#FBF6E9; --chip:#F3ECDA;
-  --ink:#1E2A1B; --ink2:#3F4A3A; --muted:#57594C; --line:#B5AC96;
-  --maize:#E9A800; --maize-soft:#FBE7B0; --sack:#B07F45; --sack-dk:#7A5428; --soil:#9A6A42; --thatch:#C9A25A;
-  --leaf:#2F6B34; --leaf-soft:#D5E6CF; --on-leaf:#FFFFFF; --hungry:#B3402A; --hungry-soft:#F6D6CC;
-  --rain:#2F5F93; --dry:#EAD7A4; --hot:#E9A15B; --rain-soft:#BFD8EC; --phone-edge:#2A2418;
-  --display:"Baloo 2", "Trebuchet MS", system-ui, sans-serif;
-  --body:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --ink:#2b251f; --body:#4a4238; --muted:#6b6256; --line:#d9d1c3;
+  --screen:#fcfaf6; --page:#f3eee5; --chip:#efe9de; --pic:#f3eee5; --rule:#e7e0d3;
+  --maize:oklch(0.78 0.13 80); --maize-dk:oklch(0.55 0.10 75); --maize-soft:oklch(0.94 0.045 85);
+  --short:oklch(0.72 0.14 32); --short-dk:oklch(0.50 0.12 32); --short-soft:oklch(0.93 0.04 32);
+  --stripe:repeating-linear-gradient(135deg,#efe9de 0 5px,#f7f3ec 5px 10px);
+  --on-maize:#2b251f;
+  --font:Archivo, Helvetica, Arial, sans-serif; --mono:"IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
     color-scheme:dark;
-    --ground:#0F120B; --phone:#15170F; --panel:#20231A; --chip:#262A1E;
-    --ink:#EDEFE4; --ink2:#C9CFBD; --muted:#A4AD99; --line:#4A5040;
-    --maize:#F2B92A; --maize-soft:#4A3C12; --sack:#C79A5F; --sack-dk:#E6C08A; --soil:#B98A5E; --thatch:#8E7440;
-    --leaf:#7DBB73; --leaf-soft:#233A22; --on-leaf:#0F1A0E; --hungry:#EE7A62; --hungry-soft:#4A2219;
-    --rain:#8DB6E4; --dry:#5A4A22; --hot:#7A4A22; --rain-soft:#23405C; --phone-edge:#3A3A2C;
+    --ink:#f1ebe0; --body:#d6ccbd; --muted:#a99f90; --line:#4a4337;
+    --screen:#1c1915; --page:#12100d; --chip:#2a2520; --pic:#26221c; --rule:#332e27;
+    --maize:oklch(0.78 0.13 80); --maize-dk:oklch(0.62 0.10 75); --maize-soft:oklch(0.34 0.05 80);
+    --short:oklch(0.68 0.14 32); --short-dk:oklch(0.78 0.10 32); --short-soft:oklch(0.33 0.06 32);
+    --stripe:repeating-linear-gradient(135deg,#2a2520 0 5px,#221e19 5px 10px);
   }
 }
 :root[data-theme="dark"]{
   color-scheme:dark;
-  --ground:#0F120B; --phone:#15170F; --panel:#20231A; --chip:#262A1E;
-  --ink:#EDEFE4; --ink2:#C9CFBD; --muted:#A4AD99; --line:#4A5040;
-  --maize:#F2B92A; --maize-soft:#4A3C12; --sack:#C79A5F; --sack-dk:#E6C08A; --soil:#B98A5E; --thatch:#8E7440;
-  --leaf:#7DBB73; --leaf-soft:#233A22; --on-leaf:#0F1A0E; --hungry:#EE7A62; --hungry-soft:#4A2219;
-  --rain:#8DB6E4; --dry:#5A4A22; --hot:#7A4A22; --rain-soft:#23405C; --phone-edge:#3A3A2C;
+  --ink:#f1ebe0; --body:#d6ccbd; --muted:#a99f90; --line:#4a4337;
+  --screen:#1c1915; --page:#12100d; --chip:#2a2520; --pic:#26221c; --rule:#332e27;
+  --maize:oklch(0.78 0.13 80); --maize-dk:oklch(0.62 0.10 75); --maize-soft:oklch(0.34 0.05 80);
+  --short:oklch(0.68 0.14 32); --short-dk:oklch(0.78 0.10 32); --short-soft:oklch(0.33 0.06 32);
+  --stripe:repeating-linear-gradient(135deg,#2a2520 0 5px,#221e19 5px 10px);
 }
 *{box-sizing:border-box}
 html,body{height:100%}
-body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.45;
-  padding-inline:16px;padding-block:20px;display:grid;justify-items:center;align-items:start}
-button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
-button:focus-visible{outline:3px solid var(--rain);outline-offset:2px}
+body{margin:0;background:var(--page);color:var(--ink);font-family:var(--font);font-size:16px;line-height:1.4;
+  padding:20px 16px;display:grid;justify-items:center;align-items:start}
+button{font-family:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(--maize-dk);outline-offset:2px}
+a{color:var(--ink)}
 
 /* ---------- phone shell ---------- */
-.phone{width:100%;max-width:400px;background:var(--phone);border:10px solid var(--phone-edge);border-radius:34px;
-  height:min(800px, calc(100dvh - 40px));display:flex;flex-direction:column;overflow:hidden;position:relative}
+.phone{position:relative;width:100%;max-width:400px;height:min(800px,calc(100dvh - 40px));background:var(--screen);
+  border:10px solid #2b251f;border-radius:42px;overflow:hidden;display:flex;flex-direction:column}
 @media (max-width:440px){body{padding:0}.phone{border:none;border-radius:0;height:100dvh;max-width:none}}
-.pbar{display:flex;align-items:center;gap:10px;padding:10px 12px 4px}
-.dots{display:flex;gap:5px;flex:1}
-.dots i{height:8px;flex:1;border-radius:4px;background:var(--line);opacity:.6}
-.dots i.on{background:var(--maize);opacity:1}
-.dots i.done{background:var(--leaf);opacity:1}
-.speak{width:52px;height:52px;border-radius:50%;border:none;background:var(--maize);display:grid;place-items:center;font-size:24px;box-shadow:0 2px 0 var(--sack-dk)}
-.speak:active{transform:translateY(2px);box-shadow:none}
+.top{display:flex;align-items:center;gap:12px;padding:16px 16px 6px}
+.dots{display:flex;gap:4px;flex:1}
+.dots i{height:6px;flex:1;border-radius:3px;background:var(--line)}
+.dots i.done{background:var(--ink)} .dots i.on{background:var(--maize)}
+.speak{width:52px;height:52px;flex:none;border-radius:50%;border:2px solid #2b251f;background:var(--maize);display:grid;place-items:center;padding:0}
+.say{padding:6px 20px 14px;font-size:26px;font-weight:700;line-height:1.15;letter-spacing:-.01em;text-wrap:pretty;min-height:74px}
+.body{flex:1;overflow-y:auto;padding:4px 20px 20px;display:flex;flex-direction:column;gap:16px}
+.body>*{flex-shrink:0}
+.foot{display:flex;gap:10px;padding:12px 16px calc(16px + env(safe-area-inset-bottom,0px));border-top:2px solid var(--chip)}
+.back{flex:0 0 64px;min-height:62px;border-radius:18px;border:2px solid var(--line);background:var(--chip);font-size:24px;font-weight:700}
+.next{flex:1;min-height:62px;border-radius:18px;border:none;background:var(--ink);color:var(--screen);font-size:22px;font-weight:700}
+.next[aria-disabled="true"]{opacity:.4}
 
-.guide{display:flex;gap:8px;align-items:flex-start;padding:4px 14px 10px}
-.guide .face{flex:none;width:56px;height:64px}
-.bubble{position:relative;background:var(--maize-soft);border-radius:18px;padding:10px 14px;font-size:18px;line-height:1.35;flex:1;min-height:56px}
-.bubble::before{content:"";position:absolute;left:-9px;top:20px;border:10px solid transparent;border-right-color:var(--maize-soft);border-left:0}
-.bubble b{font-weight:700}
-.bubble .chipi{display:inline-grid;place-items:center;min-width:28px;height:28px;border-radius:8px;border:2px solid var(--line);background:var(--phone);font-size:15px;vertical-align:middle;margin:0 1px}
+/* ---------- shared ---------- */
+.sub{font-size:16px;color:var(--body);line-height:1.4}
+.small{font-size:13px;color:var(--body);line-height:1.4}
+.center{text-align:center}
+.row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;align-items:center}
+.pill{border:2px solid var(--line);background:var(--screen);border-radius:999px;padding:10px 18px;font-size:15px;min-height:48px;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.btn{min-height:52px;border-radius:16px;border:2px solid var(--ink);background:var(--screen);font-size:16px;font-weight:700;display:grid;place-items:center;text-decoration:none;padding:0 12px}
+.btn.gold{background:var(--maize);color:var(--on-maize);border-width:3px;min-height:56px;font-size:17px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.banner{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px;border-radius:14px;border:2px dashed var(--maize-dk);background:var(--maize-soft);font-size:15px}
+.banner button{border:none;background:none;font-weight:700;text-decoration:underline;padding:6px;font-size:15px}
+.dashed{border:2px dashed var(--maize-dk);background:var(--maize-soft);border-radius:14px;padding:10px 14px;font-size:15px;font-weight:600;min-height:48px}
+.hint{font-size:15px;color:var(--body);padding:10px 12px;border-radius:12px;background:var(--maize-soft)}
+.total{display:flex;justify-content:space-between;align-items:baseline;border-top:2px solid var(--rule);padding-top:12px}
+.total span{font-size:16px;color:var(--body)} .total b{font-size:28px;font-weight:800;font-variant-numeric:tabular-nums}
+.stepper{display:flex;align-items:center;justify-content:center;gap:18px;padding-top:6px}
+.stepper button{width:68px;height:68px;border-radius:50%;border:3px solid var(--ink);background:var(--screen);font-size:34px;font-weight:700;line-height:1;padding:0}
+.stepper button[aria-disabled="true"]{opacity:.35}
+.stepper .n{font-size:68px;font-weight:800;min-width:110px;text-align:center;font-variant-numeric:tabular-nums;line-height:1;letter-spacing:-.03em}
+.people{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 10px;border-radius:14px;border:2px solid var(--line)}
+.people span{font-size:16px;font-weight:600}
+.stepper.small{gap:10px;padding:0} .stepper.small button{width:48px;height:48px;font-size:26px;border-width:2px} .stepper.small .n{font-size:30px;min-width:44px}
+.unit{text-align:center;font-size:17px;color:var(--body);margin-top:-8px}
+.pic{border-radius:12px;background:var(--pic);display:grid;place-items:center}
+.pic img{object-fit:contain}
 
-.pbody{flex:1;overflow-y:auto;padding:4px 14px 16px;display:flex;flex-direction:column;gap:12px}
-.pbody>*{flex-shrink:0}
-.pfoot{display:flex;gap:10px;padding:10px 14px 14px;border-top:2px solid var(--chip);padding-bottom:calc(14px + env(safe-area-inset-bottom,0px))}
-.big{flex:1;min-height:60px;border-radius:18px;border:none;font-family:var(--display);font-weight:700;font-size:22px;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 3px 0 rgb(0 0 0/.18)}
-.big:active{transform:translateY(3px);box-shadow:none}
-.big.go{background:var(--leaf);color:var(--on-leaf)}
-.big.go[aria-disabled="true"]{opacity:.5}
-.big.back{flex:0 0 64px;background:var(--chip);box-shadow:0 3px 0 var(--line)}
-.big.gold{background:var(--maize);color:#2A1E00}
+/* ---------- sacks: a sack silhouette used as a mask, so the colour follows the theme ---------- */
+.sacks{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;align-items:flex-end;min-height:30px}
+.sk{display:block;flex:none;width:18px;height:22px;background:var(--maize);
+  -webkit-mask:var(--sack-up) center/contain no-repeat;mask:var(--sack-up) center/contain no-repeat}
+.sk.half{width:12px;height:15px}
+.sk.big{width:26px;height:32px} .sk.big.half{width:17px;height:21px}
+.sk.ink{background:var(--ink)}
+.sk.hollow{background:var(--line);-webkit-mask-image:var(--sack-up-line);mask-image:var(--sack-up-line)}
+.sk.dk{background:var(--maize-dk)}
 
-/* ---------- shared pieces ---------- */
-.small{font-size:15px;color:var(--ink2);text-align:center}
-.row{display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap}
-.pill{border:2px solid var(--line);background:var(--panel);border-radius:999px;padding:8px 14px;font-size:15px;min-height:44px;display:inline-flex;align-items:center;gap:6px}
-.pill.strong{border-color:var(--sack);background:var(--maize-soft);font-weight:700}
-.banner{background:var(--maize-soft);border:2px dashed var(--sack);border-radius:14px;padding:8px 12px;font-size:15px;display:flex;gap:8px;align-items:center;justify-content:space-between}
-.banner button{border:none;background:none;font-weight:700;text-decoration:underline;padding:6px}
+/* ---------- phone screen ---------- */
+.choice{display:flex;flex-direction:column;gap:10px;text-align:left;padding:12px;border-radius:20px;border:3px solid var(--line);background:var(--screen)}
+.choice.on{border-color:var(--ink);background:var(--maize-soft)}
+.choice .pic{height:120px} .choice .pic img{height:96px;width:96px}
+.choice b{font-size:22px} .choice span{font-size:15px;color:var(--body);line-height:1.35}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.opt{padding:12px 10px;border-radius:16px;border:3px solid var(--line);background:var(--screen);display:flex;flex-direction:column;gap:2px;text-align:left;min-height:64px}
+.opt.on{border-color:var(--ink);background:var(--maize-soft)}
+.opt b{font-size:17px} .opt span{font-size:14px;color:var(--body)}
+.monthpick{display:flex;align-items:center;justify-content:center;gap:14px}
+.monthpick button{width:48px;height:48px;border-radius:50%;border:2px solid var(--line);background:var(--screen);font-size:20px}
+.monthpick span{font-size:18px;font-weight:600;min-width:120px;text-align:center}
 
-.stepper{display:flex;align-items:center;justify-content:center;gap:16px}
-.stepper button{width:68px;height:68px;border-radius:50%;border:3px solid var(--sack);background:var(--panel);font-size:34px;font-weight:700;line-height:1;box-shadow:0 3px 0 var(--sack-dk)}
-.stepper button:active{transform:translateY(3px);box-shadow:none}
-.stepper button[aria-disabled="true"]{opacity:.35;box-shadow:none}
-.fx .ctl button[aria-disabled="true"]{opacity:.35}
-.stepper .n{font-family:var(--display);font-size:52px;font-weight:800;min-width:100px;text-align:center;font-variant-numeric:tabular-nums;line-height:1}
-.unit{text-align:center;color:var(--ink2);font-size:16px;margin-top:-6px}
-
-.store-row{display:flex;align-items:flex-end;justify-content:center;gap:12px}
-.granary{width:120px;height:120px;flex:none}
-.granary .lvl{transition:y .45s ease, height .45s ease}
-.sacks{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;align-content:flex-end;min-height:40px;max-width:230px}
-.sacks .s{width:30px;height:34px;position:relative}
-.sacks .s.ten{width:40px;height:44px}
-.sacks .s.ten b{position:absolute;inset:14px 0 0;text-align:center;font-family:var(--display);font-size:14px;color:#fff;text-shadow:0 1px 0 var(--sack-dk)}
-
-.moons{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
-.m{border:2px solid var(--line);border-top-width:6px;background:var(--panel);border-radius:12px;padding:6px 2px 6px;display:grid;justify-items:center;align-content:center;gap:0;min-height:64px}
-.m .ic{font-size:20px;line-height:1.1}
-.m .nm{font-size:14px;font-weight:700}
-.m.sel{border-color:var(--sack-dk);background:var(--maize-soft);box-shadow:0 0 0 3px var(--maize) inset}
-.m.wide{grid-column:1/-1;min-height:52px;border-top-width:2px}
-.s-dry{border-top-color:var(--dry)}.s-hot{border-top-color:var(--hot)}.s-rain{border-top-color:var(--rain-soft)}.s-harv{border-top-color:var(--maize)}
-.m.sel.s-dry,.m.sel.s-hot,.m.sel.s-rain,.m.sel.s-harv{border-top-color:var(--sack-dk)}
-.nudge{animation:nudge .45s}
-@keyframes nudge{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
-
-.band{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:3px}
-.band span{height:6px;border-radius:3px}
-.band .s-dry{background:var(--dry)}.band .s-hot{background:var(--hot)}.band .s-rain{background:var(--rain-soft)}.band .s-harv{background:var(--maize)}
-.mlab{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:3px;font-size:11px;white-space:nowrap;text-align:center;color:var(--ink2);font-weight:700;letter-spacing:-.02em}
-.legend{display:flex;justify-content:center;gap:14px;font-size:13px;color:var(--ink2)}
-.legend i{display:inline-block;width:14px;height:6px;border-radius:3px;margin-right:4px;vertical-align:middle}
-
-/* remember */
-.cats{display:flex;flex-wrap:wrap;gap:6px}
-.cat{border:2px solid var(--line);background:var(--panel);border-radius:999px;padding:6px 12px;font-size:15px;min-height:44px;display:flex;align-items:center;gap:5px}
-.cat.on{border-color:var(--ink);background:var(--ink);color:var(--phone);font-weight:700}
-.cat.done::after{content:"✓";color:var(--leaf);font-weight:800}
-.cat.on.done::after{color:var(--maize)}
-.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.card{border:2px solid var(--line);background:var(--panel);border-radius:16px;padding:10px 4px 8px;display:grid;justify-items:center;gap:2px;position:relative;min-height:98px;box-shadow:0 3px 0 var(--chip)}
-.card:active{transform:translateY(2px)}
-.card .ic{font-size:36px;line-height:1.1}
-.card .lb{font-size:14px;line-height:1.2;text-align:center}
-.card.picked{border-color:var(--leaf);background:var(--leaf-soft)}
-.card .tag{position:absolute;top:-9px;right:-5px;background:var(--leaf);color:var(--on-leaf);border-radius:999px;font-size:13px;font-weight:700;padding:1px 8px;font-variant-numeric:tabular-nums}
-.boardwrap{background:var(--panel);border-radius:16px;padding:10px 8px 8px;display:grid;gap:4px;position:relative;overflow:hidden}
-.boardwrap .ttl{font-size:14px;color:var(--ink2);font-weight:700}
-.board{display:grid;grid-template-columns:repeat(12,1fr);gap:3px;align-items:end;border-bottom:3px solid var(--soil);min-height:52px}
-.board .col{display:flex;flex-direction:column-reverse;align-items:center;gap:2px;padding-bottom:2px}
-/* each pin is a small sack icon; a part bag is a smaller sack (half bag, or a sliver of a spread cost) */
-.board .pin{width:16px;height:18px;background:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2030%2034%22%3E%3Cpath%20d%3D%22M8%206%20L22%206%20L20%2010%20C27%2014%2028%2022%2026%2030%20C22%2033%208%2033%204%2030%20C2%2022%203%2014%2010%2010Z%22%20fill%3D%22%23B07F45%22%20stroke%3D%22%236E4A22%22%20stroke-width%3D%222.2%22/%3E%3Cpath%20d%3D%22M9%206%20Q15%202%2021%206%22%20stroke%3D%22%236E4A22%22%20stroke-width%3D%222.6%22%20fill%3D%22none%22/%3E%3Cpath%20d%3D%22M10%2019%20H20%22%20stroke%3D%22%236E4A22%22%20stroke-width%3D%222%22/%3E%3C/svg%3E") center bottom / 16px 18px no-repeat}
-.board .pin.half{width:11px;height:12px;background-size:11px 12px}
-.board .pin.tiny{width:8px;height:9px;background-size:8px 9px;opacity:.85}
-.ppl{letter-spacing:-3px;font-size:14px}
-.rat{position:absolute;right:8px;top:6px;font-size:22px}
+/* ---------- remember ---------- */
+.tabs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px}
+.tab{border:2px solid var(--ink);background:var(--screen);border-radius:10px;padding:6px 0;font-size:11px;font-weight:700;min-height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px}
+.tab.on{background:var(--ink);color:var(--screen)}
+.tab small{font-size:10px;font-weight:600;min-height:12px}
+.catline{font-size:14px;font-weight:600;color:var(--body)}
+.rat{font-size:22px;margin-right:6px;display:inline-block;vertical-align:middle}
 .ratdash{position:absolute;left:0;right:0;top:34%;z-index:6;pointer-events:none;display:flex;justify-content:center}
 .ratdash span{font-size:92px;line-height:1;filter:drop-shadow(0 6px 4px rgb(0 0 0/.25));animation:ratfade 2.2s forwards}
 @keyframes ratfade{0%,75%{opacity:1}100%{opacity:0}}
-.keepsafe{font-size:14px;color:var(--ink2);display:flex;gap:6px;align-items:center}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.card{position:relative;border:3px solid var(--line);background:var(--screen);border-radius:16px;padding:6px;display:flex;flex-direction:column;gap:6px;text-align:left}
+.card.on{border-color:var(--ink);background:var(--maize-soft)}
+.card .pic{height:72px;border-radius:9px} .card .pic img{height:62px;width:62px}
+.card b{font-size:15px;line-height:1.15;min-height:36px}
+.card .tag{position:absolute;top:-10px;right:-6px;background:var(--ink);color:var(--screen);border-radius:999px;padding:3px 10px;font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}
 
-.sheet{position:absolute;inset:auto 0 0 0;background:var(--phone);border-top:4px solid var(--maize);border-radius:24px 24px 0 0;padding:14px 14px calc(14px + env(safe-area-inset-bottom,0px));display:grid;gap:10px;box-shadow:0 -12px 30px rgb(0 0 0/.22);z-index:5;max-height:90%;overflow-y:auto}
-.sheet h3{margin:0;font-family:var(--display);font-size:24px;display:flex;align-items:center;gap:8px}
-.sheet .x{margin-left:auto;width:44px;height:44px;border-radius:50%;border:2px solid var(--line);background:var(--panel);font-size:18px}
-.scrim{position:absolute;inset:0;background:rgb(20 20 10/.4);z-index:4}
+/* ---------- play ---------- */
+.storehead{display:flex;align-items:flex-end;justify-content:space-between;gap:10px}
+.storehead .lab{font-size:14px;color:var(--body);font-weight:600}
+.storehead .num{font-size:56px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.03em}
+.keepbox{display:flex;flex-direction:column;align-items:flex-end;padding:8px 10px;border-radius:12px;border:2px dashed var(--ink)}
+.keepbox span{font-size:13px;font-weight:600} .keepbox b{font-size:24px;font-weight:800}
+.chart{display:flex;flex-direction:column;gap:4px}
+.cols{display:grid;gap:3px;align-items:end;border-bottom:3px solid var(--ink)}
+.col{display:flex;flex-direction:column;align-items:stretch;gap:3px}
+.col .v{text-align:center;font-size:12px;font-weight:700;font-variant-numeric:tabular-nums;min-height:15px}
+.stack{height:168px;border-radius:6px 6px 0 0;display:flex;flex-direction:column-reverse;gap:2px;padding:2px 2px;position:relative;outline:3px solid transparent;outline-offset:-2px}
+.stack.fut{background:var(--stripe)} .stack.low{background:var(--short-soft)} .stack.cur{outline-color:var(--ink)}
+.stack i{display:block;flex:none;height:8px;background:var(--maize);-webkit-mask:var(--sack-lying) center/100% 100% no-repeat;mask:var(--sack-lying) center/100% 100% no-repeat}
+.stack.low i{background:var(--short)}
+.stack .bang{position:absolute;left:0;right:0;bottom:6px;text-align:center;font-size:22px;font-weight:800}
+.labs{display:grid;gap:3px}
+.labs div{display:flex;flex-direction:column;align-items:center;gap:3px}
+.labs span{font-size:11px;font-weight:700;letter-spacing:-.02em}
+.labs p{display:flex;gap:2px;min-height:6px;margin:0}
+.labs p i{width:6px;height:6px;border-radius:1px;background:var(--ink)}
+.key{display:flex;gap:14px;font-size:12px;color:var(--body);justify-content:center;padding-top:2px}
+.key span{display:flex;align-items:center;gap:5px}
+.key .ks{width:18px;height:8px;background:var(--maize);-webkit-mask:var(--sack-lying) center/100% 100% no-repeat;mask:var(--sack-lying) center/100% 100% no-repeat}
+.key .kd{width:6px;height:6px;border-radius:1px;background:var(--ink)}
+.caption{min-height:52px;font-size:18px;font-weight:600;line-height:1.3;text-align:center;text-wrap:pretty}
+.playbtn{min-height:60px;border-radius:18px;border:3px solid var(--ink);background:var(--screen);font-size:19px;font-weight:700}
+.playbtn.gold{background:var(--maize);color:var(--on-maize)}
+.result{border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:14px;border:3px solid var(--ink)}
+.result.good{background:var(--maize-soft)} .result.bad{background:var(--short-soft)} .result.cut{background:var(--chip)}
+.result h3{margin:0;font-size:24px;font-weight:800;line-height:1.1}
+.result p{margin:0;font-size:16px;line-height:1.35}
+.result ul{margin:0;padding-left:20px}
+.recall{display:flex;flex-direction:column;gap:8px;border-top:2px solid color-mix(in srgb,var(--ink) 20%,transparent);padding-top:12px}
+.recall>b{font-size:14px}
+.bars{display:grid;grid-template-columns:92px 1fr auto;gap:8px;align-items:center;font-size:14px}
+.bars .track{height:18px;background:color-mix(in srgb,var(--ink) 8%,transparent);border-radius:4px}
+.bars .track div{height:100%;border-radius:4px}
+.bars .g{background:var(--screen);border:2px solid var(--ink)} .bars .r{background:var(--ink)}
+.linkbtn{align-self:center;border:none;background:none;text-decoration:underline;font-size:15px;padding:8px}
 
-/* play + fix meter */
-.meter{--mh:140px;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:3px;align-items:end;height:var(--mh);padding-top:22px;border-bottom:3px solid var(--soil)}
-.meter .b{position:relative;height:100%;display:flex;align-items:flex-end;border-radius:4px 4px 0 0}
-.meter .b span{display:block;width:100%;background:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2010%22%20preserveAspectRatio%3D%22none%22%3E%3Crect%20x%3D%221%22%20y%3D%221.2%22%20width%3D%2222%22%20height%3D%227.8%22%20rx%3D%223.9%22%20fill%3D%22%23B07F45%22%20stroke%3D%22%236E4A22%22%20stroke-width%3D%221.2%22/%3E%3Cpath%20d%3D%22M5.5%201.6%20V8.6%22%20stroke%3D%22%236E4A22%22%20stroke-width%3D%221.1%22/%3E%3C/svg%3E") left bottom / 100% var(--slot) repeat-y;transition:height .35s ease}
-.meter .b.low{background:var(--hungry-soft)}
-.meter .b.low span{background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2010%22%20preserveAspectRatio%3D%22none%22%3E%3Crect%20x%3D%221%22%20y%3D%221.2%22%20width%3D%2222%22%20height%3D%227.8%22%20rx%3D%223.9%22%20fill%3D%22%23D0735C%22%20stroke%3D%22%238A2E1C%22%20stroke-width%3D%221.2%22/%3E%3Cpath%20d%3D%22M5.5%201.6%20V8.6%22%20stroke%3D%22%238A2E1C%22%20stroke-width%3D%221.1%22/%3E%3C/svg%3E")}
-.meter .b.fut{background:repeating-linear-gradient(0deg,transparent 0 8px,var(--chip) 8px 10px);opacity:.7}
-.meter .b.fut span{background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2010%22%20preserveAspectRatio%3D%22none%22%3E%3Crect%20x%3D%221%22%20y%3D%221.2%22%20width%3D%2222%22%20height%3D%227.8%22%20rx%3D%223.9%22%20fill%3D%22%23D6CFBD%22%20stroke%3D%22%23ABA38D%22%20stroke-width%3D%221.2%22/%3E%3Cpath%20d%3D%22M5.5%201.6%20V8.6%22%20stroke%3D%22%23ABA38D%22%20stroke-width%3D%221.1%22/%3E%3C/svg%3E")}
-.meter .b.now{box-shadow:0 0 0 2px var(--ink)}
-.meter .b .v{position:absolute;left:-2px;right:-2px;text-align:center;font-size:11px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--ink2);font-style:normal}
-.meter .b.low::after{content:"!";position:absolute;bottom:2px;left:0;right:0;text-align:center;font-weight:800;color:var(--hungry);font-size:16px}
-.meter .b.low span + .v{display:none}
-.bagkey{font-size:13px;color:var(--ink2);text-align:right;margin-top:-4px}
-.tip{min-height:24px;font-size:15px;text-align:center;color:var(--ink2);font-weight:700}
-.playrow{display:grid;grid-template-columns:64px minmax(0,1fr);gap:10px;align-items:end}
-.playrow .granary{width:64px;height:64px}
-.playrow .mlab{font-size:10px;letter-spacing:-.04em}
-.playrow>div{min-width:0}
+/* ---------- say it back + home ---------- */
+.choices3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.choices3 button{min-height:96px;border-radius:20px;border:3px solid var(--ink);background:var(--screen);font-size:40px;font-weight:800;font-variant-numeric:tabular-nums}
+.choices3 .right{background:var(--maize);color:var(--on-maize)} .choices3 .wrong{background:var(--short-soft)}
+.fb{font-size:18px;font-weight:700}
+.checks{display:flex;flex-direction:column;gap:8px}
+.check{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-radius:14px;border:2px solid var(--ink);background:var(--screen)}
+.check.low{background:var(--short-soft)}
+.check span{font-size:18px;font-weight:600} .check b{font-size:26px;font-weight:800;font-variant-numeric:tabular-nums}
+.sect{display:flex;flex-direction:column;gap:10px}
+.sect>b{font-size:17px}
+.lrow{display:grid;grid-template-columns:56px 1fr auto;gap:12px;align-items:center;padding:8px;border-radius:14px;border:2px solid var(--line);background:var(--screen)}
+.lrow .pic{height:48px;border-radius:8px} .lrow .pic img{height:40px;width:40px}
+.lrow span{font-size:17px;font-weight:600} .lrow b{font-size:22px;font-weight:800;font-variant-numeric:tabular-nums}
+.toggle{display:flex;justify-content:space-between;align-items:center;min-height:56px;padding:0 14px;border-radius:16px;border:3px solid var(--ink);background:var(--screen);font-size:17px;font-weight:700}
+.toggle.on{background:var(--maize);color:var(--on-maize)}
+.crow{display:flex;justify-content:space-between;font-size:16px;padding:0 4px}
+.tel{min-height:56px;border-radius:14px;border:2px solid var(--ink);padding:0 14px;font-size:20px;font-family:inherit;background:var(--screen);color:var(--ink);width:100%}
+.smsbox{padding:12px;border-radius:12px;background:var(--chip);font-family:var(--mono);font-size:13px;line-height:1.45;overflow-wrap:anywhere}
+.erase.armed{background:var(--short-soft)}
+.qr{display:grid;place-items:center;background:#fff;padding:10px;border-radius:12px;min-height:60px}
+.qr svg{display:block;width:210px;height:210px}
+.linkbox{width:100%;font-size:12px;padding:6px;border:1px solid var(--line);border-radius:8px}
+.credit{font-size:11px;color:var(--muted);text-align:center}
+.credit a{color:var(--muted)}
 
-.verdict{border-radius:18px;padding:12px;display:grid;gap:8px;font-size:17px;
-  background-image:repeating-linear-gradient(45deg,transparent 0 6px,rgb(0 0 0/.03) 6px 7px)}
-.verdict.bad{background-color:var(--hungry-soft)}
-.verdict.good{background-color:var(--leaf-soft)}
-.cutlist{margin:0;padding-left:20px;display:grid;gap:2px}
-.verdict.quiet{background-color:var(--panel);border:2px solid var(--line)}
-.verdict .note{font-size:15px;color:var(--ink)}
-.vs{display:grid;grid-template-columns:1fr 1fr;gap:8px;text-align:center}
-.vs div{background:var(--phone);border-radius:12px;padding:6px}
-.vs .k{font-size:13px;color:var(--ink2);font-weight:700}
-.vs .v{font-family:var(--display);font-size:24px;font-weight:800}
-.burst{position:relative;height:0}
-.burst i{position:absolute;left:50%;top:-20px;width:10px;height:12px;border-radius:50%;background:var(--maize);border:1.5px solid var(--sack-dk)}
+/* ---------- sheet ---------- */
+.scrim{position:absolute;inset:0;background:rgba(30,25,20,.45);z-index:4}
+.sheet{position:absolute;left:0;right:0;bottom:0;z-index:5;background:var(--screen);border-radius:28px 28px 0 0;border-top:4px solid var(--ink);
+  padding:18px 18px calc(20px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:14px;max-height:88%;overflow-y:auto}
+.sheet .hd{display:flex;gap:12px;align-items:center}
+.sheet .hd .pic{width:64px;height:64px;flex:none} .sheet .hd .pic img{height:54px;width:54px}
+.sheet .hd b{font-size:24px;font-weight:800;flex:1;line-height:1.1}
+.sheet .x{width:48px;height:48px;border-radius:50%;border:2px solid var(--line);background:var(--screen);font-size:18px}
+.sheet .stepper button{width:60px;height:60px;font-size:30px} .sheet .stepper .n{font-size:56px;min-width:100px}
+.months{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.months button{min-height:48px;border-radius:12px;border:2px solid var(--ink);background:var(--screen);font-size:15px;font-weight:700}
+.months button.on{background:var(--ink);color:var(--screen)}
+.months .every{grid-column:1/-1}
+.keepnote{padding:12px;border-radius:12px;border:2px dashed var(--ink);font-size:16px;line-height:1.35}
+.save{min-height:60px;border-radius:18px;border:none;background:var(--ink);color:var(--screen);font-size:20px;font-weight:700}
+.save[aria-disabled="true"]{opacity:.4}
+.nudge{animation:nudge .45s}
+@keyframes nudge{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 
-/* fix */
-.fixlist{display:grid;gap:6px}
-.fx{display:grid;grid-template-columns:36px 1fr auto;gap:8px;align-items:center;background:var(--panel);border:2px solid var(--line);border-radius:14px;padding:6px 8px}
-.fx.red{border-color:var(--hungry);background:var(--hungry-soft)}
-.fx .ic{font-size:26px;text-align:center}
-.fx .t{font-size:15px;line-height:1.25}
-.fx .t small{color:var(--ink2);display:block;font-size:13px}
-.fx .ctl{display:flex;gap:6px}
-.fx .ctl button{width:46px;height:46px;border-radius:12px;border:2px solid var(--line);background:var(--phone);font-size:17px;display:grid;place-items:center;line-height:1;padding:0}
-.fx .ctl button small{display:block;font-size:9px;color:var(--ink2);margin-top:1px}
-.flash{animation:flash .6s}
-@keyframes flash{0%{background:var(--leaf-soft)}100%{}}
-.eatnote{font-size:14px;color:var(--ink2);padding:0 4px}
-
-/* family + nudges + party */
-.fam{display:grid;gap:6px}
-.fam .fx{grid-template-columns:36px 1fr auto;padding:4px 8px}
-.famn{font-family:var(--display);font-size:24px;min-width:34px;text-align:center;align-self:center;font-variant-numeric:tabular-nums}
-.nudgecard{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;background:var(--maize-soft);border:2px solid var(--sack);border-radius:16px;padding:10px}
+/* ---------- celebration ---------- */
 .party{position:absolute;inset:0;z-index:7;pointer-events:none;overflow:hidden}
 .party i{position:absolute;top:-50px;left:var(--x);font-style:normal;font-size:calc(26px * var(--s));display:none}
-.party .ban{position:absolute;top:32%;left:6%;right:6%;background:var(--maize);color:#2A1E00;font-family:var(--display);font-weight:800;font-size:30px;line-height:1.1;text-align:center;border-radius:22px;padding:18px 12px;box-shadow:0 6px 0 var(--sack-dk),0 16px 30px rgb(0 0 0/.25);border:3px solid var(--sack-dk);animation:banout .4s 3s forwards}
+.party .ban{position:absolute;top:32%;left:6%;right:6%;background:var(--maize);color:#2b251f;font-weight:800;font-size:30px;line-height:1.1;text-align:center;border-radius:22px;padding:18px 12px;border:3px solid #2b251f;box-shadow:0 6px 0 #2b251f;animation:banout .4s 3s forwards}
 @keyframes banout{to{opacity:0}}
-
-/* card */
-.plancard{border:3px dashed var(--sack);border-radius:18px;padding:10px;display:grid;gap:8px;background-color:var(--panel);
-  background-image:repeating-linear-gradient(45deg,transparent 0 6px,rgb(0 0 0/.03) 6px 7px)}
-.pc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
-.pc{border-radius:12px;background:var(--phone);border:2px solid var(--line);border-top-width:6px;padding:4px 2px;text-align:center;display:grid;position:relative}
-.pc .nm{font-size:13px;font-weight:700}
-.pc .cnt{font-family:var(--display);font-size:26px;font-weight:800;line-height:1.1;font-variant-numeric:tabular-nums}
-.pc .it{font-size:14px;min-height:18px}
-.pc.low{background:var(--hungry-soft)}
-.pc.low .cnt{color:var(--hungry)}
-.pc.check{box-shadow:0 0 0 3px var(--leaf)}
-.pc.check::after{content:"✓";position:absolute;top:-10px;right:-6px;width:22px;height:22px;border-radius:50%;background:var(--leaf);color:var(--on-leaf);font-weight:800;font-size:13px;display:grid;place-items:center}
-.pc.check.low{box-shadow:0 0 0 3px var(--hungry)}
-.pc.check.low::after{background:var(--hungry)}
-.pc.harv{box-shadow:0 0 0 3px var(--maize)}
-.remind{display:grid;gap:8px;justify-items:center;background:var(--panel);border:2px solid var(--line);border-radius:16px;padding:10px}
-a.pill{color:var(--ink);text-decoration:none}
-.qr{display:grid;place-items:center;background:#fff;padding:10px;border-radius:12px;min-height:60px}
-.qr svg{display:block;width:220px;height:220px}
-.linkbox{width:100%;font-size:12px;padding:6px;border:1px solid var(--line);border-radius:8px}
-.cardnote{font-size:15px;text-align:center}
-.cardnote.bad{color:var(--hungry);font-weight:700}
-.toast{background:var(--ink);color:var(--phone);border-radius:14px;padding:10px 12px;font-size:15px;text-align:center}
-
-/* ---------- motion (only when allowed) ---------- */
 @media (prefers-reduced-motion: no-preference){
-  .sacks .s.new{animation:drop .25s ease-out}
-  @keyframes drop{0%{transform:translateY(-16px);opacity:0}80%{transform:translateY(0) scaleY(.94)}100%{transform:none;opacity:1}}
-  .speak.hello{animation:pulse 1.2s 2}
-  @keyframes pulse{50%{box-shadow:0 0 0 10px rgb(233 168 0/.25)}}
-  .rat.run{animation:scurry 1s 1.8s ease-out backwards}
-  .ratdash span{animation:ratdash 2.2s ease-in-out forwards}
-  @keyframes ratdash{0%{transform:translateX(-120vw) scaleX(-1)}30%{transform:translateX(0) scaleX(-1)}40%{transform:translateX(0) scaleX(-1) rotate(-8deg)}50%{transform:translateX(0) scaleX(-1) rotate(6deg)}62%{transform:translateX(0) scaleX(-1)}100%{transform:translateX(120vw) scaleX(-1)}}
-  @keyframes scurry{0%{transform:translateX(-300px) scaleX(-1)}70%{transform:translateX(10px) scaleX(-1)}100%{transform:none}}
-  .burst i{animation:pop .8s ease-out forwards}
-  @keyframes pop{from{transform:translate(-50%,0) scale(.4);opacity:1}to{transform:translate(calc(-50% + var(--dx)),var(--dy)) scale(1);opacity:0}}
-  .face .blink{animation:blink 4s infinite}
-  @keyframes blink{0%,94%,100%{transform:scaleY(1)}97%{transform:scaleY(.1)}}
-  .face{transform-origin:50% 90%}
-  .face.bob{animation:bob .5s}
-  .face.dance{animation:bob .45s 6}
   .party i{display:block;animation:fall 2.6s var(--d) cubic-bezier(.3,.1,.7,1) forwards}
   @keyframes fall{to{transform:translateY(880px) rotate(var(--r))}}
   .party .ban{animation:banin .5s cubic-bezier(.2,1.6,.4,1), banout .4s 3s forwards}
   @keyframes banin{from{transform:scale(.3) rotate(-8deg);opacity:0}}
-  @keyframes bob{40%{transform:rotate(-6deg)}80%{transform:rotate(4deg)}}
+  .sacks .sk.new{animation:drop .25s ease-out}
+  @keyframes drop{0%{transform:translateY(-14px);opacity:0}80%{transform:translateY(0) scaleY(.94)}100%{transform:none;opacity:1}}
+  .speak.hello{animation:pulse 1.2s 2}
+  .rat.run{animation:scurry 1s 1.8s ease-out backwards}
+  @keyframes scurry{0%{transform:translateX(-300px) scaleX(-1)}70%{transform:translateX(10px) scaleX(-1)}100%{transform:none}}
+  .ratdash span{animation:ratdash 2.2s ease-in-out forwards}
+  @keyframes ratdash{0%{transform:translateX(-120vw) scaleX(-1)}30%{transform:translateX(0) scaleX(-1)}40%{transform:translateX(0) scaleX(-1) rotate(-8deg)}50%{transform:translateX(0) scaleX(-1) rotate(6deg)}62%{transform:translateX(0) scaleX(-1)}100%{transform:translateX(120vw) scaleX(-1)}}
+  @keyframes pulse{50%{box-shadow:0 0 0 10px color-mix(in srgb,var(--maize) 35%,transparent)}}
 }
 </style>
 </head>
 <body>
 <div class="phone" id="phone" aria-label="Bags Till Harvest">
-  <div class="pbar">
+  <div class="top">
     <div class="dots" id="dots"></div>
-    <button class="speak hello" id="soundBtn" aria-label="Read aloud">🔊</button>
+    <button class="speak hello" id="speakBtn" aria-label="Read aloud">
+      <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><polygon points="3,9 7,9 12,4 12,20 7,15 3,15" fill="#2b251f"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13" stroke="#2b251f" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+    </button>
   </div>
-  <div class="guide"><span id="face"></span><div class="bubble" id="bubble" aria-live="polite"></div></div>
-  <div class="pbody" id="pbody"></div>
-  <div class="pfoot" id="pfoot"></div>
+  <div class="say" id="say" aria-live="polite"></div>
+  <div class="body" id="body"></div>
+  <div class="foot" id="foot"></div>
 </div>
 
 <script>
 (() => {
 // ================= PHRASE BANK (English only for now) =================
 // Every word the farmer sees lives here. {name} placeholders are filled in by t().
-// {b} always means "a number of bags" and is already worded ("1 bag", "3½ bags").
-// To add a language later, copy this object and translate the values.
+// {b} is always an amount of bags that is already worded ("1 bag", "3½ bags").
+// To add a language, copy the en block, translate the values, and set LANG.
 const PHRASES = {
   en: {
     bag_one:"{n} bag", bag_other:"{n} bags",
-    next:"Next ▸", done:"Done ▸", back:"◀", bagsEachMoon:"bags each moon", empty:"empty", k:"K{n}",
-    harvest_say:"Hello! Let's see if your maize lasts <b>until next harvest</b>. How many <b>bags</b> did you bring home?",
-    harvest_unit:"bags of maize",
-    harvest_price:"💵 1 bag sells for", price_btn:"💵 Price of a bag?",
-    example:"👀 Try an example family", exampleBanner:"Example family. These are not your numbers.", mine:"Start mine",
-    guess_say:"Quick guess! <b>Before we count</b>: in which moon will the bags run out? There is no wrong answer.",
-    guess_lasts:"🌽 They will last until the next harvest",
-    eat_say:"How many <b>people</b> eat from your store? Then: how much maize do they <b>eat in one moon</b>? Half bags are fine.",
-    people:"People who eat here",
-    nudge_food:"Is {b} a moon enough for {p} people? Families of {p} often eat about {s} a moon.",
-    nudge_food_yes:"Use {s}", nudge_food_no:"Keep mine",
-    nudge_school:"No school costs this year? No fees, uniforms, books or exam fees?",
-    nudge_school_yes:"🎒 Add school costs", nudge_school_no:"No children in school",
-    nudge_safe:"🐀 Khoswe is happy: no keep-safe bags! Almost every family has a surprise: the clinic, a funeral, a broken bike.",
-    nudge_safe_yes:"🐀 Keep some safe", nudge_safe_no:"Skip",
-    party:"Food until harvest!",
-    eat_year:"For the whole year that is <b>{b}</b>.",
-    cat_school:"School", cat_home:"Home", cat_farm:"Farm", cat_people:"People", cat_surprise:"Surprises",
-    say_school:"Now let's walk through the year. <b>School</b>: fees, uniforms, books… Tap each thing your family will pay for.",
-    say_home:"<b>Home</b>: salt, soap, oil, grinding… small things add up. Tap what you buy.",
-    say_farm:"<b>Farm</b>: seed and fertiliser for next season. Hired help. Tap what you need.",
-    say_people:"<b>People</b>: weddings, church, relatives who ask, loans to repay. Tap what will come.",
-    say_surprise:"This is <b>Khoswe the rat</b> 🐀. He eats bags for things nobody can plan: the clinic, a funeral, a broken bike. Keep some bags safe from him?",
-    board:"Your year", keepSafe:"🐀 Keep-safe: {b}",
-    sheet_which:"Which moon?", sheet_pick:"Tap a moon first", sheet_surprise:"🐀 No moon: these bags stay in the store, safe from Khoswe.",
-    sheet_ok:"✓ Put it on the board", spread:"🔁 Spread over the year", spread_short:"spread over the year", sheet_year:"for the whole year", card_spread:"Spread over the year: {ic}", sheet_none:"✓ Not needed this year", close:"Close",
-    play_say:"Now watch your store, <b>one moon at a time</b>.", play_done_bad:"Now you can see the moons with no maize. Let's fix them together.", play_done_good:"Well done! 🎉 But Khoswe is sneaky…",
-    recheck_q:"Plans that last on the first try often miss something. Clinic? Exam fees? A funeral? Relatives asking?", recheck_btn:"🔎 Check my costs again", bagkey:"each sack = {n} bags",
-    play_btn:"▶ Play the year", play_again:"↻ Play again", play_tap:"Tap ▶ to play the year", play_tip:"Tap a bar to see the count",
-    tip_left:"{m}: {b} in the store", tip_none:"{m}: no maize left",
-    guessed:"Your guess", counted:"The count", harvestWord:"Harvest",
-    good:"🎉 The bags last until harvest!", good_spare:"{b} spare.", good_spare_r:"{b} spare, plus {r} keep-safe.",
-    bad:"The bags run out in <b>{m}</b>. That leaves <b>{h} moons with no maize</b> in the store.",
-    bad_one:"The bags run out in <b>{m}</b>. That leaves <b>1 moon with no maize</b> in the store.",
-    bad_comfort:"Most families guess later than the count. Small costs are easy to forget. Let's fix it together.",
-    fix_say:"Try the buttons {minus} {earlier} {later} on each cost. Watch the red moons turn gold.",
-    fix_ok_say:"Your plan reaches harvest! 🎉 You can still move things around.",
-    cut_say:"The bags last now, but only because you cut something. Is that realistic?",
-    cut_head:"The bags last, but only after cutting:",
-    cut_q:"Can your family really do without this, every moon until harvest?",
-    cut_back:"↩ Put them back", cut_tip:"Lasts, but only after cuts",
-    cut_card:"To make this last you cut: {list}.", cut_eat:"eating {a} → {b} a moon", keepSafeShort:"keep-safe bags",
-    remembered:"You remembered <b>{n} costs</b>: {b} in all.", remembered_one:"You remembered <b>1 cost</b>: {b}.",
-    remind_ask:"📅 Reminders on my own phone?", remind_why:"Only on your own phone: the reminders show your bag numbers.",
-    remind_head:"📅 Remind me to count my bags", remind_btn:"📅 {m}: {b}", remind_all:"📥 All reminders (calendar file)",
-    remind_note:"Adds a reminder to your own phone calendar.",
-    remind_title:"Count your maize bags",
-    remind_details:"Plan: about {b} in the store at the start of {m} (including {r} keep-safe). If you have fewer, slow down early.",
-    monthsLong:["May","June","July","August","September","October","November","December","January","February","March","April"],
-    share_app:"📲 Open this app on another phone", share_app_head:"Scan with your phone camera to open the app",
-    send_plan:"📲 Send this plan to a phone", send_head:"Scan with your own phone camera to take this plan home",
-    send_wa:"💬 Send by WhatsApp", share_wa_text:"Bags Till Harvest: plan your maize until the next harvest. {url}",
-    send_wa_text:"My Bags Till Harvest plan: {url}",
-    send_presenter:"WhatsApp sends from this phone, and the plan stays in this phone's chats. Scanning is more private. Delete the chat afterwards.",
-    send_note:"The plan travels inside the link. Nothing is stored on a server.", no_qr:"No QR code without internet. Copy this link instead:",
-    received:"📥 Plan received on this phone.",
-    send_sms:"✉️ Send by SMS (simple phones)", sms_text:"Bags Till Harvest plan. Count your maize bags (keep-safe included): {list}. If fewer, slow down early.",
-    sms_item:"1 {m} {b}", sms_note:"SMS works on any phone. It goes from this phone's SIM and stays in its sent messages.",
-    ex_reveal:"👀 What did the example family remember here?",
-    sr_less:"Make {x} smaller by half a bag", sr_more:"Make {x} bigger by half a bag", sr_earlier:"Move {x} one moon earlier", sr_later:"Move {x} one moon later",
-    fix_ok:"✓ Food until harvest", fix_short:"Short by {b}", earlier:"earlier", later:"later",
-    eating:"Eating", keepSafeRow:"Keep-safe from Khoswe", noCosts:"No costs added yet.",
-    eat_less:"Eating less is hard. Try moving costs first.",
-    tooSmall:"If the harvest is too small, no plan can cover it. That is not your fault. <b>Ask your group leader about help.</b>",
-    card_say:"Here is your plan. At the moons with a <b>✓</b>, count your bags. If you have fewer, slow down early.",
-    card_legend:"Big number = bags in the store at the start of the moon.", card_keepsafe:"Keep-safe bags are extra: {b}.",
-    card_short:"Short by {b}. Go back and fix, or ask for help.",
-    keep:"📷 Keep this plan", keep_toast:"Take a photo of this screen, or copy the ✓ numbers onto your store wall.",
-    startAgain:"↻ Start again", erase:"🗑️ Erase", erase_sure:"Tap again to erase",
+    next:"Next ›", next_cat:"Next: {c} ›", back_aria:"Back", read_aloud:"Read aloud", less:"Less", more:"More",
     months:["May","Jun","Jul","Aug","Sep","Oct","Nov","Dec","Jan","Feb","Mar","Apr"],
-    seasons:{harv:"harvest", dry:"cool", hot:"hot", rain:"rains"},
+    monthsLong:["May","June","July","August","September","October","November","December","January","February","March","April"],
+    // 1 phone
+    say_phone:"Whose phone is this?",
+    own:"My own phone", own_sub:"Plan privately. Reminders can go in my calendar.",
+    borrowed:"Borrowed phone", borrowed_sub:"From the presenter. Send the plan to me by SMS or WhatsApp, then erase.",
+    share_app:"📲 Open this app on another phone", share_app_head:"Scan with your phone camera to open the app",
+    share_wa:"WhatsApp", share_wa_text:"Bags Till Harvest: plan your maize until the next harvest. {url}",
+    // 2 bags
+    say_bags:"How many bags of maize do you have?",
+    just_harvested:"Just harvested", just_harvested_sub:"Year starts in May",
+    from_today:"From today", from_today_sub:"Bags on hand now", now_month:"Now: {m}", earlier_month:"Earlier month", later_month:"Later month",
+    bags_unit:"bags in the store", one_less:"One bag less", one_more:"One bag more",
+    example:"Try an example family", example_banner:"Example family. Not your numbers.", start_mine:"Start mine",
+    // 3 prior
+    say_prior:"Quick guess. How many bags will go to things that are not food?",
+    prior_sub:"School, farm, soap, church… Don't count. Just guess.", prior_unit:"bags, out of {b}",
+    // 4 remember
+    cat_line:"{i} of 6 · {c}. Tap each thing your family will pay for.",
+    reveal:"What did the example family remember here?",
+    empty_hint:"Most families have something here. Nothing this year? Tap Next.",
+    remembered:"Remembered so far",
+    ask_bags:"How many bags?", ask_year:"How many bags for the whole year?", ask_keep:"How many bags to keep safe?",
+    when:"When?", every_month:"Every month", keep_note:"No month. These bags stay in the store, kept safe for a surprise.",
+    save:"Save", pick_month:"Choose a month first", not_this_year:"Not this year", close:"Close", half_less:"Half a bag less", half_more:"Half a bag more",
+    // 5 food
+    say_food:"How many bags do you eat in one month?",
+    food_sub:"Everyone who eats from this store. Half bags are fine.", food_unit:"bags each month", food_total:"Until harvest ({n} months)",
+    people:"People who eat from this store", fewer_people:"One person fewer", more_people:"One person more",
+    nudge_food:"Is {b} a month enough for {p} people? Families of {p} often eat about {s} a month.", nudge_yes:"Use {s}", nudge_no:"Keep mine",
+    // 6 play
+    say_play:"Watch your store, one month at a time.",
+    store_now:"In the store now", store_end:"In the store, end of {m}", kept_safe:"Kept safe",
+    unit_one:"1 sack = 1 bag", unit_many:"1 sack = {n} bags", cost_key:"a cost that month",
+    cap_start:"Tap Next month to walk through the year.",
+    cap_month:"{m}: eat {e}{pay}. {rest}", cap_pay:", pay {c}", cap_left:"{l} left.", cap_short:"Not enough maize.",
+    next_month:"Next month ›", play_all:"Play all ››",
+    good_title:"The maize lasts until harvest.", good_sub:"{b} spare.", good_sub_keep:"{b} spare, plus {k} kept safe.",
+    bad_title:"The maize runs out in {m}.", bad_sub_one:"1 month with no maize in the store. Small costs are easy to forget. Try a change.",
+    bad_sub:"{n} months with no maize in the store. Small costs are easy to forget. Try a change.",
+    cut_title:"The maize lasts, but only after cutting:", cut_q:"Can your family really do without this?", cut_back:"Put them back",
+    cut_eat:"food {a} → {b} a month", cut_keep:"kept-safe bags",
+    recall_head:"Bags for things that are not food", first_guess:"First guess", remembered_bar:"Remembered",
+    change_food:"Change food", change_costs:"Change costs", play_again:"Play again", party:"🎉 Food until harvest! 🎉",
+    // 7 teach
+    say_teach:"At the start of {m}, how many bags should you have?",
+    teach_sub:"Count every bag, kept-safe bags too.", teach_right:"Yes. Remember this number.", teach_wrong:"Close. The plan says {b}.",
+    teach_days:"Count your bags on these days:", day:"1 {m}",
+    // 8 home
+    say_home:"Take your plan home.", received:"📥 Plan received on this phone.",
+    mark:"1. Mark your bags", mark_note:"Tie one label on each bag. Use those bags only for that.",
+    lab_food:"Food", lab_keep:"Kept safe",
+    remind_head:"2. Remind me every 3 months", remind_off:"Turn on reminders", remind_on:"Reminders on",
+    remind_ics:"Add to my calendar", remind_gcal:"Google Calendar: {m}", remind_note:"The reminders show your bag numbers. Only on your own phone.",
+    remind_wait:"Reminders come once the plan lasts until harvest without cuts.",
+    remind_title:"Count your maize bags", remind_details:"Plan: about {b} in the store (kept-safe too). If fewer, slow down early.",
+    send_head:"2. Send the plan to your phone", tel_ph:"Your phone number",
+    sms_text:"Bags Till Harvest plan. Count your bags (kept-safe too): {list}. If fewer, slow down early.", sms_item:"1 {m} {v}",
+    sms:"SMS", whatsapp:"WhatsApp", send_note:"SMS works on any phone. It is sent from this phone and stays in its messages.",
+    qr_btn:"Or scan the plan with your own phone", qr_head:"Scan with your own phone camera. The plan opens there; nothing is stored on a server.",
+    no_qr:"No QR code without internet. Copy this link instead:",
+    erase:"Erase plan from this phone", erase_sure:"Tap again to erase",
+    credit:"Pictures: OpenMoji (CC BY-SA 4.0), placeholders for local photos.",
+    // category prompts
+    say_school:"School. Think of each child. What will you pay for?",
+    say_home_cat:"Home. Salt, soap, oil… small things add up. What do you buy?",
+    say_farm:"Farm. Next season starts soon. What will you need?",
+    say_give:"Giving. Church, weddings, family who ask, loans. What will come?",
+    say_surprise:"Surprises. Khoswe the rat eats bags nobody planned for. Keep some bags safe from him?",
+    say_other:"Anything else this year? Anything we missed?",
+    cat_school:"School", cat_home:"Home", cat_farm:"Farm", cat_give:"Giving", cat_surprise:"Surprises", cat_other:"Other",
     items:{ fees:"School fees", uniform:"Uniform", shoes:"Shoes", books:"Books, pens", exam:"Exam fees", bus:"Travel to school",
-      salt:"Salt, sugar", soap:"Soap", oil:"Cooking oil", light:"Paraffin, candles", mill:"Grinding", roof:"Roof, repairs",
-      phone:"Phone talk-time", blanket:"Blankets", relish:"Relish, fish",
-      seed:"Seed", fert:"Fertiliser", labour:"Hired help", tools:"Hoe, tools", store:"Sacks, storage", transport:"Transport",
-      funeral:"Funeral", wedding:"Wedding", church:"Church, mosque", relatives:"Relatives ask", loan:"Loan to repay", group:"Savings group",
-      sick:"Clinic", medicine:"Medicine", animal:"Animal dies", bike:"Something breaks", other:"Something else" }
+      salt:"Salt, sugar", soap:"Soap", oil:"Cooking oil", light:"Paraffin, candles", mill:"Grinding", relish:"Relish, fish", talk:"Phone talk-time", blanket:"Blankets", roof:"Roof, repairs",
+      seed:"Seed", fert:"Fertiliser", labour:"Hired help", tools:"Hoe, tools", sacks:"Sacks, storage", transport:"Transport",
+      church:"Church, mosque", wedding:"Wedding", relatives:"Family asks", loan:"Loan to repay", group:"Savings group",
+      clinic:"Clinic", medicine:"Medicine", funeral:"Funeral", animal:"Animal dies", broken:"Something breaks",
+      clothes:"Clothes", travel:"Travel", else:"Something else" }
   }
 };
 let LANG = "en";
 function t(key, vars={}){ const s = PHRASES[LANG][key] ?? PHRASES.en[key] ?? key; return String(s).replace(/\{(\w+)\}/g,(_,k)=>vars[k]??""); }
+function fmt(x){ const r=Math.round(x*2)/2, w=Math.floor(r); return r%1 ? (w?w+"½":"½") : String(w); }
 const nb = n => t(n>0 && n<=1 ? "bag_one" : "bag_other", {n:fmt(n)});
-const mName = i => PHRASES[LANG].months[i];
+const mS = i => PHRASES[LANG].months[i], mL = i => PHRASES[LANG].monthsLong[i];
 const iName = id => PHRASES[LANG].items[id];
 
 // ================= DATA (no words here) =================
-const MONTH_IC = ["🌾","🌾","☀️","☀️","🎒","☀️","🌱","🎄","🎒","🌧️","🌧️","🌽"];
-const SEASON = ["harv","dry","dry","hot","hot","hot","rain","rain","rain","rain","rain","harv"];
+const SCREENS = ["phone","bags","prior","remember","food","play","teach","home"];
+const ALL = "all", KEEP = "keep";            // spread over the months to harvest; kept safe (no month)
+// [id, OpenMoji picture, default month: 0 = May … 11 = Apr, ALL, or null = farmer chooses]
 const CATS = [
-  {id:"school", ic:"🎒", items:[["fees","🏫"],["uniform","👕"],["shoes","👟"],["books","✏️"],["exam","📝"],["bus","🚌"]]},
-  {id:"home", ic:"🏠", items:[["salt","🧂"],["soap","🧼"],["oil","🛢️"],["light","🕯️"],["mill","⚙️"],["roof","🛖"],["phone","📱"],["blanket","🛏️"],["relish","🐟"]]},
-  {id:"farm", ic:"🌱", items:[["seed","🌽"],["fert","🧪"],["labour","🧑‍🌾"],["tools","⛏️"],["store","🧺"],["transport","🚲"]]},
-  {id:"people", ic:"👪", items:[["wedding","💍"],["church","⛪"],["relatives","🤲"],["loan","📒"],["group","🪙"]]},
-  {id:"surprise", ic:"🐀", surprise:true, items:[["sick","🏥"],["medicine","💊"],["funeral","🕊️"],["animal","🐐"],["bike","🔧"],["other","❔"]]}
+  {id:"school", say:"say_school", items:[["fees","1F3EB",8],["uniform","1F455",8],["shoes","1F45F",8],["books","1F4DA",8],["exam","1F4DD",5],["bus","1F68C",8]]},
+  {id:"home", say:"say_home_cat", items:[["salt","1F9C2",ALL],["soap","1F9FC",ALL],["oil","1FAD9",ALL],["light","1F56F",ALL],["mill","2699",ALL],["relish","1F41F",ALL],["talk","1F4F1",ALL],["blanket","1F6CF",null],["roof","1F6D6",null]]},
+  {id:"farm", say:"say_farm", items:[["seed","1F331",5],["fert","1F9EA",6],["labour","1F9D1-200D-1F33E",7],["tools","26CF",5],["sacks","1F9FA",4],["transport","1F6B2",0]]},
+  {id:"give", say:"say_give", items:[["church","26EA",ALL],["wedding","1F48D",null],["relatives","1F932",null],["loan","1F4D2",null],["group","1FA99",ALL]]},
+  {id:"surprise", say:"say_surprise", keep:true, items:[["clinic","1F3E5"],["medicine","1F48A"],["funeral","1F54A"],["animal","1F410"],["broken","1F527"]]},
+  {id:"other", say:"say_other", items:[["clothes","1F457",null],["travel","1F9F3",null],["else","2754",null]]}
 ];
-const ITEM = {}; CATS.forEach(c=>c.items.forEach(([id,ic])=>ITEM[id]={id,ic,cat:c.id,surprise:!!c.surprise}));
-const STEPS = ["harvest","guess","eat","remember","play","fix","card"];
-const CHECKS = [3,6,9]; // Aug, Nov, Feb: every three months after harvest
-const ALL = "all";       // a cost spread evenly over the 12 moons; its amount is for the whole year
-const SPREAD_BY_DEFAULT = ["home"];
+const ITEM = {}; CATS.forEach(c=>c.items.forEach(([id,pic,dm])=>ITEM[id]={id,pic,dm,cat:c.id,keep:!!c.keep}));
+const ART = hex => "art/"+hex+".svg";
+// Example family: shows how the screens work. Amounts are invented.
+const EX = {fees:{b:1,m:8},uniform:{b:.5,m:8},books:{b:.5,m:4},salt:{b:1,m:ALL},soap:{b:.5,m:ALL},mill:{b:1,m:ALL},seed:{b:1,m:5},fert:{b:2,m:6},
+  labour:{b:1,m:7},church:{b:.5,m:ALL},loan:{b:1,m:9},clinic:{b:1,m:KEEP},funeral:{b:1,m:KEEP}};
 
-// Deployer switches and food benchmark.
-// PROTOTYPE ASSUMPTION, not validated: 150 kg maize per person per year (household average,
-// adults and children together) = 0.25 of a 50 kg bag a moon. Replace with a locally checked figure.
-// This check tells families what is typical, which is outside information; turn it off for a pure-recall study arm.
-const CHECK = { food:true, school:true, keepSafe:true };
-// Calendar reminders put the family's bag numbers into a phone calendar. Turn them off on a
-// presenter's or shared device by opening the page with ?reminders=off (or set this to false).
-// ?presenter=1 = a presenter's or shared phone: no reminders, plus a button to open the app on farmers' phones.
-const PRESENTER = /[?&]presenter=1\b/.test(location.search);
-const FEATURES = { reminders: !PRESENTER && !/[?&]reminders=off\b/.test(location.search), shareApp: PRESENTER };
+// Switches. ?presenter=1: a presenter's or shared phone (starts on "Borrowed phone", no reminders, can share the app).
+// ?reminders=off: no reminders. ?outside=off: a pure-recall study arm (no example family, no empty-category hint).
+const Q = location.search;
+const PRESENTER = /[?&]presenter=1\b/.test(Q);
+const FEATURES = { reminders: !PRESENTER && !/[?&]reminders=off\b/.test(Q), shareApp: PRESENTER, outsideInfo: !/[?&]outside=off\b/.test(Q) };
+const STEP_MS = 650;
+// Food benchmark: PROTOTYPE ASSUMPTION, not validated. 150 kg of maize per person per year (household average,
+// adults and children together) = 0.25 of a 50 kg bag a month. It tells families what is typical, which is outside
+// information the study did not give, so it only runs when FEATURES.outsideInfo is on. Replace with a local figure.
 const FOOD = { kgPerPersonYear:150, bagKg:50, askBelow:.75 };
 const typicalEat = () => S.people * FOOD.kgPerPersonYear / 12 / FOOD.bagKg;
-// A plan that only lasts because eating went below the family's first answer gets no party.
-// "First list" = costs and keep-safe when the family first leaves the cost walk. Moving a cost is fine;
-// cutting eating, keep-safe, or any first-list cost means the plan only lasts after cuts: no party.
-function cuts(){ const out=[];
-  if(S.eat0!==null && S.eat<S.eat0) out.push("🍲 "+t("cut_eat",{a:nb(S.eat0),b:nb(S.eat)}));
-  if(S.first){ if(reserve()<S.first.reserve-1e-9) out.push("🐀 "+t("keepSafeShort"));
-    for(const [k,p] of Object.entries(S.first.picks)) if(!ITEM[k].surprise && (!S.picks[k] || S.picks[k].b<p.b-1e-9)) out.push(ITEM[k].ic+" "+iName(k)); }
-  return out; }
-const eatCut = () => cuts().length>0;
 const suggestEat = () => Math.max(.5, Math.ceil(typicalEat()*2)/2);
-const FACE_FOR = {harvest:"happy", guess:"think", eat:"happy", remember:"think", play:"think", fix:"think", card:"happy"};
 
-function example(){ return { harvest:18, price:300, guess:10, eat:1.5, eat0:1.5, people:6, asked:{}, catIdx:0, catsDone:[], picks:{}, first:null,
-  exPicks:{ fees:{b:1,m:8}, uniform:{b:.5,m:8}, books:{b:.5,m:4}, salt:{b:1,m:ALL}, soap:{b:.5,m:ALL}, mill:{b:1,m:ALL},
-    seed:{b:1,m:5}, fert:{b:2,m:6}, labour:{b:1,m:7}, church:{b:.5,m:7}, loan:{b:1,m:1}, sick:{b:1,m:null}, funeral:{b:1,m:null} },
-  step:0, example:true, showPrice:true }; }
-function blank(){ return {harvest:0, price:300, guess:null, eat:1, eat0:null, people:0, asked:{}, catIdx:0, catsDone:[], picks:{}, step:0, example:false, showPrice:false}; }
-let S = blank(), sheet = null, playing = null, playMonth = -1, ui = {}, nudge = null;
+// Sack silhouettes, drawn as masks so the colour follows the theme.
+const svgUri = s => `url("data:image/svg+xml,${encodeURIComponent(s)}")`;
+const SACK_BODY = "M9 12 C3 16 2 24 4 30 C9 33.5 21 33.5 26 30 C28 24 27 16 21 12Z", SACK_TOP = "M8 3 H22 L20 9.5 H10Z";
+document.documentElement.style.setProperty("--sack-up", svgUri(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 34"><path d="${SACK_BODY}"/><path d="${SACK_TOP}"/></svg>`));
+document.documentElement.style.setProperty("--sack-up-line", svgUri(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 34" fill="none" stroke="#000" stroke-width="2.4" stroke-linejoin="round"><path d="${SACK_BODY}"/><path d="${SACK_TOP}"/></svg>`));
+document.documentElement.style.setProperty("--sack-lying", svgUri(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 10" preserveAspectRatio="none"><path d="M8 0.5 H27 Q29.5 0.5 29.5 5 Q29.5 9.5 27 9.5 H8 Q6.5 9.5 6.5 5 Q6.5 0.5 8 0.5Z"/><path d="M1.5 1 H4.2 Q5.2 5 4.2 9 H1.5 Q0.5 5 1.5 1Z"/></svg>`));
+
+// ================= STATE =================
+const nowIdx = () => (new Date().getMonth() - 4 + 12) % 12;        // today's month, May = 0
+function blank(){ return {screen:0, own:PRESENTER?false:null, bags:0, startMode:"harvest", start:Math.min(10,nowIdx()), prior:0, cat:0, visited:[],
+  picks:{}, eat:1, people:0, foodAsked:false, first:null, teach:null, remindOn:false, phoneNum:"", ex:false, exPicks:{}, received:false, showQR:false, shareApp:false}; }
+let S = blank(), sheet = null, play = -1, playing = null, eraseArmed = false, ui = {};
 
 // ================= MODEL =================
-const reserve = () => Object.entries(S.picks).filter(([k])=>ITEM[k].surprise).reduce((a,[,p])=>a+p.b,0);
-const spendIn = m => Object.entries(S.picks).filter(([k])=>!ITEM[k].surprise).reduce((a,[,p])=>a+(p.m===m?p.b:p.m===ALL?p.b/12:0),0);
-// For each moon: bags in the store at the START (not counting keep-safe), and whether the moon runs short.
-function run(){
-  let stock = S.harvest - reserve(); const out=[]; let runOut=null, hungry=0;
-  for(let m=0;m<12;m++){ const start=stock; stock -= S.eat + spendIn(m); const low=stock < -1e-9;  // tolerance: spread costs add twelfths, which do not sum exactly
-    if(low){ if(runOut===null) runOut=m; hungry++; } out.push({start:Math.max(0,start), low}); }
-  return {out, runOut, hungry, short:runOut===null?0:Math.max(.5,Math.ceil(-stock*2-1e-9)/2), end:stock};
-}
-function fmt(x){ const r=Math.round(x*2)/2, w=Math.floor(r); return r%1 ? (w?w+"½":"½") : String(w); }
+const st = () => S.startMode==="harvest" ? 0 : S.start;               // first month of the plan
+const months = () => 12 - st();
+const reserve = () => Object.values(S.picks).filter(p=>p.m===KEEP).reduce((a,p)=>a+p.b,0);
+// A dated cost set before the start month is paid in the start month; a spread cost is split over the months left.
+function spendIn(m){ const s0=st(), n=months();
+  return Object.values(S.picks).reduce((a,p)=> a + (p.m===ALL ? p.b/n : (p.m!==KEEP && p.m!==null && Math.max(s0,p.m)===m ? p.b : 0)), 0); }
+function run(){ const s0=st(); let stock=S.bags-reserve(); const out=[]; let runOut=null, dry=0;
+  for(let m=s0;m<12;m++){ const start=stock, cost=spendIn(m); stock -= S.eat + cost; const low = stock < -1e-9;   // tolerance: spread costs split into fractions
+    if(low){ if(runOut===null) runOut=m; dry++; } out.push({m, start:Math.max(0,start), cost, left:Math.max(0,stock), low}); }
+  return {out, runOut, dry, end:stock}; }
+const total = () => Object.values(S.picks).reduce((a,p)=>a+p.b,0);
+// Check months every three months from the start; the value is what the farmer will count, kept-safe bags included.
+function checks(){ const s0=st(), r=run(), rs=reserve(); let cm=[s0+3,s0+6,s0+9].filter(m=>m<=11); if(!cm.length) cm=[11];
+  return cm.map(m=>{ const o=r.out[m-s0]; return {m, v:(o?o.start:0)+rs, low:!!(o&&o.low)}; }); }
+// "First list" = costs, kept-safe bags and food when the family first finishes Food. Cutting any of them later means
+// the plan only lasts after cuts, which gets no celebration and no reminders. Moving a cost to another month is not a cut.
+function cuts(){ const out=[], f=S.first; if(!f) return out;
+  if(S.eat < f.eat-1e-9) out.push("🌽 "+t("cut_eat",{a:nb(f.eat),b:nb(S.eat)}));
+  if(reserve() < f.reserve-1e-9) out.push("🔒 "+t("cut_keep"));
+  for(const [k,p] of Object.entries(f.picks)) if(p.m!==KEEP && (!S.picks[k] || S.picks[k].b < p.b-1e-9)) out.push(iName(k));
+  return out; }
+const works = () => run().runOut===null && !cuts().length;
 
-// ================= DRAWING =================
+// ================= DRAWING HELPERS =================
 const $ = s => document.querySelector(s);
-const SACK = `<path d="M8 6 L22 6 L20 10 C27 14 28 22 26 30 C22 33 8 33 4 30 C2 22 3 14 10 10Z"/>`;
-function sack(kind, isNew){
-  const id = "h"+Math.random().toString(36).slice(2,7);
-  if(kind==="half") return `<svg class="s ${isNew?"new":""}" viewBox="0 0 30 34" aria-hidden="true"><defs><clipPath id="${id}"><rect x="0" y="18" width="30" height="16"/></clipPath></defs>
-    <g fill="none" stroke="var(--sack-dk)" stroke-width="1.5" stroke-dasharray="2 2">${SACK}</g><g clip-path="url(#${id})" fill="var(--sack)" stroke="var(--sack-dk)" stroke-width="1.5">${SACK}</g></svg>`;
-  return `<svg class="s ${kind==="ten"?"ten":""} ${isNew?"new":""}" viewBox="0 0 30 34" aria-hidden="true"><g fill="var(--sack)" stroke="var(--sack-dk)" stroke-width="1.5">${SACK}</g>
-    <path d="M9 6 Q15 2 21 6" stroke="var(--sack-dk)" stroke-width="2" fill="none"/>${kind==="ten"?`<text x="15" y="25" text-anchor="middle" font-size="10" font-weight="800" fill="#fff" font-family="Baloo 2, sans-serif">10</text>`:`<path d="M10 18 H20" stroke="var(--sack-dk)" stroke-width="1.5"/>`}</svg>`;
-}
-function sacks(n, animateLast){
-  if(n<=0) return `<div class="sacks"><span class="small">${t("empty")}</span></div>`;
-  const tens=Math.floor(n/10), ones=Math.floor(n%10), half=n%1; let h="";
-  for(let i=0;i<tens;i++) h+=sack("ten");
-  for(let i=0;i<ones;i++) h+=sack("one", animateLast && !half && i===ones-1);
-  if(half) h+=sack("half", animateLast);
-  return `<div class="sacks" aria-label="${nb(n)}">${h}</div>`;
-}
-// Round mud granary on stilts (nkokwe). frac = how full, 0..1
-function granary(frac, cls=""){
-  frac = Math.max(0, Math.min(1, frac)); const top=40, bot=100, y = bot - (bot-top)*frac;
-  return `<svg class="granary ${cls}" viewBox="0 0 120 120" aria-hidden="true">
-    <defs><clipPath id="gbody"><path d="M26 40 Q24 72 30 100 Q60 108 90 100 Q96 72 94 40 Z"/></clipPath></defs>
-    <rect x="34" y="100" width="7" height="16" rx="2" fill="var(--soil)"/><rect x="79" y="100" width="7" height="16" rx="2" fill="var(--soil)"/>
-    <path d="M26 40 Q24 72 30 100 Q60 108 90 100 Q96 72 94 40 Z" fill="var(--soil)" opacity=".35"/>
-    <g clip-path="url(#gbody)">
-      <rect class="lvl" x="20" y="${y}" width="80" height="${bot-y+10}" fill="${frac>0?"var(--maize)":"var(--hungry-soft)"}"/>
-      ${frac>0?`<rect class="lvl" x="20" y="${y}" width="80" height="2.5" fill="var(--sack-dk)"/>`:""}
-      <g fill="var(--sack-dk)" opacity=".18">${[0,1,2,3,4,5].map(i=>`<circle cx="${36+i*9}" cy="${y+8}" r="2"/><circle cx="${40+i*9}" cy="${y+16}" r="2"/>`).join("")}</g>
-    </g>
-    <path d="M26 40 Q24 72 30 100 Q60 108 90 100 Q96 72 94 40" fill="none" stroke="var(--soil)" stroke-width="4" stroke-linejoin="round"/>
-    <path d="M60 4 L110 44 Q60 52 10 44 Z" fill="var(--thatch)" stroke="var(--sack-dk)" stroke-width="2" stroke-linejoin="round"/>
-    <path d="M60 4 L40 46 M60 4 L60 49 M60 4 L80 46" stroke="var(--sack-dk)" stroke-width="1.5" opacity=".55"/>
-  </svg>`;
-}
-// Maize-cob guide with three moods
-function face(mood){
-  const eyes = mood==="worried"
-    ? `<path d="M19 30 L25 28 M37 28 L43 30" stroke="var(--ink)" stroke-width="2.5" stroke-linecap="round"/><g class="blink" style="transform-origin:31px 34px"><circle cx="23" cy="34" r="3" fill="var(--ink)"/><circle cx="39" cy="34" r="3" fill="var(--ink)"/></g>`
-    : `<g class="blink" style="transform-origin:31px 32px"><circle cx="23" cy="${mood==="think"?31:33}" r="3" fill="var(--ink)"/><circle cx="39" cy="${mood==="think"?31:33}" r="3" fill="var(--ink)"/></g>`;
-  const mouth = mood==="happy" ? `<path d="M23 42 Q31 49 39 42" stroke="var(--ink)" stroke-width="3" fill="none" stroke-linecap="round"/>`
-    : mood==="think" ? `<path d="M25 44 H37" stroke="var(--ink)" stroke-width="3" stroke-linecap="round"/>`
-    : `<path d="M24 46 Q31 41 38 46" stroke="var(--ink)" stroke-width="3" fill="none" stroke-linecap="round"/>`;
-  let kernels=""; for(let r=0;r<7;r++) for(let c=0;c<4;c++){ const x=19+c*8+(r%2?4:0), y=12+r*7; if(x<46) kernels+=`<circle cx="${x}" cy="${y}" r="2.2"/>`; }
-  return `<svg class="face" viewBox="0 0 62 72" aria-hidden="true">
-    <ellipse cx="31" cy="34" rx="18" ry="28" fill="var(--maize)" stroke="var(--sack-dk)" stroke-width="1.5"/>
-    <g fill="var(--sack-dk)" opacity=".22">${kernels}</g>
-    <path d="M13 40 Q4 58 22 70 Q18 56 22 44 Z" fill="var(--leaf)"/><path d="M49 40 Q58 58 40 70 Q44 56 40 44 Z" fill="var(--leaf)"/>
-    <path d="M31 6 Q27 0 22 2 M31 6 Q35 -1 40 2" stroke="var(--sack-dk)" stroke-width="1.5" fill="none"/>
-    ${eyes}${mouth}${mood==="happy"?`<circle cx="18" cy="41" r="3" fill="var(--hot)" opacity=".5"/><circle cx="44" cy="41" r="3" fill="var(--hot)" opacity=".5"/>`:""}
-  </svg>`;
-}
-const band = () => `<div class="band" aria-hidden="true">${SEASON.map(s=>`<span class="s-${s}"></span>`).join("")}</div>`;
-const labels = () => `<div class="mlab">${MONTH_IC.map((_,i)=>`<span>${mName(i)}</span>`).join("")}</div>`;
-const legend = () => { const L=PHRASES[LANG].seasons||PHRASES.en.seasons; return `<div class="legend">${["harv","dry","hot","rain"].map(s=>`<span><i class="s-${s}" style="background:var(--${s==="harv"?"maize":s==="rain"?"rain-soft":s})"></i>${L[s]}</span>`).join("")}</div>`; };
-const stepper = (minus, plus, val, unit, atMin) => `<div class="stepper"><button data-a="${minus}" aria-label="less" ${atMin?'aria-disabled="true"':""}>−</button><div class="n">${val}</div><button data-a="${plus}" aria-label="more">+</button></div><div class="unit">${unit}</div>`;
-const moonGrid = (cls, act) => `<div class="moons" id="moons">${MONTH_IC.map((ic,i)=>`<button class="m s-${SEASON[i]} ${cls(i)}" data-a="${act}" data-i="${i}" aria-pressed="${cls(i).includes("sel")}"><span class="ic">${ic}</span><span class="nm">${mName(i)}</span></button>`).join("")}</div>`;
-const tip = (i,o) => o.low && o.start<=0 ? t("tip_none",{m:mName(i)}) : t("tip_left",{m:mName(i),b:nb(o.start)});
-const guessName = () => S.guess===12 ? t("harvestWord") : mName(S.guess);
-const chip = s => `<span class="chipi">${s}</span>`;
-// Each flat sack in a column is one bag (or 2 or 5 for big harvests); the top sack is cut when there is a part bag.
-function bagUnit(){ const base=Math.max(1,S.harvest-reserve()); return base<=24?1:base<=48?2:5; }
-function meterStyle(){ const base=Math.max(1,S.harvest-reserve()), slots=Math.ceil(base/bagUnit()); return `--slot:calc((var(--mh) - 25px) / ${slots})`; }
-const bagKey = () => bagUnit()>1 ? `<div class="bagkey">${t("bagkey",{n:bagUnit()})}</div>` : "";
-function bars(r, upto){ const base=Math.max(1,S.harvest-reserve());
-  return r.out.map((o,i)=>{ const vis=i<=upto, pct=vis?Math.min(100,o.start/base*100):0; // future moons stay empty: no spoilers
-    return `<div class="b ${vis?(o.low?"low":""):"fut"} ${i===upto&&upto<11?"now":""}" tabindex="0" data-tip="${vis?tip(i,o):mName(i)}" aria-label="${vis?tip(i,o):mName(i)}"><span style="height:${pct}%"></span>${vis?`<em class="v" style="bottom:calc(${pct}% + 2px)">${fmt(o.start)}</em>`:""}</div>`; }).join(""); }
-function speak(s){ try{ speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(s.replace(/<[^>]+>/g,"")); u.rate=.92; u.lang="en"; speechSynthesis.speak(u);}catch(e){} }
+const esc = s => String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function sacks(n, cls="", ink=0, animate=false){ let h=""; const w=Math.floor(Math.min(n,60)+1e-9);
+  for(let i=0;i<w;i++) h+=`<i class="sk ${cls} ${i<ink?"ink":""} ${animate&&i===w-1&&!(n%1)?"new":""}"></i>`;
+  if(n%1 && n<60) h+=`<i class="sk half ${cls} ${animate?"new":""}"></i>`;
+  return `<div class="sacks" aria-hidden="true">${h}</div>`; }
+const stepper = (minus, plus, val, labels, atMin, atMax) =>
+  `<div class="stepper"><button data-a="${minus}" aria-label="${labels[0]}" ${atMin?'aria-disabled="true"':""}>−</button><div class="n">${val}</div><button data-a="${plus}" aria-label="${labels[1]}" ${atMax?'aria-disabled="true"':""}>+</button></div>`;
+const img = (hex, size) => `<div class="pic"><img src="${ART(hex)}" alt="" width="${size}" height="${size}"></div>`;
+function speak(s){ try{ speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(s.replace(/<[^>]+>/g,"")); u.rate=.9; u.lang="en"; speechSynthesis.speak(u); }catch(e){} }
 
 // ================= SCREENS =================
-const SCREENS = {
-  harvest: () => ({ say:t("harvest_say"), next:S.harvest>0, body:`
-    ${S.example?`<div class="banner"><span>👀 ${t("exampleBanner")}</span><button data-a="new">${t("mine")}</button></div>`:""}
-    <div class="store-row">${granary(S.harvest/30)}${sacks(S.harvest, ui.added)}</div>
-    ${stepper("h-","h+",S.harvest,t("harvest_unit"),S.harvest<=0)}
-    ${S.showPrice?`<div class="row"><span class="small">${t("harvest_price")}</span><button class="pill" data-a="p-">−</button><b class="small" style="font-size:18px">${t("k",{n:S.price})}</b><button class="pill" data-a="p+">+</button></div>`
-      :`<div class="row"><button class="pill" data-a="price">${t("price_btn")}</button></div>`}
-    ${S.example?"":`<div class="row"><button class="pill strong" data-a="ex">${t("example")}</button></div>`}
-    ${FEATURES.shareApp ? (ui.shareApp ? sharePanel(t("share_app_head"), location.origin+location.pathname, t("share_wa_text",{url:location.origin+location.pathname}), "")
-        : `<div class="row"><button class="pill" data-a="shareApp">${t("share_app")}</button></div>`) : ""}` }),
+const SCREEN = {
+  phone(){ return { say:t("say_phone"), next:S.own!==null, body:`
+    ${[[true,"own","1F4F1"],[false,"borrowed","1F91D"]].map(([v,k,pic])=>`<button class="choice ${S.own===v?"on":""}" data-a="own" data-v="${v}" aria-pressed="${S.own===v}">
+      ${img(pic,96)}<b>${t(k)}</b><span>${t(k+"_sub")}</span></button>`).join("")}
+    ${FEATURES.shareApp ? (S.shareApp ? sharePanel(t("share_app_head"), appUrl(), t("share_wa_text",{url:appUrl()})) : `<div class="row"><button class="pill" data-a="shareApp">${t("share_app")}</button></div>`) : ""}
+    <p class="credit">${t("credit")}</p>` }; },
 
-  guess: () => ({ say:t("guess_say"), next:S.guess!==null, body:`${moonGrid(i=>S.guess===i?"sel":"","g")}
-    <button class="m wide ${S.guess===12?"sel":""}" data-a="g" data-i="12"><span class="nm">${t("guess_lasts")}</span></button>${legend()}` }),
+  bags(){ return { say:t("say_bags"), next:S.bags>0, body:`
+    ${S.ex?`<div class="banner"><span>${t("example_banner")}</span><button data-a="mine">${t("start_mine")}</button></div>`:""}
+    <div class="opts">${[["harvest","just_harvested"],["today","from_today"]].map(([v,k])=>`<button class="opt ${S.startMode===v?"on":""}" data-a="startMode" data-v="${v}" aria-pressed="${S.startMode===v}"><b>${t(k)}</b><span>${t(k+"_sub")}</span></button>`).join("")}</div>
+    ${S.startMode==="today"?`<div class="monthpick"><button data-a="startPrev" aria-label="${t("earlier_month")}">‹</button><span>${t("now_month",{m:mL(S.start)})}</span><button data-a="startNext" aria-label="${t("later_month")}">›</button></div>`:""}
+    ${stepper("bags-","bags+",S.bags,[t("one_less"),t("one_more")],S.bags<=0,S.bags>=60)}
+    <div class="unit">${t("bags_unit")}</div>
+    ${sacks(S.bags,"",0,ui.added)}
+    ${FEATURES.outsideInfo && !S.ex ? `<button class="pill" data-a="example" style="align-self:center">${t("example")}</button>`:""}` }; },
 
-  eat: () => ({ say:t("eat_say"), next:S.eat>0 && S.people>0, body:`
-    <div class="fam">${peopleRow()}</div>
-    <div class="store-row">${sacks(S.eat, ui.added)}</div>
-    ${stepper("e-","e+",fmt(S.eat),t("bagsEachMoon"),S.eat<=.5)}
-    <div class="boardwrap"><div class="board">${MONTH_IC.map(()=>`<div class="col">${pins(S.eat)}</div>`).join("")}</div>${band()}${labels()}</div>
-    <div class="small">${t("eat_year",{b:nb(S.eat*12)})}</div>` }),
+  prior(){ return { say:t("say_prior"), next:true, body:`
+    <div class="sub">${t("prior_sub")}</div>
+    ${stepper("prior-","prior+",fmt(S.prior),[t("one_less"),t("one_more")],S.prior<=0,S.prior>=S.bags)}
+    <div class="unit">${t("prior_unit",{b:nb(S.bags)})}</div>
+    <div class="sacks" aria-hidden="true">${Array.from({length:Math.min(60,S.bags)},(_,i)=>`<i class="sk ${i<S.prior?"ink":"hollow"}"></i>`).join("")}</div>` }; },
 
-  remember: () => { const c = CATS[S.catIdx]; return { say:t("say_"+c.id), next:true, nextLabel:S.catIdx<CATS.length-1?t("next"):t("done"), body:`
-    <div class="cats">${CATS.map((k,i)=>`<button class="cat ${i===S.catIdx?"on":""} ${S.catsDone.includes(k.id)?"done":""}" data-a="cat" data-i="${i}">${k.ic} ${t("cat_"+k.id)}</button>`).join("")}</div>
-    ${S.example && c.items.some(([id])=>S.exPicks[id] && !S.picks[id]) ? `<button class="pill strong" data-a="exReveal" style="align-self:center">${t("ex_reveal")}</button>` : ""}
-    <div class="cards">${c.items.map(([id,ic])=>{const p=S.picks[id];return `<button class="card ${p?"picked":""}" data-a="item" data-id="${id}" aria-pressed="${!!p}">${p?`<span class="tag">${fmt(p.b)}</span>`:""}<span class="ic">${ic}</span><span class="lb">${iName(id)}</span></button>`}).join("")}</div>
-    <div class="boardwrap"><span class="ttl">${t("board")}</span>
-      ${c.surprise?`<span class="rat ${ui.ratRun?"run":""}" aria-hidden="true">🐀</span>`:""}
-      <div class="board">${MONTH_IC.map((_,i)=>`<div class="col" title="${mName(i)}">${pins(spendIn(i))}</div>`).join("")}</div>
-      ${band()}${labels()}
-      ${reserve()?`<div class="keepsafe">${t("keepSafe",{b:nb(reserve())})}</div>`:""}</div>` }; },
+  remember(){ const c=CATS[S.cat], ids=c.items.map(i=>i[0]), none=!ids.some(id=>S.picks[id]);
+    return { say:t(c.say), next:true, nextLabel: S.cat<5 ? t("next_cat",{c:t("cat_"+CATS[S.cat+1].id)}) : t("next"), body:`
+    <div class="tabs">${CATS.map((k,i)=>`<button class="tab ${i===S.cat?"on":""}" data-a="cat" data-i="${i}" aria-pressed="${i===S.cat}"><span>${t("cat_"+k.id)}</span><small>${k.items.some(x=>S.picks[x[0]])?"✓":S.visited.includes(i)?"·":""}</small></button>`).join("")}</div>
+    <div class="catline">${c.keep?`<span class="rat ${ui.ratRun?"run":""}" aria-hidden="true">🐀</span>`:""}${t("cat_line",{i:S.cat+1,c:t("cat_"+c.id)})}</div>
+    ${S.ex && ids.some(id=>S.exPicks[id] && !S.picks[id]) ? `<button class="dashed" data-a="reveal">${t("reveal")}</button>`:""}
+    <div class="cards">${c.items.map(([id,pic])=>{ const p=S.picks[id]; return `<button class="card ${p?"on":""}" data-a="item" data-id="${id}" aria-pressed="${!!p}">
+      ${img(pic,62)}<b>${iName(id)}</b>${p?`<span class="tag">${fmt(p.b)}</span>`:""}</button>`; }).join("")}</div>
+    ${FEATURES.outsideInfo && !S.ex && none ? `<div class="hint">${t("empty_hint")}</div>`:""}
+    <div class="total"><span>${t("remembered")}</span><b>${nb(total())}</b></div>` }; },
 
-  play: () => { const r=run(), done=playMonth>=11, shown=Math.max(-1,playMonth);
-    const cur = shown<0 ? 1 : (r.out[shown].low && r.out[shown].start<=0 ? 0 : r.out[shown].start/Math.max(1,S.harvest-reserve()));
-    const vs = c => `<div class="vs"><div><div class="k">${t("guessed")}</div><div class="v">${guessName()}</div></div><div><div class="k">${t("counted")}</div><div class="v">${c}</div></div></div>`;
-    const nPicks=Object.keys(S.picks).length, totB=Object.values(S.picks).reduce((a,p)=>a+p.b,0);
-    const rem = nPicks ? `<span class="note">${t(nPicks===1?"remembered_one":"remembered",{n:nPicks,b:nb(totB)})}</span>` : "";
-    const verdict = !done ? "" : r.runOut===null && eatCut()
-      ? `<div class="verdict quiet"><b>${t("cut_head")}</b><ul class="cutlist">${cuts().map(c=>`<li>${c}</li>`).join("")}</ul><span class="note">${t("cut_q")}</span><button class="pill strong" data-a="cutBack" style="justify-self:center">${t("cut_back")}</button></div>`
-      : r.runOut===null
-      ? `<div class="burst">${burst()}</div><div class="verdict good"><b>${t("good")}</b>${rem}${vs("🌽 "+t("harvestWord"))}<span class="note">${t(reserve()?"good_spare_r":"good_spare",{b:nb(r.end),r:nb(reserve())})}</span><span class="note">${t("recheck_q")}</span><button class="pill strong" data-a="recheck" style="justify-self:center">${t("recheck_btn")}</button></div>`
-      : `<div class="verdict bad"><span>${t(r.hungry===1?"bad_one":"bad",{m:mName(r.runOut),h:r.hungry})}</span>${rem}${vs(mName(r.runOut))}<span class="note">${t("bad_comfort")}</span></div>`;
-    return { say:done?(r.runOut===null?(eatCut()?t("cut_say"):t("play_done_good")):t("play_done_bad")):t("play_say"), mood: done ? (r.runOut===null&&!eatCut()?"happy":"think") : "think", next:done, body:`
-      <div class="playrow">${granary(cur)}<div><div class="meter" style="${meterStyle()}">${bars(r, shown)}</div>${band()}${labels()}</div></div>${bagKey()}
-      <div class="tip" id="tip" aria-live="polite">${shown<0?t("play_tap"):t("play_tip")}</div>${verdict}
-      ${done?`<div class="row"><button class="pill" data-a="play">${t("play_again")}</button></div>`:(playing?"":`<button class="big gold" data-a="play" style="flex:none">${t("play_btn")}</button>`)}` }; },
+  food(){ const nudge = ui.foodNudge || S.foodNudge;
+    return { say: nudge ? t("nudge_food",{b:nb(S.eat),p:S.people,s:nb(suggestEat())}) : t("say_food"), next:S.eat>0 && S.people>0, body:`
+    ${nudge?`<div class="grid2"><button class="btn gold" data-a="nudgeYes">${t("nudge_yes",{s:nb(suggestEat())})}</button><button class="btn" data-a="nudgeNo">${t("nudge_no")}</button></div>`:""}
+    <div class="people"><span>${t("people")}</span><div class="stepper small"><button data-a="ppl-" aria-label="${t("fewer_people")}" ${S.people<=0?'aria-disabled="true"':""}>−</button><div class="n">${S.people}</div><button data-a="ppl+" aria-label="${t("more_people")}" ${S.people>=20?'aria-disabled="true"':""}>+</button></div></div>
+    <div class="sub">${t("food_sub")}</div>
+    ${stepper("eat-","eat+",fmt(S.eat),[t("half_less"),t("half_more")],S.eat<=.5,S.eat>=8)}
+    <div class="unit">${t("food_unit")}</div>
+    ${sacks(S.eat,"big",0,ui.added)}
+    <div class="total"><span>${t("food_total",{n:months()})}</span><b>${nb(S.eat*months())}</b></div>` }; },
 
-  fix: () => { const r=run();
-    const btn = (a,l,cap,id,flag,sr) => `<button data-a="${a}" data-id="${id||""}" aria-label="${sr||cap||l}" ${flag&&flag.includes("min")?'aria-disabled="true"':""}>${l}${cap?`<small>${cap}</small>`:""}</button>`;
-    const sr = (key,x) => t(key,{x});
-    const row = (ic,label,sub,ctl,cls="",id="") => `<div class="fx ${cls}" ${id?`id="fx-${id}"`:""}><span class="ic">${ic}</span><span class="t">${label}<small>${sub}</small></span><span class="ctl">${ctl}</span></div>`;
-    const ord = m => m===ALL ? -1 : m;
-    const items = Object.entries(S.picks).filter(([k])=>!ITEM[k].surprise).sort((a,b)=>ord(a[1].m)-ord(b[1].m))
-      .map(([k,p])=> p.m===ALL
-        ? row(ITEM[k].ic, iName(k), `${nb(p.b)} · ${t("spread_short")}`, btn("fx-","−","",k,"",sr("sr_less",iName(k))), "", k)
-        : row(ITEM[k].ic, iName(k), `${nb(p.b)} · ${mName(p.m)}`, btn("fx-","−","",k,"",sr("sr_less",iName(k)))+btn("fx<","◀",t("earlier"),k,p.m<=0?"min":"",sr("sr_earlier",iName(k)))+btn("fx>","▶",t("later"),k,p.m>=11?"min":"",sr("sr_later",iName(k))), r.out[p.m].low?"red":"", k)).join("");
-    const ok = r.runOut===null, cut = ok && eatCut();
-    return { say: cut ? t("cut_say") : ok ? t("fix_ok_say") : t("fix_say",{minus:chip("−"),earlier:chip("◀"),later:chip("▶")}), mood:ok&&!cut?"happy":"think", next:true, body:`
-      <div><div class="meter" style="--mh:100px;${meterStyle()}">${bars(r, 11)}</div>${band()}${labels()}${bagKey()}</div>
-      <div class="tip" id="tip" aria-live="polite" style="color:var(${cut?"--ink2":ok?"--leaf":"--hungry"})">${cut?t("cut_tip"):ok?t("fix_ok"):t("fix_short",{b:nb(r.short)})}</div>
-      <div class="fixlist">${items||`<span class="small">${t("noCosts")}</span>`}</div>
-      ${row("🐀",t("keepSafeRow"),nb(reserve()),btn("r-","−","","","",sr("sr_less",t("keepSafeShort")))+btn("r+","+","","","",sr("sr_more",t("keepSafeShort"))))}
-      ${row("🍲",t("eating"),`${fmt(S.eat)} ${t("bagsEachMoon")}`,btn("e-","−","",""," "+(S.eat<=.5?"min":""),sr("sr_less",t("eating")))+btn("e+","+","","","",sr("sr_more",t("eating"))))}
-      ${S.eat0!==null && S.eat<S.eat0 ? `<div class="eatnote">${t("eat_less")}</div>`:""}
-      ${cut?`<div class="verdict quiet"><b>${t("cut_head")}</b><ul class="cutlist">${cuts().map(c=>`<li>${c}</li>`).join("")}</ul><button class="pill strong" data-a="cutBack" style="justify-self:center">${t("cut_back")}</button></div>`:""}
-      ${r.short>0?`<div class="verdict bad"><span class="note">${t("tooSmall")}</span></div>`:""}` }; },
+  play(){ const r=run(), n=months(), s0=st(), rs=reserve(), base=Math.max(0,S.bags-rs), done=play>=n-1, cur=play>=0?r.out[play]:null;
+    const unit=Math.max(1,Math.ceil(Math.max(1,base)/16)), cols=`repeat(${n},minmax(0,1fr))`;
+    const col = (o,i) => { const shown=i<=play, k=shown?Math.ceil(o.start/unit-1e-9):0;
+      return `<div class="col"><div class="v">${shown?fmt(o.start):""}</div>
+        <div class="stack ${!shown?"fut":o.low?"low":""} ${i===play?"cur":""}" aria-label="${mL(o.m)}: ${shown?(o.low?t("cap_short"):nb(o.start)):""}">${"<i></i>".repeat(k)}${shown&&o.low?`<span class="bang">!</span>`:""}</div></div>`; };
+    const lab = o => { const d=Object.values(S.picks).filter(p=>p.m!==ALL&&p.m!==KEEP&&p.m!==null&&Math.max(s0,p.m)===o.m).length;
+      return `<div><span>${mS(o.m)}</span><p>${"<i></i>".repeat(Math.min(3,d))}</p></div>`; };
+    const caption = !cur ? t("cap_start") : t("cap_month",{m:mL(cur.m), e:fmt(S.eat), pay:cur.cost>=0.25?t("cap_pay",{c:fmt(cur.cost)}):"", rest:cur.low?t("cap_short"):t("cap_left",{l:fmt(cur.left)})});
+    const cl=cuts(), lasts=r.runOut===null, mx=Math.max(S.prior,total(),1);
+    const result = !done ? "" : `
+      <div class="result ${lasts&&!cl.length?"good":lasts?"cut":"bad"}">
+        ${lasts && cl.length ? `<h3>${t("cut_title")}</h3><ul>${cl.map(c=>`<li>${esc(c)}</li>`).join("")}</ul><p>${t("cut_q")}</p><button class="btn" data-a="cutBack">${t("cut_back")}</button>`
+          : lasts ? `<h3>${t("good_title")}</h3><p>${t(rs?"good_sub_keep":"good_sub",{b:nb(Math.max(0,r.end)),k:nb(rs)})}</p>`
+          : `<h3>${t("bad_title",{m:mL(r.runOut)})}</h3><p>${r.dry===1?t("bad_sub_one"):t("bad_sub",{n:r.dry})}</p>`}
+        <div class="recall"><b>${t("recall_head")}</b><div class="bars">
+          <span>${t("first_guess")}</span><div class="track"><div class="g" style="width:${S.prior/mx*100}%"></div></div><b>${fmt(S.prior)}</b>
+          <span>${t("remembered_bar")}</span><div class="track"><div class="r" style="width:${total()/mx*100}%"></div></div><b>${fmt(total())}</b></div></div>
+      </div>
+      <div class="grid2"><button class="btn" data-a="toFood">${t("change_food")}</button><button class="btn" data-a="toCosts">${t("change_costs")}</button></div>
+      <button class="linkbtn" data-a="replay">${t("play_again")}</button>`;
+    return { say:t("say_play"), next:done, body:`
+      <div class="storehead"><div style="display:flex;flex-direction:column"><span class="lab">${cur?t("store_end",{m:mL(cur.m)}):t("store_now")}</span><span class="num">${fmt(cur?cur.left:base)}</span></div>
+        ${rs?`<div class="keepbox"><span>${t("kept_safe")}</span><b>${fmt(rs)}</b></div>`:""}</div>
+      <div class="chart"><div class="cols" style="grid-template-columns:${cols}">${r.out.map(col).join("")}</div>
+        <div class="labs" style="grid-template-columns:${cols}">${r.out.map(lab).join("")}</div>
+        <div class="key"><span><i class="ks"></i>${unit===1?t("unit_one"):t("unit_many",{n:unit})}</span><span><i class="kd"></i>${t("cost_key")}</span></div></div>
+      <div class="caption" aria-live="polite">${caption}</div>
+      ${done ? result : `<div class="grid2"><button class="playbtn" data-a="step">${t("next_month")}</button><button class="playbtn gold" data-a="playAll">${t("play_all")}</button></div>`}` }; },
 
-  card: () => { const r=run(); return { say:t("card_say"), mood:r.runOut===null&&!eatCut()?"happy":"think", foot:`<button class="big gold" data-a="keep">${t("keep")}</button>`, body:`
-    <div class="plancard"><div class="pc-grid">${r.out.map((o,i)=>`<div class="pc s-${SEASON[i]} ${o.low?"low":""} ${CHECKS.includes(i)?"check":""} ${i===11&&r.runOut===null?"harv":""}"><span class="nm">${MONTH_IC[i]} ${mName(i)}</span><span class="cnt">${o.low&&o.start<=0?"0":fmt(o.start)}</span><span class="it">${o.low&&o.start<=0?"🥣":Object.entries(S.picks).filter(([k,p])=>p.m===i&&!ITEM[k].surprise).map(([k])=>ITEM[k].ic).join("")}</span></div>`).join("")}</div>
-      ${(()=>{ const ic=Object.entries(S.picks).filter(([k,p])=>p.m===ALL).map(([k])=>ITEM[k].ic).join(" "); return ic?`<div class="cardnote">${t("card_spread",{ic})}</div>`:""; })()}
-      ${r.short>0?`<div class="cardnote bad">${t("card_short",{b:nb(r.short)})}</div>`:""}
-      ${eatCut()?`<div class="cardnote"><b>${t("cut_card",{list:cuts().join(", ")})}</b></div>`:""}
-      <div class="cardnote">${t("card_legend")}${reserve()?" "+t("card_keepsafe",{b:"🐀 "+nb(reserve())}):""}</div></div>
-    ${S.received?`<div class="banner"><span>${t("received")}</span></div>`:""}
-    ${remindersHtml(r)}
-    ${S.showSend ? sharePanel(t("send_head"), planToLink(), smsText()+"\n"+t("send_wa_text",{url:planToLink()}), (PRESENTER||!FEATURES.reminders?t("send_presenter")+" ":"")+t("send_note"), smsText())
-      : `<div class="row"><button class="pill" data-a="sendPlan">${t("send_plan")}</button></div>`}
-    ${ui.toast?`<div class="toast">${t("keep_toast")}</div>`:""}
-    <div class="row"><button class="pill" data-a="restart">${t("startAgain")}</button><button class="pill" data-a="erase">${ui.eraseArmed?t("erase_sure"):t("erase")}</button></div>` }; }
+  teach(){ const ck=checks(), c0=ck[0]; let ch=[c0.v, c0.v+2, c0.v-2<0?c0.v+4:c0.v-2]; const rot=Math.round(c0.v)%3; ch=ch.slice(rot).concat(ch.slice(0,rot));
+    return { say:t("say_teach",{m:mL(c0.m)}), next:S.teach!==null, body:`
+    <div class="sub">${t("teach_sub")}</div>
+    <div class="choices3">${ch.map(v=>`<button data-a="teach" data-v="${v}" class="${S.teach===null?"":v===c0.v?"right":S.teach===v?"wrong":""}">${fmt(v)}</button>`).join("")}</div>
+    ${S.teach===null?"":`<div class="fb" aria-live="polite">${S.teach===c0.v?t("teach_right"):t("teach_wrong",{b:nb(c0.v)})}</div>
+      <div class="checks"><span class="sub">${t("teach_days")}</span>${ck.map(k=>`<div class="check ${k.low?"low":""}"><span>${t("day",{m:mL(k.m)})}</span><b>${fmt(k.v)}</b></div>`).join("")}</div>`}` }; },
+
+  home(){ const n=months(), base=Math.max(0,S.bags-reserve()), sum=id=>Object.entries(S.picks).filter(([k,p])=>ITEM[k].cat===id&&p.m!==KEEP).reduce((a,[,p])=>a+p.b,0);
+    const rows=[[t("lab_food"),"1F33D",Math.min(S.eat*n,base)],[t("cat_school"),"1F3EB",sum("school")],[t("cat_home"),"1F3E0",sum("home")],[t("cat_farm"),"1F331",sum("farm")],
+      [t("cat_give"),"1F932",sum("give")],[t("cat_other"),"2754",sum("other")],[t("lab_keep"),"1F512",reserve()]].filter(x=>x[2]>0);
+    const ck=checks();
+    const own = S.own!==false ? `<div class="sect"><b>${t("remind_head")}</b>
+      ${!FEATURES.reminders ? "" : !works() ? `<span class="small">${t("remind_wait")}</span>` : `
+        <button class="toggle ${S.remindOn?"on":""}" data-a="remind" aria-pressed="${S.remindOn}"><span>${S.remindOn?t("remind_on"):t("remind_off")}</span><span>${S.remindOn?"✓":"○"}</span></button>
+        ${S.remindOn ? `${ck.map(k=>`<div class="crow"><span>${t("day",{m:mL(k.m)})}</span><b>${fmt(k.v)}</b></div>`).join("")}
+          ${reminderLinks()}<span class="small">${t("remind_note")}</span>` : ""}`}</div>` : "";
+    const borrowed = S.own===false ? `<div class="sect"><b>${t("send_head")}</b>
+      <input class="tel" id="tel" data-a="tel" inputmode="tel" autocomplete="tel" placeholder="${t("tel_ph")}" value="${esc(S.phoneNum)}" aria-label="${t("tel_ph")}">
+      <div class="smsbox" id="smsbox">${esc(smsText())}</div>
+      <div class="grid2"><a class="btn gold" id="smsA" href="${smsHref()}">${t("sms")}</a><a class="btn" id="waA" href="${waHref()}" target="_blank" rel="noopener">${t("whatsapp")}</a></div>
+      <span class="small">${t("send_note")}</span>
+      ${S.showQR ? `<div class="sect"><span class="small">${t("qr_head")}</span>${qrBlock(planToLink())}</div>` : `<button class="pill" data-a="showQR" style="align-self:center">📲 ${t("qr_btn")}</button>`}
+      <button class="btn erase ${eraseArmed?"armed":""}" data-a="erase">${eraseArmed?t("erase_sure"):t("erase")}</button></div>` : "";
+    return { say:t("say_home"), next:false, noNext:true, body:`
+      ${S.received?`<div class="banner"><span>${t("received")}</span></div>`:""}
+      <div class="sect"><b>${t("mark")}</b>${rows.map(([name,pic,v])=>`<div class="lrow">${img(pic,40)}<span>${name}</span><b>${fmt(v)}</b></div>`).join("")}
+        <span class="small">${t("mark_note")}</span></div>
+      ${own}${borrowed}
+      <p class="credit">${t("credit")}</p>` }; }
 };
-function peopleRow(){ const v=S.people;
-  return `<div class="fx"><span class="ic">👪</span><span class="t">${t("people")}<small class="ppl">${"🧑".repeat(Math.min(v,12))}${v>12?"…":""}</small></span><span class="ctl"><button data-a="ppl" data-d="-1" aria-label="less" ${v<=0?'aria-disabled="true"':""}>−</button><b class="famn">${v}</b><button data-a="ppl" data-d="1" aria-label="more">+</button></span></div>`; }
-// ---- calendar reminders at the check months (Google Calendar link, or an .ics file) ----
-function checkDates(r){
-  const now=new Date(), y0 = now.getMonth()>=3 ? now.getFullYear() : now.getFullYear()-1; // plans made from April on are for the harvest year starting in May
-  return CHECKS.map(i=>{ const jm=(4+i)%12, y=y0+((4+i)>=12?1:0), d=new Date(y,jm,1);
-    const inStore = Math.max(0,r.out[i].start)+reserve();
-    return {i, d, inStore, text:t("remind_title"), details:t("remind_details",{b:nb(inStore), m:(PHRASES[LANG].monthsLong||PHRASES.en.monthsLong)[i], r:nb(reserve())})};
-  }).filter(c=>c.d>now);
-}
+
+// ================= SHEET (amount and month for one cost) =================
+function openSheet(id){ const it=ITEM[id], p=S.picks[id], s0=st();
+  const m = p ? p.m : it.keep ? KEEP : it.dm===ALL ? ALL : it.dm==null ? null : Math.max(s0,it.dm);
+  sheet = {id, b:p?p.b:1, m, had:!!p}; }
+function sheetHtml(){ const it=ITEM[sheet.id], s0=st(), can=sheet.b>0 && sheet.m!=null;
+  const ask = it.keep ? t("ask_keep") : sheet.m===ALL ? t("ask_year") : t("ask_bags");
+  return `<div class="scrim" data-a="close"></div><div class="sheet" role="dialog" aria-modal="true" aria-label="${iName(it.id)}">
+    <div class="hd">${img(it.pic,54)}<b>${iName(it.id)}</b><button class="x" data-a="close" aria-label="${t("close")}">✕</button></div>
+    <div class="sub">${ask}</div>
+    ${stepper("s-","s+",fmt(sheet.b),[t("half_less"),t("half_more")],sheet.b<=.5,sheet.b>=20)}
+    <div class="unit" style="font-size:15px">${(sheet.b>0&&sheet.b<=1?t("bag_one",{n:""}):t("bag_other",{n:""})).trim()}</div>
+    ${it.keep ? `<div class="keepnote">${t("keep_note")}</div>` : `<b>${sheet.warn?`<span style="color:var(--short-dk)">${t("pick_month")}</span>`:t("when")}</b>
+      <div class="months" id="months">${Array.from({length:12-s0},(_,i)=>{ const m=s0+i; return `<button class="${sheet.m===m?"on":""}" data-a="sm" data-i="${m}" aria-pressed="${sheet.m===m}">${mS(m)}</button>`; }).join("")}
+        <button class="every ${sheet.m===ALL?"on":""}" data-a="sm" data-i="all" aria-pressed="${sheet.m===ALL}">${t("every_month")}</button></div>`}
+    <button class="save" data-a="save" aria-disabled="${!can}">${t("save")}</button>
+    ${sheet.had?`<button class="linkbtn" data-a="remove">${t("not_this_year")}</button>`:""}</div>`; }
+
+// ================= SENDING, QR AND REMINDERS =================
+const appUrl = () => location.origin + location.pathname;
+const ascii = s => s.replace(/(\d)½/g,"$1 1/2").replace(/½/g,"1/2");          // plain characters keep it to one SMS
+function smsText(){ return ascii(t("sms_text",{list:checks().map(k=>t("sms_item",{m:mS(k.m),v:fmt(k.v)})).join("; ")})); }
+const telDigits = () => S.phoneNum.replace(/[^\d+]/g,"");
+const smsHref = () => "sms:"+telDigits()+"?&body="+encodeURIComponent(smsText());
+const waHref = () => "https://wa.me/"+telDigits().replace(/\D/g,"")+"?text="+encodeURIComponent(smsText()+"\n"+planToLink());
+function qrBlock(url){ return `<div class="qr" data-text="${esc(url)}"></div>`; }
+function drawQRs(){ document.querySelectorAll(".qr[data-text]").forEach(el=>{ const url=el.dataset.text; el.removeAttribute("data-text");
+  if(window.qrcode){ try{ const q=qrcode(0,"M"); q.addData(url); q.make(); el.innerHTML=q.createSvgTag({cellSize:4,margin:2,scalable:true}); return; }catch(e){} }
+  el.innerHTML = `<span class="small">${t("no_qr")}</span><input class="linkbox" readonly value="${esc(url)}">`; }); }
+function sharePanel(head, url, waText){ return `<div class="sect" style="align-items:center"><span class="small">${head}</span>${qrBlock(url)}
+  <a class="btn" href="https://wa.me/?text=${encodeURIComponent(waText)}" target="_blank" rel="noopener">${t("share_wa")}</a></div>`; }
+// Calendar dates: the harvest year starts in May; plans made from April on belong to the year starting that May.
+function checkDates(){ const now=new Date(), y0 = now.getMonth()>=3 ? now.getFullYear() : now.getFullYear()-1;
+  return checks().map(k=>({...k, d:new Date(y0+((4+k.m)>=12?1:0), (4+k.m)%12, 1)})).filter(c=>c.d>now); }
 const ymd = d => `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,"0")}${String(d.getDate()).padStart(2,"0")}`;
 const dayAfter = d => new Date(d.getFullYear(), d.getMonth(), d.getDate()+1);
-function gcalUrl(c){ return "https://calendar.google.com/calendar/render?action=TEMPLATE&text="+encodeURIComponent(c.text)
-  +"&dates="+ymd(c.d)+"/"+ymd(dayAfter(c.d))+"&details="+encodeURIComponent(c.details); }
+const details = c => t("remind_details",{b:nb(c.v)});
+function gcalUrl(c){ return "https://calendar.google.com/calendar/render?action=TEMPLATE&text="+encodeURIComponent(t("remind_title"))
+  +"&dates="+ymd(c.d)+"/"+ymd(dayAfter(c.d))+"&details="+encodeURIComponent(details(c)); }
 function icsUrl(list){
-  const esc = s => s.replace(/[\\,;]/g, m=>"\\"+m);
+  const escI = s => s.replace(/[\\,;]/g, m=>"\\"+m);
   const fold = line => { const out=[]; let cur=""; for(const ch of line){ if(new TextEncoder().encode(cur+ch).length>73){ out.push(cur); cur=" "+ch; } else cur+=ch; } out.push(cur); return out.join("\r\n"); };
   const stamp = new Date().toISOString().replace(/[-:]/g,"").replace(/\.\d{3}/,"");
-  const ev = list.map((c,n)=>["BEGIN:VEVENT","UID:bags-till-harvest-"+ymd(c.d)+"-"+n,"DTSTAMP:"+stamp,
-    "DTSTART;VALUE=DATE:"+ymd(c.d),"DTEND;VALUE=DATE:"+ymd(dayAfter(c.d)),"SUMMARY:"+esc(c.text),"DESCRIPTION:"+esc(c.details),
-    "BEGIN:VALARM","ACTION:DISPLAY","DESCRIPTION:"+esc(c.text),"TRIGGER:PT9H","END:VALARM","END:VEVENT"].map(fold).join("\r\n"));
+  const ev = list.map((c,n)=>["BEGIN:VEVENT","UID:bags-till-harvest-"+ymd(c.d)+"-"+n,"DTSTAMP:"+stamp,"DTSTART;VALUE=DATE:"+ymd(c.d),"DTEND;VALUE=DATE:"+ymd(dayAfter(c.d)),
+    "SUMMARY:"+escI(t("remind_title")),"DESCRIPTION:"+escI(details(c)),"BEGIN:VALARM","ACTION:DISPLAY","DESCRIPTION:"+escI(t("remind_title")),"TRIGGER:PT9H","END:VALARM","END:VEVENT"].map(fold).join("\r\n"));
   const ics=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Bags Till Harvest//EN",...ev,"END:VCALENDAR"].join("\r\n");
   if(icsUrl.last) URL.revokeObjectURL(icsUrl.last);
-  return icsUrl.last = URL.createObjectURL(new Blob([ics],{type:"text/calendar;charset=utf-8"}));
-}
-function remindersHtml(r){
-  if(!FEATURES.reminders) return "";
-  if(r.runOut!==null || eatCut()) return "";   // only offer reminders for a plan that lasts without cuts
-  const list=checkDates(r); if(!list.length) return "";
-  if(!S.remindOn) return `<div class="row"><button class="pill" data-a="remindOn">${t("remind_ask")}</button></div>`;
-  return `<div class="remind"><b>${t("remind_head")}</b><div class="row">${list.map(c=>`<a class="pill" href="${gcalUrl(c)}" target="_blank" rel="noopener">${t("remind_btn",{m:mName(c.i),b:nb(c.inStore)})}</a>`).join("")}</div>
-    <div class="row"><a class="pill" href="${icsUrl(list)}" download="bags-till-harvest.ics">${t("remind_all")}</a></div><span class="small">${t("remind_why")} ${t("remind_note")}</span></div>`;
-}
-// ---- plan in a link: #plan=<base64 JSON>; the fragment never reaches the web server ----
+  return icsUrl.last = URL.createObjectURL(new Blob([ics],{type:"text/calendar;charset=utf-8"})); }
+function reminderLinks(){ const list=checkDates(); if(!list.length) return "";
+  return `<a class="btn" href="${icsUrl(list)}" download="bags-reminders.ics">${t("remind_ics")}</a>
+    <div class="row">${list.map(c=>`<a class="pill" href="${gcalUrl(c)}" target="_blank" rel="noopener">${t("remind_gcal",{m:mS(c.m)})}</a>`).join("")}</div>`; }
+
+// ---- plan in a link: #plan=<base64 JSON>; the part after # never reaches the web server ----
+const encPicks = picks => Object.entries(picks).map(([id,p])=>[id,p.b,p.m===ALL?"a":p.m===KEEP?"k":p.m]);
 function planToLink(){
-  const k = Object.entries(S.picks).map(([id,p])=>[id,p.b,p.m===ALL?"a":p.m===null?-1:p.m]);
-  const enc = picks => Object.entries(picks).map(([id,p])=>[id,p.b,p.m===ALL?"a":p.m===null?-1:p.m]);
-  const o = {h:S.harvest, e:S.eat, e0:S.eat0, n:S.people, g:S.guess, pr:S.price, k, ex:S.example?1:0,
-    f: S.first ? enc(S.first.picks) : null, fr: S.first ? S.first.reserve : null};
-  const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
-  return location.origin + location.pathname + "#plan=" + b64;
-}
+  const o = {v:2, n:S.people, sm:S.startMode==="today"?1:0, s:S.start, h:S.bags, p:S.prior, e:S.eat, k:encPicks(S.picks), ex:S.ex?1:0,
+    f: S.first ? {k:encPicks(S.first.picks), r:S.first.reserve, e:S.first.eat} : null};
+  return appUrl() + "#plan=" + btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,""); }
 function planFromHash(){
   const m = location.hash.match(/^#plan=([\w-]+)/); if(!m) return null;
   try{ const o = JSON.parse(decodeURIComponent(escape(atob(m[1].replace(/-/g,"+").replace(/_/g,"/")))));
-    // Treat every value as untrusted: known item keys only, and each number clamped to what the app allows.
+    // Every value is untrusted: known item keys only, and each number clamped to what the app allows.
     const num = (v,lo,hi,dflt) => { v=+v; return Number.isFinite(v) ? Math.min(hi,Math.max(lo,Math.round(v*2)/2)) : dflt; };
     const dec = list => { const out={}; for(const row of Array.isArray(list)?list:[]){ if(!Array.isArray(row)) continue; const [id,b,mm]=row;
       if(typeof id!=="string" || !Object.hasOwn(ITEM,id)) continue;
-      const m = mm==="a" ? ALL : (mm===-1||mm===null) ? null : (Number.isInteger(mm)&&mm>=0&&mm<=11 ? mm : undefined);
-      if(m===undefined || (m===null)!==ITEM[id].surprise) continue;
-      out[id]={b:num(b,.5,20,1), m}; } return out; };
-    const picks = dec(o.k);
-    const g = Number.isInteger(o.g) && o.g>=0 && o.g<=12 ? o.g : null;
-    const firstPicks = o.f ? dec(o.f) : JSON.parse(JSON.stringify(picks));
-    const firstRes = o.fr!=null ? num(o.fr,0,60,0) : Object.entries(firstPicks).filter(([k])=>ITEM[k].surprise).reduce((a,[,p])=>a+p.b,0);
-    return {...blank(), harvest:num(o.h,0,60,0), eat:num(o.e,.5,6,1), eat0:o.e0==null?null:num(o.e0,.5,6,null), people:Math.round(num(o.n,0,20,0)), guess:g,
-      price: Number.isFinite(+o.pr) ? Math.min(2000,Math.max(0,Math.round(+o.pr))) : 300, example:o.ex===1, exPicks:{},
-      picks, catsDone:CATS.map(c=>c.id), first:{picks:firstPicks, reserve:firstRes}, step:STEPS.indexOf("card"), received:true};
-  }catch(e){ return null; }
-}
-function qrBlock(url){ return `<div class="qr" data-text="${url}"></div>`; }
-function drawQRs(){ document.querySelectorAll(".qr[data-text]").forEach(el=>{ const url=el.dataset.text; el.removeAttribute("data-text");
-  if(window.qrcode){ try{ const q=qrcode(0,"M"); q.addData(url); q.make(); el.innerHTML=q.createSvgTag({cellSize:4,margin:2,scalable:true}); return; }catch(e){} }
-  el.innerHTML = `<span class="small">${t("no_qr")}</span><input class="linkbox" readonly value="${url}" onclick="this.select()">`; }); }
-const waLink = text => "https://wa.me/?text=" + encodeURIComponent(text);
-function smsText(){ const r=run(); const list=CHECKS.map(i=>t("sms_item",{m:mName(i),b:i===CHECKS[0]?nb(Math.max(0,r.out[i].start)+reserve()):fmt(Math.max(0,r.out[i].start)+reserve())})).join("; ");
-  return t("sms_text",{list}).replace(/(\d)½/g,"$1 1/2").replace(/½/g,"1/2"); }  // plain characters keep it to one SMS
-const smsLink = text => "sms:?body=" + encodeURIComponent(text);
-function sharePanel(head, url, waText, note, sms){
-  return `<div class="remind"><b>${head}</b>${qrBlock(url)}<div class="row"><a class="pill" href="${waLink(waText)}" target="_blank" rel="noopener">${t("send_wa")}</a>${sms?`<a class="pill" href="${smsLink(sms)}">${t("send_sms")}</a>`:""}</div><span class="small">${note}</span>${sms?`<span class="small">${t("sms_note")}</span>`:""}</div>`; }
-function pins(n){ let h=""; for(let k=0;k<Math.floor(Math.min(n,8)+1e-9);k++) h+='<i class="pin"></i>'; const f=n%1; if(f>=.45) h+='<i class="pin half"></i>'; else if(f>.01) h+='<i class="pin tiny"></i>'; return h; }
-function burst(){ let h=""; for(let i=0;i<10;i++){ const a=i/10*Math.PI*2; h+=`<i style="--dx:${Math.round(Math.cos(a)*90)}px;--dy:${Math.round(Math.sin(a)*60-30)}px"></i>`; } return h; }
+      const mo = mm==="a" ? ALL : mm==="k" ? KEEP : (Number.isInteger(mm)&&mm>=0&&mm<=11 ? mm : undefined);
+      if(mo===undefined || (mo===KEEP)!==ITEM[id].keep) continue;
+      out[id]={b:num(b,.5,20,1), m:mo}; } return out; };
+    const picks = dec(o.k), f = o.f && typeof o.f==="object" ? o.f : null;
+    const s = {...blank(), own:true, startMode:o.sm===1?"today":"harvest", start:Number.isInteger(o.s)&&o.s>=0&&o.s<=10?o.s:0,
+      bags:Math.round(num(o.h,0,60,0)), people:Math.round(num(o.n,0,20,0)), prior:Math.round(num(o.p,0,60,0)), eat:num(o.e,.5,8,1), picks, ex:o.ex===1,
+      visited:[0,1,2,3,4,5], screen:SCREENS.indexOf("home"), received:true};
+    s.first = f ? {picks:dec(f.k), reserve:num(f.r,0,60,0), eat:num(f.e,.5,8,s.eat)} : null;
+    return s;
+  }catch(e){ return null; } }
 
-// ================= NUDGES =================
-// Asked once each, never blocking: the family can always carry on.
-function needNudge(){
-  const st=STEPS[S.step];
-  if(st==="eat" && CHECK.food && !S.asked.food && S.eat < FOOD.askBelow*typicalEat()) return "food";
-  if(st==="remember" && CATS[S.catIdx].id==="school" && CHECK.school && !S.asked.school
-     && !Object.keys(S.picks).some(k=>ITEM[k].cat==="school")) return "school";
-  if(st==="remember" && CATS[S.catIdx].surprise && CHECK.keepSafe && !S.asked.keepSafe && reserve()===0) return "keepSafe";
-  return null;
-}
-function nudgeView(){
-  const v = {s:nb(suggestEat()), b:nb(S.eat), p:S.people};
-  const K = {food:["nudge_food","nudge_food_yes","nudge_food_no"], school:["nudge_school","nudge_school_yes","nudge_school_no"], keepSafe:["nudge_safe","nudge_safe_yes","nudge_safe_no"]}[nudge];
-  return { say:t(K[0],v), card:`<div class="nudgecard"><button class="pill strong" data-a="nudgeYes">${t(K[1],v)}</button><button class="pill" data-a="nudgeNo">${t(K[2],v)}</button></div>` };
-}
-
-// ================= RENDER =================
-let lastMood = null;
-function render(){
-  const st = STEPS[S.step], sc = SCREENS[st]();
-  if(nudge){ const nv=nudgeView(); sc.say=nv.say; sc.body=nv.card+sc.body; sc.mood="think"; }
-  const mood = sc.mood || FACE_FOR[st];
-  $("#dots").innerHTML = STEPS.map((_,i)=>`<i class="${i<S.step?"done":i===S.step?"on":""}"></i>`).join("");
-  if(mood!==lastMood){ $("#face").innerHTML = face(mood); const f=$("#face .face"); if(lastMood) f.classList.add("bob"); lastMood=mood; }
-  const fa=document.activeElement, fkey = fa && fa.dataset && fa.dataset.a ? `[data-a="${fa.dataset.a}"]`+["id","i","k","d"].map(k=>fa.dataset[k]!=null?`[data-${k}="${fa.dataset[k]}"]`:"").join("") : null;
-  if($("#bubble").dataset.said!==sc.say){ $("#bubble").innerHTML = sc.say; $("#bubble").dataset.said = sc.say; }
-  const scroll = $("#pbody").scrollTop; $("#pbody").innerHTML = sc.body; $("#pbody").scrollTop = scroll;
-  $("#pfoot").innerHTML = (S.step>0?`<button class="big back" data-a="back" aria-label="back">${t("back")}</button>`:"")
-    + (sc.foot || `<button class="big go" data-a="next" aria-disabled="${!sc.next}">${sc.nextLabel||t("next")}</button>`);
-  $("#phone").querySelectorAll(".sheet,.scrim").forEach(e=>e.remove());
-  if(sheet) $("#phone").insertAdjacentHTML("beforeend", sheetHtml());
-  $("#phone").dataset.say = sc.say;
-  drawQRs();
-  if(fkey){ const el=document.querySelector(fkey); if(el) el.focus({preventScroll:true}); }
-  try{ if(window.parent!==window) window.parent.postMessage({bthStep:st}, "*"); }catch(e){}
-  $("#phone").querySelectorAll(".ratdash").forEach(e=>e.remove());
-  if(ui.ratRun){ $("#phone").insertAdjacentHTML("beforeend",`<div class="ratdash" aria-hidden="true"><span>🐀</span></div>`); setTimeout(()=>document.querySelectorAll(".ratdash").forEach(e=>e.remove()),2300); }
-  ui = {};
-}
+// ================= CELEBRATION =================
 function party(){
   document.querySelectorAll(".party").forEach(e=>e.remove());
   const bits=["🌽","🎉","🌽","✨","🌾"]; let h="";
   for(let i=0;i<36;i++) h+=`<i style="--x:${Math.round(Math.random()*100)}%;--d:${(Math.random()*.9).toFixed(2)}s;--r:${Math.round(Math.random()*720-360)}deg;--s:${(0.8+Math.random()*.9).toFixed(2)}">${bits[i%bits.length]}</i>`;
-  $("#phone").insertAdjacentHTML("beforeend",`<div class="party" aria-live="polite">${h}<div class="ban">🎉 ${t("party")} 🎉</div></div>`);
-  const f=$("#face .face"); if(f){ f.classList.remove("dance"); void f.offsetWidth; f.classList.add("dance"); }
-  setTimeout(()=>document.querySelectorAll(".party").forEach(e=>e.remove()),3400);
+  $("#phone").insertAdjacentHTML("beforeend",`<div class="party" aria-live="polite">${h}<div class="ban">${t("party")}</div></div>`);
+  setTimeout(()=>document.querySelectorAll(".party").forEach(e=>e.remove()),3400); }
+
+// ================= RENDER =================
+function render(){
+  const scr=SCREENS[S.screen], sc=SCREEN[scr]();
+  const fa=document.activeElement, fkey = fa && fa.dataset && fa.dataset.a ? `[data-a="${fa.dataset.a}"]`+["id","i","v"].map(k=>fa.dataset[k]!=null?`[data-${k}="${fa.dataset[k]}"]`:"").join("") : null;
+  $("#dots").innerHTML = SCREENS.map((_,i)=>`<i class="${i<S.screen?"done":i===S.screen?"on":""}"></i>`).join("");
+  if($("#say").textContent!==sc.say) $("#say").textContent = sc.say;
+  const scroll=$("#body").scrollTop; $("#body").innerHTML = sc.body; $("#body").scrollTop = ui.top ? 0 : scroll;
+  $("#foot").innerHTML = (S.screen>0?`<button class="back" data-a="back" aria-label="${t("back_aria")}">‹</button>`:"")
+    + (sc.noNext ? "" : `<button class="next" data-a="next" aria-disabled="${!sc.next}">${sc.nextLabel||t("next")}</button>`);
+  document.querySelectorAll(".sheet,.scrim").forEach(e=>e.remove());
+  if(sheet) $("#phone").insertAdjacentHTML("beforeend", sheetHtml());
+  drawQRs();
+  document.querySelectorAll(".ratdash").forEach(e=>e.remove());
+  if(ui.ratRun){ $("#phone").insertAdjacentHTML("beforeend",`<div class="ratdash" aria-hidden="true"><span>🐀</span></div>`); setTimeout(()=>document.querySelectorAll(".ratdash").forEach(e=>e.remove()),2300); }
+  if(ui.sheetOpened) document.querySelector('.sheet [data-a="close"]')?.focus();
+  else if(fkey){ const el=document.querySelector(fkey); if(el) el.focus({preventScroll:true}); }
+  try{ if(window.parent!==window) window.parent.postMessage({bthStep:scr}, "*"); }catch(e){}
+  ui = {};
 }
-function sheetHtml(){
-  const it = ITEM[sheet.id];
-  return `<div class="scrim" data-a="close"></div><div class="sheet" role="dialog" aria-label="${iName(it.id)}">
-    <h3><span style="font-size:36px">${it.ic}</span>${iName(it.id)}<button class="x" data-a="close" aria-label="${t("close")}">✕</button></h3>
-    ${stepper("s-","s+",fmt(sheet.b), (sheet.b>0&&sheet.b<=1?t("bag_one",{n:""}):t("bag_other",{n:""})).trim()+(sheet.m===ALL?" "+t("sheet_year"):"")+(S.showPrice||S.example?" · "+t("k",{n:Math.round(sheet.b*S.price)}):""))}
-    ${sheet.b===0?"":it.surprise?`<div class="small">${t("sheet_surprise")}</div>`:`<div class="small" id="pickmsg">${sheet.warn?`<b style="color:var(--hungry)">${t("sheet_pick")}</b>`:t("sheet_which")}</div>${moonGrid(i=>sheet.m===i?"sel":"","sm")}<button class="m wide ${sheet.m===ALL?"sel":""}" data-a="sm" data-i="all"><span class="nm">${t("spread")}</span></button>`}
-    <div class="pfoot" style="padding:0;border:none">${sheet.had?`<button class="big back" data-a="sdel" aria-label="remove">🗑️</button>`:""}
-      <button class="big go" data-a="sok">${sheet.b===0?t("sheet_none"):t("sheet_ok")}</button></div></div>`;
-}
+function go(i){ clearInterval(playing); playing=null; sheet=null; eraseArmed=false; S.screen=Math.max(0,Math.min(7,i)); play=-1; ui.top=true;
+  if(SCREENS[S.screen]==="play" && !S.first) S.first={picks:JSON.parse(JSON.stringify(S.picks)), reserve:reserve(), eat:S.eat}; }
+function playTick(){ const n=months(); play=Math.min(n-1,play+1); if(play>=n-1){ clearInterval(playing); playing=null; if(works()) setTimeout(party,50); } render(); }
 
 // ================= ACTIONS =================
-const markDone = () => { const id=CATS[S.catIdx].id; if(!S.catsDone.includes(id)) S.catsDone.push(id); };
-function startPlay(){
-  clearInterval(playing); playMonth=-1;
-  if(matchMedia("(prefers-reduced-motion: reduce)").matches){ playMonth=11; render(); if(run().runOut===null && !eatCut()) party(); return; }
-  playing = setInterval(()=>{ playMonth++; if(playMonth>=11){ clearInterval(playing); playing=null; } render(); if(playMonth>=11 && run().runOut===null && !eatCut()) party(); }, 520);
-  render();
-}
-function flashRow(id){ requestAnimationFrame(()=>{ const el=document.getElementById("fx-"+id); if(el) el.classList.add("flash"); }); }
+const clamp = (v,lo,hi) => Math.max(lo,Math.min(hi,v));
 const ACTIONS = {
-  "h+":()=>{S.harvest=Math.min(60,S.harvest+1); ui.added=true;}, "h-":()=>S.harvest=Math.max(0,S.harvest-1),
-  "p+":()=>S.price=Math.min(2000,S.price+25), "p-":()=>S.price=Math.max(0,S.price-25), "price":()=>S.showPrice=true,
-  "new":()=>S=blank(), "ex":()=>S=example(), "restart":()=>{S.step=0; S.catIdx=0; S.asked={}; S.first=null; S.eat0=null; S.remindOn=false; S.showSend=false; S.received=false; playMonth=-1; clearInterval(playing); playing=null;},
-  "erase":()=>{ if(eraseArmed){ S=blank(); eraseArmed=false; } else { eraseArmed=true; ui.eraseArmed=true; setTimeout(()=>{ eraseArmed=false; render(); },3000); } },
-  "keep":()=>ui.toast=true, "remindOn":()=>S.remindOn=true, "sendPlan":()=>S.showSend=true, "shareApp":()=>ui.shareApp=true,
-  "cutBack":()=>{ if(S.eat0!==null) S.eat=Math.max(S.eat,S.eat0);
-    if(S.first) for(const [k,p] of Object.entries(S.first.picks)){ const c=S.picks[k]; if(!c) S.picks[k]={...p}; else if(c.b<p.b) c.b=p.b; }
-    S.step=STEPS.indexOf("fix"); $("#pbody").scrollTop=0; },
-  "exReveal":()=>{ const c=CATS[S.catIdx]; for(const [id] of c.items) if(S.exPicks[id]) S.picks[id]={...S.exPicks[id]}; },
-  "recheck":()=>{ clearInterval(playing); playing=null; S.step=STEPS.indexOf("remember"); S.catIdx=0; $("#pbody").scrollTop=0; },
-  "g":el=>S.guess=+el.dataset.i,
-  "ppl":el=>{ S.people=Math.max(0,Math.min(20,S.people+ +el.dataset.d)); },
-  "nudgeYes":()=>{ S.asked[nudge]=true; if(nudge==="food"){ S.eat=suggestEat(); } nudge=null; },
-  "nudgeNo":()=>{ S.asked[nudge]=true; nudge=null; return ACTIONS.next({getAttribute:()=>null}); },
-  "e+":()=>{S.eat=Math.min(6,S.eat+.5); ui.added=true;}, "e-":()=>S.eat=Math.max(.5,S.eat-.5),
-  "cat":el=>{markDone(); S.catIdx=+el.dataset.i; if(CATS[S.catIdx].surprise) ui.ratRun=true;},
-  "item":el=>{const id=el.dataset.id, p=S.picks[id]; sheet={id, b:p?p.b:1, m:p?p.m:(SPREAD_BY_DEFAULT.includes(ITEM[id].cat)?ALL:null), had:!!p};},
-  "s+":()=>sheet.b=Math.min(20,sheet.b+.5), "s-":()=>sheet.b=Math.max(0,sheet.b-.5),
-  "sm":el=>{sheet.m=el.dataset.i==="all"?ALL:+el.dataset.i; sheet.warn=false;},
-  "sok":()=>{ if(sheet.b===0){ delete S.picks[sheet.id]; sheet=null; return; } if(ITEM[sheet.id].surprise||sheet.m!==null){ S.picks[sheet.id]={b:sheet.b,m:sheet.m}; sheet=null; }
-    else { sheet.warn=true; render(); const g=$("#moons"); g.classList.add("nudge"); return "skip"; } },
-  "sdel":()=>{ delete S.picks[sheet.id]; sheet=null; }, "close":()=>sheet=null,
-  "fx-":el=>{ const id=el.dataset.id, p=S.picks[id]; p.b-=.5; if(p.b<=0) delete S.picks[id]; else flashRow(id); },
-  "fx<":el=>{ const p=S.picks[el.dataset.id]; if(p.m===ALL) return; p.m=Math.max(0,p.m-1); flashRow(el.dataset.id); },
-  "fx>":el=>{ const p=S.picks[el.dataset.id]; if(p.m===ALL) return; p.m=Math.min(11,p.m+1); flashRow(el.dataset.id); },
-  "r+":()=>{ const k=Object.keys(S.picks).find(k=>ITEM[k].surprise)||"other"; S.picks[k]={b:(S.picks[k]?.b||0)+.5,m:null}; },
-  "r-":()=>{ const k=Object.keys(S.picks).find(k=>ITEM[k].surprise); if(k){ S.picks[k].b-=.5; if(S.picks[k].b<=0) delete S.picks[k]; } },
-  "next":el=>{ if(el.getAttribute("aria-disabled")==="true") return "skip";
-    if(nudge){ S.asked[nudge]=true; nudge=null; }
-    else { const n=needNudge(); if(n){ nudge=n; if(n==="keepSafe") ui.ratRun=true; return; } }
-    if(STEPS[S.step]==="eat"){ if(S.eat0===null) S.eat0=S.eat; S.catIdx=0; }
-    if(STEPS[S.step]==="remember"){ markDone(); if(S.catIdx<CATS.length-1){ S.catIdx++; if(CATS[S.catIdx].surprise) ui.ratRun=true; $("#pbody").scrollTop=0; return; } }
-    if(STEPS[S.step]==="remember" && !S.first) S.first={picks:JSON.parse(JSON.stringify(S.picks)), reserve:reserve()};
-    S.step=Math.min(STEPS.length-1,S.step+1); $("#pbody").scrollTop=0; if(STEPS[S.step]==="play"){ playMonth=-1; clearInterval(playing); playing=null; } },
-  "back":()=>{ if(STEPS[S.step]==="remember" && S.catIdx>0){ S.catIdx--; return; } clearInterval(playing); playing=null; S.step=Math.max(0,S.step-1); $("#pbody").scrollTop=0; },
-  "play":()=>{ startPlay(); return "skip"; }
+  own:el=>{ S.own = el.dataset.v==="true"; render(); setTimeout(()=>{ if(S.screen===0){ go(1); render(); } },180); return "skip"; },
+  shareApp:()=>S.shareApp=true,
+  startMode:el=>{ S.startMode=el.dataset.v; play=-1; },
+  startPrev:()=>S.start=clamp(S.start-1,0,10), startNext:()=>S.start=clamp(S.start+1,0,10),
+  "bags-":()=>{ S.bags=clamp(S.bags-1,0,60); S.prior=Math.min(S.prior,S.bags); }, "bags+":()=>{ S.bags=clamp(S.bags+1,0,60); ui.added=true; },
+  example:()=>{ const own=S.own; S={...blank(), own, bags:16, startMode:"today", start:4, prior:3, eat:1, people:5, ex:true, exPicks:{...EX}, screen:S.screen}; },
+  mine:()=>{ const own=S.own; S={...blank(), own, screen:1}; },
+  "prior-":()=>S.prior=clamp(S.prior-1,0,60), "prior+":()=>S.prior=clamp(S.prior+1,0,S.bags||60),
+  cat:el=>{ S.cat=+el.dataset.i; S.visited=[...new Set([...S.visited,S.cat])]; if(CATS[S.cat].keep) ui.ratRun=true; },
+  reveal:()=>{ for(const [id] of CATS[S.cat].items) if(S.exPicks[id]) S.picks[id]={...S.exPicks[id]}; },
+  item:el=>{ openSheet(el.dataset.id); ui.sheetOpened=true; },
+  "s-":()=>sheet.b=clamp(sheet.b-.5,.5,20), "s+":()=>sheet.b=clamp(sheet.b+.5,.5,20),
+  sm:el=>{ sheet.m = el.dataset.i==="all" ? ALL : +el.dataset.i; sheet.warn=false; },
+  save:()=>{ if(sheet.m==null){ sheet.warn=true; render(); $("#months")?.classList.add("nudge"); return "skip"; }
+    S.picks[sheet.id]={b:sheet.b,m:sheet.m}; sheet=null; play=-1; },
+  remove:()=>{ delete S.picks[sheet.id]; sheet=null; play=-1; }, close:()=>sheet=null,
+  "ppl-":()=>S.people=clamp(S.people-1,0,20), "ppl+":()=>S.people=clamp(S.people+1,0,20),
+  nudgeYes:()=>{ S.eat=suggestEat(); S.foodNudge=false; },
+  nudgeNo:()=>{ S.foodNudge=false; go(S.screen+1); },
+  "eat-":()=>S.eat=clamp(S.eat-.5,.5,8), "eat+":()=>{ S.eat=clamp(S.eat+.5,.5,8); ui.added=true; },
+  step:()=>{ clearInterval(playing); playing=null; playTick(); return "skip"; },
+  playAll:()=>{ clearInterval(playing); if(play>=months()-1) play=-1;
+    if(matchMedia("(prefers-reduced-motion: reduce)").matches){ play=months()-2; playTick(); return "skip"; }
+    playing=setInterval(playTick, STEP_MS); playTick(); return "skip"; },
+  replay:()=>{ clearInterval(playing); playing=null; play=-1; },
+  toFood:()=>go(SCREENS.indexOf("food")), toCosts:()=>{ go(SCREENS.indexOf("remember")); S.cat=0; },
+  cutBack:()=>{ const f=S.first; if(!f) return; S.eat=Math.max(S.eat,f.eat);
+    for(const [k,p] of Object.entries(f.picks)){ const c=S.picks[k]; if(!c) S.picks[k]={...p}; else if(c.b<p.b) c.b=p.b; } play=-1; },
+  teach:el=>S.teach=+el.dataset.v,
+  remind:()=>S.remindOn=!S.remindOn,
+  showQR:()=>S.showQR=true,
+  erase:()=>{ if(eraseArmed){ eraseArmed=false; S=blank(); } else { eraseArmed=true; setTimeout(()=>{ if(eraseArmed){ eraseArmed=false; render(); } },3000); } },
+  next:el=>{ if(el.getAttribute("aria-disabled")==="true") return "skip"; const scr=SCREENS[S.screen];
+    if(scr==="remember" && S.cat<5){ S.cat++; S.visited=[...new Set([...S.visited,S.cat-1,S.cat])]; ui.top=true; if(CATS[S.cat].keep) ui.ratRun=true; return; }
+    if(scr==="bags" && S.prior>S.bags) S.prior=S.bags;
+    if(scr==="food"){ if(S.foodNudge){ S.foodNudge=false; }
+      else if(FEATURES.outsideInfo && !S.foodAsked && S.eat < FOOD.askBelow*typicalEat()){ S.foodAsked=true; S.foodNudge=true; return; } }
+    go(S.screen+1); },
+  back:()=>{ if(SCREENS[S.screen]==="remember" && S.cat>0){ S.cat--; ui.top=true; return; } go(S.screen-1); }
 };
-let eraseArmed = false;
 document.addEventListener("click", e=>{
-  const b = e.target.closest("[data-a]"); if(!b) return;
-  const a = b.dataset.a;
-  if(nudge && !["next","nudgeYes","nudgeNo"].includes(a)) nudge=null;
-  const wasShort = STEPS[S.step]==="fix" && run().runOut!==null;
-  const f = ACTIONS[a]; if(f && f(b)==="skip") return; render();
-  if(wasShort && STEPS[S.step]==="fix" && run().runOut===null && !eatCut()) party();
+  const b = e.target.closest("[data-a]"); if(!b || b.dataset.a==="tel") return;
+  if(b.tagName==="A") return;                                   // real links (SMS, WhatsApp, calendar) do their own thing
+  const f = ACTIONS[b.dataset.a]; if(!f) return; if(f(b)==="skip") return; render();
 });
-const showTip = e => { const b=e.target.closest(".meter .b"); if(b && $("#tip")) $("#tip").textContent=b.dataset.tip; };
-document.addEventListener("pointerover", showTip); document.addEventListener("focusin", showTip);
-$("#soundBtn").addEventListener("click", ()=>{ $("#soundBtn").classList.remove("hello"); speak($("#phone").dataset.say); });
-// The design sketch embeds this page and can jump to a screen (loads the example family, all costs shown).
+// Typing a phone number updates the SMS and WhatsApp links without redrawing the screen (keeps the keyboard open).
+document.addEventListener("input", e=>{ if(e.target.id!=="tel") return; S.phoneNum=e.target.value;
+  $("#smsA").href=smsHref(); $("#waA").href=waHref(); });
+$("#speakBtn").addEventListener("click", ()=>{ $("#speakBtn").classList.remove("hello"); speak($("#say").textContent); });
+$("#speakBtn").setAttribute("aria-label", t("read_aloud"));
+
+// The design notes page embeds this app and can jump to a screen (loads the example family with all costs).
 window.addEventListener("message", e=>{ if(window.parent===window || e.source!==window.parent) return;
-  const i=e.data && e.data.bthGo; if(!Number.isInteger(i) || i<0 || i>=STEPS.length) return;
-  clearInterval(playing); playing=null; sheet=null; nudge=null;
-  if(!S.example){ S=example(); } S.picks={...S.picks}; for(const [k,v] of Object.entries(S.exPicks)) if(!S.picks[k]) S.picks[k]={...v};
-  S.catsDone=CATS.map(c=>c.id); S.asked={food:true,school:true,keepSafe:true}; S.step=i;
-  if(i>STEPS.indexOf("remember")) S.first={picks:JSON.parse(JSON.stringify(S.picks)), reserve:reserve()}; playMonth = STEPS[i]==="play"?-1:playMonth; $("#pbody").scrollTop=0; render(); });
+  const i=e.data && e.data.bthGo; if(!Number.isInteger(i) || i<0 || i>=SCREENS.length) return;
+  if(!S.ex && !Object.keys(S.picks).length) ACTIONS.example();
+  if(S.own===null) S.own=!PRESENTER ? true : false;
+  if(i>=SCREENS.indexOf("food")){ S.picks={...S.exPicks,...S.picks}; S.visited=[0,1,2,3,4,5]; }
+  go(i); render(); });
+
 const got = planFromHash(); if(got){ S = got; try{ history.replaceState(null,"",location.pathname+location.search); }catch(e){} }
 render();
 })();
