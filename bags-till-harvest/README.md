@@ -58,9 +58,14 @@ Each screen asks one question, shown large at the top; the round button reads it
    guess is shown in sacks out of the total. It replaces the first pass's guess of the month the
    bags run out, so the guess and the recall are in the same unit.
 4. **Remember.** Six categories, one at a time: School, Home, Farm, Giving, Surprises, Other.
-   Tapping a picture card opens a sheet: bags in half steps, then a month (only months from the
-   start to April) or **Every month** for costs spread over the year. Home items start as
-   "every month". Surprises (clinic, medicine, funeral, animal dies, something breaks) have no
+   Tapping a picture card opens a sheet: bags in half steps, then when:
+   - a **month** (only months from the start to April), or
+   - **Spread until harvest (one total)**: the amount is the total until harvest, taken out evenly
+     each month. Good for small costs such as spices: 1 bag in total is a few cents a week. Home
+     items start this way.
+   - **Every month (amount each month)**: the same amount every month until harvest.
+
+   Card badges and the running total always show bags until harvest. Surprises (clinic, medicine, funeral, animal dies, something breaks) have no
    month: **Khoswe the rat** runs in, and these become **kept-safe** bags set aside before the
    year is played. "Not this year" removes a cost. A running total shows the bags remembered.
 5. **Food**, last, as in the study. How many people eat from the store, then bags eaten per month.
@@ -93,8 +98,10 @@ Each screen asks one question, shown large at the top; the round button reads it
 - The eight screens above, with back navigation, in the study's order.
 - Bags as the only unit; half bags allowed. Sack icons everywhere bags are counted.
 - 34 picture cards in 6 categories, with ✓ for categories with costs and · for visited ones.
-- Costs by month or spread over the year; dated costs set before the start month count in the
-  start month.
+- Costs by month, as one total spread until harvest, or as an amount every month; dated costs
+  set before the start month count in the start month.
+- When the year finishes playing, the screen scrolls so the result and **Change food / Change
+  costs** are in view.
 - **First complete list.** When the family first reaches Play the year, the app saves its costs,
   kept-safe bags and food. Later cuts to any of them mean no celebration and no reminders, and
   are listed with **Put them back**. Moving a cost to another month is not a cut.
@@ -180,7 +187,7 @@ or Bemba, so expect recorded audio to be needed.
 | 1 Phone | `say_phone`, `own`, `own_sub`, `borrowed`, `borrowed_sub`, `share_app`, `share_app_head`, `share_wa`, `share_wa_text` |
 | 2 Bags | `say_bags`, `just_harvested`, `just_harvested_sub`, `from_today`, `from_today_sub`, `now_month`, `earlier_month`, `later_month`, `bags_unit`, `one_less`, `one_more`, `example`, `example_banner`, `start_mine` |
 | 3 Guess | `say_prior`, `prior_sub`, `prior_unit` |
-| 4 Remember | `say_school`, `say_home_cat`, `say_farm`, `say_give`, `say_surprise`, `say_other`, `cat_*` (6 names), `cat_line`, `reveal`, `empty_hint`, `remembered`, `items`; sheet: `ask_bags`, `ask_year`, `ask_keep`, `when`, `every_month`, `keep_note`, `save`, `pick_month`, `not_this_year`, `close`, `half_less`, `half_more` |
+| 4 Remember | `say_school`, `say_home_cat`, `say_farm`, `say_give`, `say_surprise`, `say_other`, `cat_*` (6 names), `cat_line`, `reveal`, `empty_hint`, `remembered`, `items`; sheet: `ask_bags`, `ask_year`, `ask_month`, `spread`, `ask_keep`, `when`, `every_month`, `keep_note`, `save`, `pick_month`, `not_this_year`, `close`, `half_less`, `half_more` |
 | 5 Food | `say_food`, `food_sub`, `food_unit`, `food_total`, `people`, `fewer_people`, `more_people`, `nudge_food`, `nudge_yes`, `nudge_no` |
 | 6 Play | `say_play`, `store_now`, `store_end`, `kept_safe`, `unit_one`, `unit_many`, `cost_key`, `cap_start`, `cap_month`, `cap_pay`, `cap_left`, `cap_short`, `next_month`, `play_all`, `good_title`, `good_sub`, `good_sub_keep`, `bad_title`, `bad_sub_one`, `bad_sub`, `cut_title`, `cut_q`, `cut_back`, `cut_eat`, `cut_keep`, `recall_head`, `first_guess`, `remembered_bar`, `change_food`, `change_costs`, `play_again`, `party` |
 | 7 Say it back | `say_teach`, `teach_sub`, `teach_right`, `teach_wrong`, `teach_days`, `day` |
@@ -191,10 +198,12 @@ or Bemba, so expect recorded audio to be needed.
 Below the phrase bank, the script has no user-facing words:
 
 - **Items and categories:** `CATS`. Each item is `[key, OpenMoji code, default month]`, where
-  months count from May = 0, `ALL` = every month, and `null` = the farmer chooses. Adding an item
+  months count from May = 0, `ALL` = one total spread until harvest, `MO` = the same amount every
+  month, and `null` = the farmer chooses. Adding an item
   means adding it to `CATS`, a picture to `art/`, and its name under `items` in every language.
 - **Example family:** `EX` (its costs) and the `example` action (bags, guess, food, people).
-- **Model:** `st()`, `spendIn()`, `run()`, `checks()`, `cuts()`, `works()`.
+- **Model:** `st()`, `spendIn()`, `bagsOf()` (bags a cost takes until harvest), `run()`, `checks()`,
+  `cuts()`, `works()`.
 - **Switches and benchmark:** `PRESENTER`, `FEATURES`, `FOOD`, `STEP_MS` (Play all speed).
 - **Plan links:** `planToLink()` and `planFromHash()`: compact JSON, base64-encoded after
   `#plan=`, including the first complete list so cuts still count on the receiving phone. Every

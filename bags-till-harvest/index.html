@@ -153,12 +153,13 @@ a{color:var(--ink)}
 .caption{min-height:52px;font-size:18px;font-weight:600;line-height:1.3;text-align:center;text-wrap:pretty}
 .playbtn{min-height:60px;border-radius:18px;border:3px solid var(--ink);background:var(--screen);font-size:19px;font-weight:700}
 .playbtn.gold{background:var(--maize);color:var(--on-maize)}
-.result{border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:14px;border:3px solid var(--ink)}
+.result{border-radius:20px;padding:14px;display:flex;flex-direction:column;gap:10px;border:3px solid var(--ink)}
 .result.good{background:var(--maize-soft)} .result.bad{background:var(--short-soft)} .result.cut{background:var(--chip)}
-.result h3{margin:0;font-size:24px;font-weight:800;line-height:1.1}
+.result h3{margin:0;font-size:22px;font-weight:800;line-height:1.1}
 .result p{margin:0;font-size:16px;line-height:1.35}
 .result ul{margin:0;padding-left:20px}
-.recall{display:flex;flex-direction:column;gap:8px;border-top:2px solid color-mix(in srgb,var(--ink) 20%,transparent);padding-top:12px}
+.changes{scroll-margin-bottom:8px}
+.recall{display:flex;flex-direction:column;gap:6px;border-top:2px solid color-mix(in srgb,var(--ink) 20%,transparent);padding-top:12px}
 .recall>b{font-size:14px}
 .bars{display:grid;grid-template-columns:92px 1fr auto;gap:8px;align-items:center;font-size:14px}
 .bars .track{height:18px;background:color-mix(in srgb,var(--ink) 8%,transparent);border-radius:4px}
@@ -277,8 +278,8 @@ const PHRASES = {
     reveal:"What did the example family remember here?",
     empty_hint:"Most families have something here. Nothing this year? Tap Next.",
     remembered:"Remembered so far",
-    ask_bags:"How many bags?", ask_year:"How many bags for the whole year?", ask_keep:"How many bags to keep safe?",
-    when:"When?", every_month:"Every month", keep_note:"No month. These bags stay in the store, kept safe for a surprise.",
+    ask_bags:"How many bags?", ask_year:"How many bags in total, until harvest?", ask_month:"How many bags each month?", ask_keep:"How many bags to keep safe?",
+    when:"When?", every_month:"Every month (amount each month)", spread:"Spread until harvest (one total)", keep_note:"No month. These bags stay in the store, kept safe for a surprise.",
     save:"Save", pick_month:"Choose a month first", not_this_year:"Not this year", close:"Close", half_less:"Half a bag less", half_more:"Half a bag more",
     // 5 food
     say_food:"How many bags do you eat in one month?",
@@ -343,7 +344,7 @@ const iName = id => PHRASES[LANG].items[id];
 
 // ================= DATA (no words here) =================
 const SCREENS = ["phone","bags","prior","remember","food","play","teach","home"];
-const ALL = "all", KEEP = "keep";            // spread over the months to harvest; kept safe (no month)
+const ALL = "all", MO = "mo", KEEP = "keep";  // ALL: one total spread over the months to harvest; MO: the same amount every month; KEEP: kept safe (no month)
 // [id, OpenMoji picture, default month: 0 = May … 11 = Apr, ALL, or null = farmer chooses]
 const CATS = [
   {id:"school", say:"say_school", items:[["fees","1F3EB",8],["uniform","1F455",8],["shoes","1F45F",8],["books","1F4DA",8],["exam","1F4DD",5],["bus","1F68C",8]]},
@@ -391,12 +392,14 @@ const months = () => 12 - st();
 const reserve = () => Object.values(S.picks).filter(p=>p.m===KEEP).reduce((a,p)=>a+p.b,0);
 // A dated cost set before the start month is paid in the start month; a spread cost is split over the months left.
 function spendIn(m){ const s0=st(), n=months();
-  return Object.values(S.picks).reduce((a,p)=> a + (p.m===ALL ? p.b/n : (p.m!==KEEP && p.m!==null && Math.max(s0,p.m)===m ? p.b : 0)), 0); }
+  return Object.values(S.picks).reduce((a,p)=> a + (p.m===ALL ? p.b/n : p.m===MO ? p.b : (p.m!==KEEP && p.m!==null && Math.max(s0,p.m)===m ? p.b : 0)), 0); }
+// Bags a cost takes until harvest: a monthly amount counts once per month left.
+const bagsOf = p => p.m===MO ? p.b*months() : p.b;
 function run(){ const s0=st(); let stock=S.bags-reserve(); const out=[]; let runOut=null, dry=0;
   for(let m=s0;m<12;m++){ const start=stock, cost=spendIn(m); stock -= S.eat + cost; const low = stock < -1e-9;   // tolerance: spread costs split into fractions
     if(low){ if(runOut===null) runOut=m; dry++; } out.push({m, start:Math.max(0,start), cost, left:Math.max(0,stock), low}); }
   return {out, runOut, dry, end:stock}; }
-const total = () => Object.values(S.picks).reduce((a,p)=>a+p.b,0);
+const total = () => Object.values(S.picks).reduce((a,p)=>a+bagsOf(p),0);
 // Check months every three months from the start; the value is what the farmer will count, kept-safe bags included.
 function checks(){ const s0=st(), r=run(), rs=reserve(); let cm=[s0+3,s0+6,s0+9].filter(m=>m<=11); if(!cm.length) cm=[11];
   return cm.map(m=>{ const o=r.out[m-s0]; return {m, v:(o?o.start:0)+rs, low:!!(o&&o.low)}; }); }
@@ -405,7 +408,7 @@ function checks(){ const s0=st(), r=run(), rs=reserve(); let cm=[s0+3,s0+6,s0+9]
 function cuts(){ const out=[], f=S.first; if(!f) return out;
   if(S.eat < f.eat-1e-9) out.push("🌽 "+t("cut_eat",{a:nb(f.eat),b:nb(S.eat)}));
   if(reserve() < f.reserve-1e-9) out.push("🔒 "+t("cut_keep"));
-  for(const [k,p] of Object.entries(f.picks)) if(p.m!==KEEP && (!S.picks[k] || S.picks[k].b < p.b-1e-9)) out.push(iName(k));
+  for(const [k,p] of Object.entries(f.picks)) if(p.m!==KEEP && (!S.picks[k] || bagsOf(S.picks[k]) < bagsOf(p)-1e-9)) out.push(iName(k));
   return out; }
 const works = () => run().runOut===null && !cuts().length;
 
@@ -450,7 +453,7 @@ const SCREEN = {
     <div class="catline">${c.keep?`<span class="rat ${ui.ratRun?"run":""}" aria-hidden="true">🐀</span>`:""}${t("cat_line",{i:S.cat+1,c:t("cat_"+c.id)})}</div>
     ${S.ex && ids.some(id=>S.exPicks[id] && !S.picks[id]) ? `<button class="dashed" data-a="reveal">${t("reveal")}</button>`:""}
     <div class="cards">${c.items.map(([id,pic])=>{ const p=S.picks[id]; return `<button class="card ${p?"on":""}" data-a="item" data-id="${id}" aria-pressed="${!!p}">
-      ${img(pic,62)}<b>${iName(id)}</b>${p?`<span class="tag">${fmt(p.b)}</span>`:""}</button>`; }).join("")}</div>
+      ${img(pic,62)}<b>${iName(id)}</b>${p?`<span class="tag">${fmt(bagsOf(p))}</span>`:""}</button>`; }).join("")}</div>
     ${FEATURES.outsideInfo && !S.ex && none ? `<div class="hint">${t("empty_hint")}</div>`:""}
     <div class="total"><span>${t("remembered")}</span><b>${nb(total())}</b></div>` }; },
 
@@ -469,7 +472,7 @@ const SCREEN = {
     const col = (o,i) => { const shown=i<=play, k=shown?Math.ceil(o.start/unit-1e-9):0;
       return `<div class="col"><div class="v">${shown?fmt(o.start):""}</div>
         <div class="stack ${!shown?"fut":o.low?"low":""} ${i===play?"cur":""}" aria-label="${mL(o.m)}: ${shown?(o.low?t("cap_short"):nb(o.start)):""}">${"<i></i>".repeat(k)}${shown&&o.low?`<span class="bang">!</span>`:""}</div></div>`; };
-    const lab = o => { const d=Object.values(S.picks).filter(p=>p.m!==ALL&&p.m!==KEEP&&p.m!==null&&Math.max(s0,p.m)===o.m).length;
+    const lab = o => { const d=Object.values(S.picks).filter(p=>p.m!==ALL&&p.m!==MO&&p.m!==KEEP&&p.m!==null&&Math.max(s0,p.m)===o.m).length;
       return `<div><span>${mS(o.m)}</span><p>${"<i></i>".repeat(Math.min(3,d))}</p></div>`; };
     const caption = !cur ? t("cap_start") : t("cap_month",{m:mL(cur.m), e:fmt(S.eat), pay:cur.cost>=0.25?t("cap_pay",{c:fmt(cur.cost)}):"", rest:cur.low?t("cap_short"):t("cap_left",{l:fmt(cur.left)})});
     const cl=cuts(), lasts=r.runOut===null, mx=Math.max(S.prior,total(),1);
@@ -482,7 +485,7 @@ const SCREEN = {
           <span>${t("first_guess")}</span><div class="track"><div class="g" style="width:${S.prior/mx*100}%"></div></div><b>${fmt(S.prior)}</b>
           <span>${t("remembered_bar")}</span><div class="track"><div class="r" style="width:${total()/mx*100}%"></div></div><b>${fmt(total())}</b></div></div>
       </div>
-      <div class="grid2"><button class="btn" data-a="toFood">${t("change_food")}</button><button class="btn" data-a="toCosts">${t("change_costs")}</button></div>
+      <div class="grid2 changes"><button class="btn" data-a="toFood">${t("change_food")}</button><button class="btn" data-a="toCosts">${t("change_costs")}</button></div>
       <button class="linkbtn" data-a="replay">${t("play_again")}</button>`;
     return { say:t("say_play"), next:done, body:`
       <div class="storehead"><div style="display:flex;flex-direction:column"><span class="lab">${cur?t("store_end",{m:mL(cur.m)}):t("store_now")}</span><span class="num">${fmt(cur?cur.left:base)}</span></div>
@@ -500,7 +503,7 @@ const SCREEN = {
     ${S.teach===null?"":`<div class="fb" aria-live="polite">${S.teach===c0.v?t("teach_right"):t("teach_wrong",{b:nb(c0.v)})}</div>
       <div class="checks"><span class="sub">${t("teach_days")}</span>${ck.map(k=>`<div class="check ${k.low?"low":""}"><span>${t("day",{m:mL(k.m)})}</span><b>${fmt(k.v)}</b></div>`).join("")}</div>`}` }; },
 
-  home(){ const n=months(), base=Math.max(0,S.bags-reserve()), sum=id=>Object.entries(S.picks).filter(([k,p])=>ITEM[k].cat===id&&p.m!==KEEP).reduce((a,[,p])=>a+p.b,0);
+  home(){ const n=months(), base=Math.max(0,S.bags-reserve()), sum=id=>Object.entries(S.picks).filter(([k,p])=>ITEM[k].cat===id&&p.m!==KEEP).reduce((a,[,p])=>a+bagsOf(p),0);
     const rows=[[t("lab_food"),"1F33D",Math.min(S.eat*n,base)],[t("cat_school"),"1F3EB",sum("school")],[t("cat_home"),"1F3E0",sum("home")],[t("cat_farm"),"1F331",sum("farm")],
       [t("cat_give"),"1F932",sum("give")],[t("cat_other"),"2754",sum("other")],[t("lab_keep"),"1F512",reserve()]].filter(x=>x[2]>0);
     const ck=checks();
@@ -529,7 +532,7 @@ function openSheet(id){ const it=ITEM[id], p=S.picks[id], s0=st();
   const m = p ? p.m : it.keep ? KEEP : it.dm===ALL ? ALL : it.dm==null ? null : Math.max(s0,it.dm);
   sheet = {id, b:p?p.b:1, m, had:!!p}; }
 function sheetHtml(){ const it=ITEM[sheet.id], s0=st(), can=sheet.b>0 && sheet.m!=null;
-  const ask = it.keep ? t("ask_keep") : sheet.m===ALL ? t("ask_year") : t("ask_bags");
+  const ask = it.keep ? t("ask_keep") : sheet.m===ALL ? t("ask_year") : sheet.m===MO ? t("ask_month") : t("ask_bags");
   return `<div class="scrim" data-a="close"></div><div class="sheet" role="dialog" aria-modal="true" aria-label="${iName(it.id)}">
     <div class="hd">${img(it.pic,54)}<b>${iName(it.id)}</b><button class="x" data-a="close" aria-label="${t("close")}">✕</button></div>
     <div class="sub">${ask}</div>
@@ -537,7 +540,8 @@ function sheetHtml(){ const it=ITEM[sheet.id], s0=st(), can=sheet.b>0 && sheet.m
     <div class="unit" style="font-size:15px">${(sheet.b>0&&sheet.b<=1?t("bag_one",{n:""}):t("bag_other",{n:""})).trim()}</div>
     ${it.keep ? `<div class="keepnote">${t("keep_note")}</div>` : `<b>${sheet.warn?`<span style="color:var(--short-dk)">${t("pick_month")}</span>`:t("when")}</b>
       <div class="months" id="months">${Array.from({length:12-s0},(_,i)=>{ const m=s0+i; return `<button class="${sheet.m===m?"on":""}" data-a="sm" data-i="${m}" aria-pressed="${sheet.m===m}">${mS(m)}</button>`; }).join("")}
-        <button class="every ${sheet.m===ALL?"on":""}" data-a="sm" data-i="all" aria-pressed="${sheet.m===ALL}">${t("every_month")}</button></div>`}
+        <button class="every ${sheet.m===ALL?"on":""}" data-a="sm" data-i="all" aria-pressed="${sheet.m===ALL}">${t("spread")}</button>
+        <button class="every ${sheet.m===MO?"on":""}" data-a="sm" data-i="mo" aria-pressed="${sheet.m===MO}">${t("every_month")}</button></div>`}
     <button class="save" data-a="save" aria-disabled="${!can}">${t("save")}</button>
     ${sheet.had?`<button class="linkbtn" data-a="remove">${t("not_this_year")}</button>`:""}</div>`; }
 
@@ -576,7 +580,7 @@ function reminderLinks(){ const list=checkDates(); if(!list.length) return "";
     <div class="row">${list.map(c=>`<a class="pill" href="${gcalUrl(c)}" target="_blank" rel="noopener">${t("remind_gcal",{m:mS(c.m)})}</a>`).join("")}</div>`; }
 
 // ---- plan in a link: #plan=<base64 JSON>; the part after # never reaches the web server ----
-const encPicks = picks => Object.entries(picks).map(([id,p])=>[id,p.b,p.m===ALL?"a":p.m===KEEP?"k":p.m]);
+const encPicks = picks => Object.entries(picks).map(([id,p])=>[id,p.b,p.m===ALL?"a":p.m===MO?"o":p.m===KEEP?"k":p.m]);
 function planToLink(){
   const o = {v:2, n:S.people, sm:S.startMode==="today"?1:0, s:S.start, h:S.bags, p:S.prior, e:S.eat, k:encPicks(S.picks), ex:S.ex?1:0,
     f: S.first ? {k:encPicks(S.first.picks), r:S.first.reserve, e:S.first.eat} : null};
@@ -588,7 +592,7 @@ function planFromHash(){
     const num = (v,lo,hi,dflt) => { v=+v; return Number.isFinite(v) ? Math.min(hi,Math.max(lo,Math.round(v*2)/2)) : dflt; };
     const dec = list => { const out={}; for(const row of Array.isArray(list)?list:[]){ if(!Array.isArray(row)) continue; const [id,b,mm]=row;
       if(typeof id!=="string" || !Object.hasOwn(ITEM,id)) continue;
-      const mo = mm==="a" ? ALL : mm==="k" ? KEEP : (Number.isInteger(mm)&&mm>=0&&mm<=11 ? mm : undefined);
+      const mo = mm==="a" ? ALL : mm==="o" ? MO : mm==="k" ? KEEP : (Number.isInteger(mm)&&mm>=0&&mm<=11 ? mm : undefined);
       if(mo===undefined || (mo===KEEP)!==ITEM[id].keep) continue;
       out[id]={b:num(b,.5,20,1), m:mo}; } return out; };
     const picks = dec(o.k), f = o.f && typeof o.f==="object" ? o.f : null;
@@ -628,7 +632,8 @@ function render(){
 }
 function go(i){ clearInterval(playing); playing=null; sheet=null; eraseArmed=false; S.screen=Math.max(0,Math.min(7,i)); play=-1; ui.top=true;
   if(SCREENS[S.screen]==="play" && !S.first) S.first={picks:JSON.parse(JSON.stringify(S.picks)), reserve:reserve(), eat:S.eat}; }
-function playTick(){ const n=months(); play=Math.min(n-1,play+1); if(play>=n-1){ clearInterval(playing); playing=null; if(works()) setTimeout(party,50); } render(); }
+function playTick(){ const n=months(); play=Math.min(n-1,play+1); const fin = play>=n-1; if(fin){ clearInterval(playing); playing=null; if(works()) setTimeout(party,50); } render();
+  if(fin) requestAnimationFrame(()=>document.querySelector(".changes")?.scrollIntoView({block:"end", behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"})); }
 
 // ================= ACTIONS =================
 const clamp = (v,lo,hi) => Math.max(lo,Math.min(hi,v));
@@ -645,7 +650,7 @@ const ACTIONS = {
   reveal:()=>{ for(const [id] of CATS[S.cat].items) if(S.exPicks[id]) S.picks[id]={...S.exPicks[id]}; },
   item:el=>{ openSheet(el.dataset.id); ui.sheetOpened=true; },
   "s-":()=>sheet.b=clamp(sheet.b-.5,.5,20), "s+":()=>sheet.b=clamp(sheet.b+.5,.5,20),
-  sm:el=>{ sheet.m = el.dataset.i==="all" ? ALL : +el.dataset.i; sheet.warn=false; },
+  sm:el=>{ const i=el.dataset.i; sheet.m = i==="all" ? ALL : i==="mo" ? MO : +i; sheet.warn=false; },
   save:()=>{ if(sheet.m==null){ sheet.warn=true; render(); $("#months")?.classList.add("nudge"); return "skip"; }
     S.picks[sheet.id]={b:sheet.b,m:sheet.m}; sheet=null; play=-1; },
   remove:()=>{ delete S.picks[sheet.id]; sheet=null; play=-1; }, close:()=>sheet=null,
