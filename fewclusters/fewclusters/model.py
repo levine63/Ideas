@@ -49,6 +49,10 @@ from .scores import ClusterScores, cluster_scores
 Q_RATIO_WARN = 1.25
 
 
+class SmallClusterWarning(UserWarning):
+    """Diagnostic only: small sites or calibration folds weaken approximations."""
+
+
 class IdentificationWarning(UserWarning):
     """Raised (as a warning) when residual treatment variation looks spurious."""
 
@@ -100,6 +104,9 @@ class ARTDML:
         Calibration sample for "adaptive": a random share of the target
         cluster outside the evaluation fold (K >= 2), or None to use the next
         fold (K >= 3). Not available with buffered/contiguous folds.
+    reserve_calibration : bool
+        Reserve calibration even for fixed local/pooled fits, enabling comparisons
+        with the adaptive candidates on exactly the same training rows.
     exclude_same_fold : bool
         When borrowing, drop the other clusters' same-numbered fold.
     buffer : int
@@ -123,7 +130,9 @@ class ARTDML:
                  borrow: str = "pooled_id", calib_fraction: Optional[float] = None,
                  exclude_same_fold: bool = True, buffer: int = 0, contiguous: bool = False,
                  weights: Optional[np.ndarray] = None, max_exact: int = 20,
-                 n_random_signs: int = 10_000, random_state: Optional[int] = None):
+                 n_random_signs: int = 10_000, random_state: Optional[int] = None,
+                 reserve_calibration: bool = False):
+        self.reserve_calibration = reserve_calibration
         self.learner_m = learner_m
         self.learner_l = learner_l
         self.n_folds = n_folds
@@ -194,7 +203,7 @@ class ARTDML:
         spec_l = NuisanceSpec(self.learner_l, self.pooling_l, self.borrow, name="ell")
         use_m_learner = m_known is None
         spec_m = NuisanceSpec(self.learner_m, self.pooling_m, self.borrow, name="m") if use_m_learner else None
-        needs_calib = spec_l.needs_calibration or (use_m_learner and spec_m.needs_calibration)
+        needs_calib = self.reserve_calibration or spec_l.needs_calibration or (use_m_learner and spec_m.needs_calibration)
 
         plan = FoldPlan(cl, n_folds=self.n_folds, use_calibration=needs_calib,
                         calib_fraction=self.calib_fraction if needs_calib else None,
@@ -228,6 +237,22 @@ class ARTDML:
                          "between-cluster variation rather than within-cluster identifying variation.")
         for msg in notes:
             warnings.warn(msg, IdentificationWarning, stacklevel=2)
+
+        # Heuristic flags, not theorem thresholds or a normality test.
+        small_notes = []
+        for j in range(q):
+            cal_sizes = [role.calib_idx.size for role in plan.roles
+                         if role.cluster == j and role.calib_idx.size]
+            n_cal = min(cal_sizes) if cal_sizes else None
+            if scores.n[j] < 100 or (n_cal is not None and n_cal < 20):
+                msg = (f"Cluster {labels[j]} has {scores.n[j]} scored observations"
+                       + (f" and as few as {n_cal} calibration observations" if n_cal is not None else "")
+                       + ". Small-sample warning: Gaussian cluster-score approximation may be poor; "
+                       "calibrated pooling weights may be noisy. Shrinkage does not establish normality. "
+                       "The n<100 / calibration<20 flags are diagnostic heuristics, not validity cutoffs.")
+                small_notes.append(msg)
+                warnings.warn(msg, SmallClusterWarning, stacklevel=2)
+        notes.extend(small_notes)
 
         self.result_ = ARTDMLResult(
             labels=labels, scores=scores, weights=weights, signs=signs, exact=exact,
