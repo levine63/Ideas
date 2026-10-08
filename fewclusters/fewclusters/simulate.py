@@ -21,6 +21,9 @@ One function, `simulate_plm`, with knobs for each experiment in the plan:
                         probit, m_0j(x) = Phi(index(x)), so E[V|X] = 0 still holds.
     dependence_share    share of the treatment latent variance carried by the
                         MA(R) shock (larger = more score dependence).
+    error_dist          "normal" (default) or "lognormal": outcome errors
+                        exp(Z) centred and scaled to mean 0, variance 1 (heavily
+                        right-skewed, like earnings). Only for dependence_R = 0.
     covariate_shift     size of cluster-specific shifts of the covariate
                         distribution (overlap experiment).
 
@@ -66,8 +69,12 @@ def simulate_plm(q: int = 6, n_j: Union[int, Sequence[int]] = 500, theta: float 
                  p: int = 4, tau_m: float = 0.0, tau_l: float = 0.0,
                  known_propensity: bool = False, gamma: Optional[np.ndarray] = None,
                  dependence_R: int = 0, dependence_share: float = 0.7,
-                 covariate_shift: float = 0.0,
+                 covariate_shift: float = 0.0, error_dist: str = "normal",
                  seed: Optional[int] = None) -> Dict[str, np.ndarray]:
+    if error_dist not in ("normal", "lognormal"):
+        raise ValueError("error_dist must be 'normal' or 'lognormal'.")
+    if error_dist != "normal" and dependence_R > 0:
+        raise ValueError("error_dist='lognormal' is only implemented with dependence_R = 0.")
     rng = np.random.default_rng(seed)
     p = max(p, 4)
     sizes = np.full(q, int(n_j)) if np.isscalar(n_j) else np.asarray(n_j, dtype=int)
@@ -101,7 +108,12 @@ def simulate_plm(q: int = 6, n_j: Union[int, Sequence[int]] = 500, theta: float 
             m0 = _sigmoid(index)
             d = (rng.random(n) < m0).astype(float)
         g0 = x1 ** 2 - x2 + np.cos(x3) + 0.5 * x1 * x4 + tau_l * (C[j] + 0.5 * E[j] * x2)
-        u = _ma(rng, n, dependence_R) if dependence_R > 0 else rng.standard_normal(n)
+        if dependence_R > 0:
+            u = _ma(rng, n, dependence_R)
+        elif error_dist == "lognormal":
+            u = (np.exp(rng.standard_normal(n)) - np.exp(0.5)) / np.sqrt((np.e - 1.0) * np.e)
+        else:
+            u = rng.standard_normal(n)
         y = theta_j[j] * d + g0 + u
         y_all.append(y); d_all.append(d); X_all.append(X); c_all.append(np.full(n, j))
         m0_all.append(m0); g0_all.append(g0); l0_all.append(theta_j[j] * m0 + g0)

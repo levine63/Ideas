@@ -1,6 +1,16 @@
 """
 jtpa_analysis.py -- re-analysis of the National JTPA Study with site clusters.
 
+PRIMARY ANALYSIS: the stratified randomization test (StratifiedFRT). JTPA
+randomized individuals within sites, so design-based inference needs no
+site-level clustering; the FRT re-randomizes assignment within site (x
+strata) cells, adjusts for covariates with ML fitted without the treatment,
+and chooses the adjustment and site weights by placebo re-randomizations.
+It is exact under the sharp null of a constant effect. The site-level sign
+tests below are reported as a robustness check: they answer a different
+question (inference that must hold across sites with site-varying effects)
+and pay for it with the 2^(q-1) resolution floor.
+
 The JTPA experiment randomized applicants to treatment or control (about 2:1)
 WITHIN each of 16 sites, so (i) treatment varies within every cluster and
 (ii) the assignment probability is known by design. That makes it the
@@ -52,7 +62,7 @@ from sklearn.dummy import DummyRegressor
 from sklearn.ensemble import HistGradientBoostingClassifier, HistGradientBoostingRegressor
 from sklearn.linear_model import LinearRegression
 
-from fewclusters import ARTDML, attainable_size
+from fewclusters import ARTDML, StratifiedFRT, attainable_size
 
 
 # --------------------------------------------------------------------- data
@@ -154,7 +164,15 @@ def run_all(df: pd.DataFrame, y: str, d: str, site: str, xs: List[str], strata: 
 
     q = np.unique(sv).size
     out = {"n": len(data), "dropped": dropped, "q": q, "alpha": alpha,
-           "attainable": attainable_size(q, alpha), "rows": [], "sites": None, "weights": None}
+           "attainable": attainable_size(q, alpha), "rows": [], "sites": None, "weights": None,
+           "frt": None}
+
+    # primary: stratified randomization test within site (x strata) cells, complete randomization
+    t0 = time.time()
+    frt = StratifiedFRT(gbr(), n_folds=n_folds, B=1999, random_state=seed)
+    res0 = frt.test(yv, dv, X, cells.to_numpy(), lam=0.0, design="complete")
+    out["frt"] = dict(p0=res0.p_value, est=res0.estimate, choice=res0.choice,
+                      tuning=str(res0.tuning), secs=time.time() - t0)
 
     est, ci, p = crve_site_fe(yv, dv, X, sv, alpha)
     out["rows"].append(dict(method="CRVE (site FE, t(q-1))", est=est, lo=ci[0], hi=ci[1], p0=p))
@@ -180,9 +198,16 @@ def run_all(df: pd.DataFrame, y: str, d: str, site: str, xs: List[str], strata: 
 
 # --------------------------------------------------------------------- report
 def report(res: Dict, title: str) -> str:
+    f = res["frt"]
     L = [f"## {title}", "",
-         f"n = {res['n']} (dropped {res['dropped']} rows with missing values), q = {res['q']} sites; "
-         f"alpha = {res['alpha']}, attainable ART size = {res['attainable']:.4f}.", "",
+         f"n = {res['n']} (dropped {res['dropped']} rows with missing values), q = {res['q']} sites.", "",
+         "### Primary: stratified randomization test (re-randomization within site cells)", "",
+         f"Estimate {f['est']:.1f}; randomization p-value for no effect {f['p0']:.4f} "
+         f"(1999 re-randomizations). Configuration chosen by placebo tuning: "
+         f"adjustment = {f['choice'][0]}, site weights = {f['choice'][1]}.", "",
+         "```", f["tuning"], "```", "",
+         f"### Robustness: site-level sign tests (attainable size {res['attainable']:.4f} at "
+         f"alpha = {res['alpha']})", "",
          "| method | estimate | CI low | CI high | CI length | p (theta=0) |",
          "|---|---:|---:|---:|---:|---:|"]
     for r in res["rows"]:

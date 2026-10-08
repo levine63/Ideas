@@ -164,10 +164,90 @@ Monte Carlo s.e. of a rejection rate near 0.03: 0.0076. [824s]
   validity (`ARTDML(weights=...)`); weights increasing in n_j should help
   here. Not yet tested.
 
+
+## Known randomization: stratified randomization test vs site-level sign test (`examples/frt_vs_art.py`)
+
+Same six sites (10, 25, 40, 200, 400, 800), site-specific outcome
+regressions, treatment Bernoulli with known site-specific probability,
+constant effect theta = 1 (the sharp null holds at theta). 400
+replications per error distribution, seed 777; FRT p-values from 999
+re-randomizations. Power columns test theta - 0.15 and theta - 0.30.
+"invvar" = site weights proportional to the inverse design variance of the
+site estimate; "placebo-tuned" chooses adjustment and weights from fake
+re-randomizations of the design, never seeing the real treatment.
+
+### Normal errors
+
+Sign test attainable size with 6 sites: 0.0312 at 5%, 0.0938 at 10%. The FRT is exact at any level.
+
+| method | size 5% | size 10% | power 5%, -0.15 | power 5%, -0.30 | power 10%, -0.30 |
+|---|---:|---:|---:|---:|---:|
+| ART sign test (adaptive, kappa=20) | 0.023 | 0.073 | 0.108 | 0.259 | 0.606 |
+| FRT oracle residuals, invvar | 0.040 | 0.095 | 0.802 | 1.000 | 1.000 |
+| FRT site_mean, equal | 0.053 | 0.106 | 0.088 | 0.188 | 0.289 |
+| FRT site_mean, invvar | 0.048 | 0.106 | 0.274 | 0.761 | 0.847 |
+| FRT local, equal | 0.035 | 0.083 | 0.053 | 0.143 | 0.209 |
+| FRT pooled_id, invvar | 0.053 | 0.101 | 0.784 | 1.000 | 1.000 |
+| FRT adaptive_shrunk, equal | 0.038 | 0.068 | 0.113 | 0.319 | 0.420 |
+| FRT adaptive_shrunk, invvar | 0.050 | 0.098 | 0.784 | 1.000 | 1.000 |
+| FRT placebo-tuned | 0.058 | 0.098 | 0.789 | 1.000 | 1.000 |
+
+Placebo tuner's choice when testing theta - 0.30 (adjustment, weights): pooled_id/invvar 80, pooled_id/size 74, adaptive/invvar 57, local/invvar 51, adaptive/size 48, adaptive_shrunk/size 43, adaptive_shrunk/invvar 35, local/size 10
+
+Monte Carlo s.e. of a rate near 0.05: 0.0109. [1131s]
+
+### Lognormal errors (skewness ~6)
+
+Sign test attainable size with 6 sites: 0.0312 at 5%, 0.0938 at 10%. The FRT is exact at any level.
+
+| method | size 5% | size 10% | power 5%, -0.15 | power 5%, -0.30 | power 10%, -0.30 |
+|---|---:|---:|---:|---:|---:|
+| ART sign test (adaptive, kappa=20) | 0.023 | 0.083 | 0.148 | 0.317 | 0.661 |
+| FRT oracle residuals, invvar | 0.045 | 0.088 | 0.832 | 1.000 | 1.000 |
+| FRT site_mean, equal | 0.050 | 0.098 | 0.085 | 0.188 | 0.309 |
+| FRT site_mean, invvar | 0.058 | 0.103 | 0.276 | 0.754 | 0.849 |
+| FRT local, equal | 0.033 | 0.070 | 0.068 | 0.209 | 0.286 |
+| FRT pooled_id, invvar | 0.055 | 0.106 | 0.804 | 1.000 | 1.000 |
+| FRT adaptive_shrunk, equal | 0.033 | 0.068 | 0.153 | 0.465 | 0.570 |
+| FRT adaptive_shrunk, invvar | 0.048 | 0.106 | 0.814 | 1.000 | 1.000 |
+| FRT placebo-tuned | 0.050 | 0.111 | 0.802 | 1.000 | 1.000 |
+
+Placebo tuner's choice when testing theta - 0.30 (adjustment, weights): pooled_id/invvar 127, adaptive_shrunk/invvar 75, adaptive/invvar 73, local/invvar 37, pooled_id/size 32, adaptive_shrunk/size 27, adaptive/size 20, local/size 7
+
+Monte Carlo s.e. of a rate near 0.05: 0.0109. [1136s]
+
+**Reading.**
+
+* **The randomization test is exact**, including with a 10-person site and
+  heavily skewed errors: every FRT configuration, tuned or fixed, rejects a
+  true null at 0.033-0.058 at 5% (Monte Carlo s.e. 0.011), and at the full
+  nominal level, not the sign test's 1/32.
+* **Power is transformed.** Against an effect 0.15 below the truth, the
+  tuned FRT rejects 79-80% of the time at 5%, essentially the oracle's
+  80-83%; the site-level sign test rejects 11-15%. Against 0.30: 100%
+  versus 26-32%.
+* **Site weighting matters more than the adjustment.** With equal site
+  weights even the FRT is weak (0.19-0.47 at -0.30), because the 10-person
+  site counts as much as the 800-person site. Inverse-variance weights fix
+  this; better covariate adjustment then adds the rest (site means only:
+  0.76; adaptive or pooled ML: 1.00).
+* **The placebo tuner never chose equal weights or no adjustment**, and
+  matched the best fixed configuration (0.79-0.80 vs 0.78-0.81 at -0.15)
+  without knowing in advance which that was. In this design a sensible
+  fixed default (adaptive_shrunk, invvar) does equally well; tuning is
+  insurance against a bad default, not a gain over a good one.
+* **Scope.** The FRT tests the sharp null of a constant effect for these
+  sites. The sign test answers a different question (inference that holds
+  across sites with site-varying effects); its low power here is the price
+  of that question plus equal site weights.
+
 ## Not covered
 
 * Flexible learners (boosting, forests) in the Monte Carlo; they are used
   only in `quickstart.py` and `jtpa_analysis.py`.
 * q other than 6.
-* Skewed or heavy-tailed outcomes with tiny clusters.
+* Skewed outcomes with tiny clusters for the sign test with estimated m
+  (the known-m design is covered above).
+* FRT confidence intervals and the studentized FRT for heterogeneous
+  individual effects.
 * Leakage through flexible nuisance fits under dependence (see above).

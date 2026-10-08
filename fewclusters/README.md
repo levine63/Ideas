@@ -68,6 +68,38 @@ Serially dependent rows within a cluster: pass `buffer=R` (rows must be in
 time order within each cluster); folds become contiguous blocks and no row
 within `R` positions of a block may train or calibrate the model that scores it.
 
+## Known individual randomization: use `StratifiedFRT`
+
+If treatment was randomized to individuals within sites with known
+probabilities (a multi-site trial, JTPA), site-level clustering is not
+needed for inference: the score terms (D_i - p_i) e_i are uncorrelated
+across people even when outcomes are correlated within a site. Use the
+stratified randomization test instead of the sign test:
+
+```python
+from fewclusters import StratifiedFRT
+frt = StratifiedFRT(learner=GBR(), random_state=0)
+res = frt.test(y, d, X, site, p=assignment_prob, lam=0.0)        # Bernoulli design
+res = frt.test(y, d, X, site, lam=0.0, design="complete")       # fixed number treated per site
+print(res); print(res.tuning)
+```
+
+* Exact in finite samples under the sharp null (constant effect): no
+  normal approximation, no 2^(q-1) floor, tiny sites are fine.
+* ML adjustment is fitted on Y - lam D and X only, never on D (Rosenbaum
+  2002), with local / pooled / adaptive borrowing across sites.
+* The adjustment and the site weights (equal, size, inverse variance) are
+  chosen by **placebo tuning**: fake treatments drawn from the known design,
+  a known effect added, simulated power compared. The tuner never sees the
+  real D, so the choice cannot invalidate the test, and one model fit
+  serves every placebo draw (E[Y + delta D' | X] = E[Y | X] + delta p).
+* Not yet: confidence intervals, studentization for heterogeneous
+  individual effects (Wu & Ding 2021).
+
+Use `ARTDML` (the sign test) when assignment is at the cluster level or
+unknown, or when inference must generalize across sites with site-varying
+effects. See `examples/frt_vs_art.py`.
+
 ## How the pieces fit (one module per idea)
 
 | Module | Idea | Note reference |
@@ -79,6 +111,7 @@ within `R` positions of a block may train or calibrate the model that scores it.
 | `scores.py` | `Q_j`, `theta_j`, `S_j(lambda) = a_j - b_j lambda` | eq. (2)-(3) |
 | `art.py` | sign group, p-value, decision, CI by inversion; pure numpy | eq. (4), Proposition 1 |
 | `model.py` | `ARTDML`: fit once, test and invert many times | Section 3 |
+| `frt.py` | `StratifiedFRT`: exact within-site randomization test; placebo tuner | known-randomization extension |
 | `simulate.py` | DGPs with the knobs of the simulation plan | Sections 4-7 |
 
 Data flow: `FoldPlan` -> `crossfit_nuisance` (twice: m and ell) ->

@@ -28,6 +28,9 @@ scores.py     turns residuals into the per-cluster quantities
 art.py        the sign-group randomization test, p-values and confidence
               intervals by test inversion (eq. (4)); pure numpy.
 model.py      ARTDML, the user-facing class that ties everything together.
+frt.py        StratifiedFRT: exact randomization test for individually
+              randomized multi-site data, with ML adjustment and site weights
+              chosen by placebo re-randomizations (fake treatments).
 simulate.py   data-generating processes for the simulation study.
 
 Notation follows the note: clusters j = 1..q, observations i = 1..n_j,
@@ -47,6 +50,7 @@ from .folds import FoldPlan, FoldRoles
 from .nuisance import NuisanceSpec, crossfit_nuisance
 from .scores import ClusterScores, cluster_scores
 from .simulate import simulate_plm
+from .frt import Design, FRTResult, StratifiedFRT, TuneResult, placebo_tune, residualize
 
 __all__ = [
     "ARTDML",
@@ -66,6 +70,12 @@ __all__ = [
     "ClusterScores",
     "cluster_scores",
     "simulate_plm",
+    "Design",
+    "FRTResult",
+    "StratifiedFRT",
+    "TuneResult",
+    "placebo_tune",
+    "residualize",
 ]
 
 __version__ = "0.1.0"
