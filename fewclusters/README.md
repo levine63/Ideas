@@ -121,6 +121,24 @@ separately.
   random cases (they agree exactly, to rounding). This is a port-level
   check; the R package itself was not run.
 
+## JTPA application data (retrieval only)
+
+The downloader at `examples/download_jtpa.py` can retrieve the public-use
+National JTPA archive and the smaller `senseweight` women's extract. It saves
+original source files, SHA-256 provenance, site counts for the women's extract,
+and an inventory of the ZIP archive. It does **not** estimate treatment effects
+or determine site-specific randomization probabilities.
+
+```bash
+python -m pip install requests pandas pyreadr
+python examples/download_jtpa.py --dataset both --output-dir jtpa_data
+```
+
+The downloaded study files are ignored by Git. Review the original study
+codebooks and verify the actual site/stratum assignment design before using
+`m_known`; never substitute observed assignment frequencies. Full remote
+downloads have not yet been validated in this environment.
+
 ## References
 
 Cai, Canay, Kim, Shaikh (2023) J. Econometric Methods 12(1): 85-103.
