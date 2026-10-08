@@ -1,0 +1,195 @@
+{
+  "status": "PRELIMINARY - NOT FOR PUBLICATION",
+  "runs": [
+    {
+      "status": "PRELIMINARY - NOT FOR PUBLICATION",
+      "design": "normal_equal",
+      "theta": 0.08,
+      "sizes": [
+        38,
+        74,
+        81,
+        87,
+        177,
+        179,
+        190,
+        234,
+        353,
+        401,
+        463,
+        485,
+        524,
+        636,
+        788,
+        1392
+      ],
+      "oracle_reps": 1000,
+      "fitted_reps": 500,
+      "seed": 20261009,
+      "variance_kappas": [
+        100,
+        20
+      ],
+      "variance_floor_fraction": 0.1,
+      "code_sha256": "e4427ec39513b16969b7f971d9efe7d6157cf11aecd3329855336c5f6185bfab",
+      "seconds": 605.9070756435394,
+      "warnings": {
+        "Cluster(s) [np.int64(0)] have fewer than 50 observations ([38]). The test treats each cluster score as approximately normal and symmetric; that approximation may be poor here. Small-sample warning: shrinkage does not establish normality. Consider sensitivity results with and without them.": 500,
+        "Cluster 0 has as few as 7 calibration rows. Pooling weights may be noisy; calibration<20 is a diagnostic heuristic, not a validity cutoff. Shrinkage does not establish normality.": 500,
+        "Cluster 1 has as few as 14 calibration rows. Pooling weights may be noisy; calibration<20 is a diagnostic heuristic, not a validity cutoff. Shrinkage does not establish normality.": 500,
+        "Cluster 2 has as few as 16 calibration rows. Pooling weights may be noisy; calibration<20 is a diagnostic heuristic, not a validity cutoff. Shrinkage does not establish normality.": 500,
+        "Cluster 3 has as few as 17 calibration rows. Pooling weights may be noisy; calibration<20 is a diagnostic heuristic, not a validity cutoff. Shrinkage does not establish normality.": 500,
+        "Cluster 0: residual treatment variance Q_hat = 0.155 is 1.36 x the raw within-cluster variance of D (0.1143). The treatment model predicts D worse than the cluster mean does; Q_hat may reflect between-cluster variation rather than within-cluster identifying variation.": 2,
+        "Cluster 0: residual treatment variance Q_hat = 0.1462 is 1.55 x the raw within-cluster variance of D (0.09418). The treatment model predicts D worse than the cluster mean does; Q_hat may reflect between-cluster variation rather than within-cluster identifying variation.": 2
+      },
+      "failures": [],
+      "result_sha256": "dd3cff965d9d79915a09872d3cbd2e8fc6c683d8d54995147905dd101e3c45b6"
+    },
+    {
+      "status": "PRELIMINARY - NOT FOR PUBLICATION",
+      "design": "normal_unequal",
+      "theta": 0.08,
+      "sizes": [
+        38,
+        74,
+        81,
+        87,
+        177,
+        179,
+        190,
+        234,
+        353,
+        401,
+        463,
+        485,
+        524,
+        636,
+        788,
+        1392
+      ],
+      "oracle_reps": 1000,
+      "fitted_reps": 500,
+      "seed": 20261009,
+      "variance_kappas": [
+        100,
+        20
+      ],
+      "variance_floor_fraction": 0.1,
+      "code_sha256": "e4427ec39513b16969b7f971d9efe7d6157cf11aecd3329855336c5f6185bfab",
+      "seconds": 603.1780385971069,
+      "warnings": {
+        "Cluster(s) [np.int64(0)] have fewer than 50 observations ([38]). The test treats each cluster score as approximately normal and symmetric; that approximation may be poor here. Small-sample warning: shrinkage does not establish normality. Consider sensitivity results with and without them.": 500,
+        "Cluster 0 has as few as 7 calibration rows. Pooling weights may be noisy; calibration<20 is a diagnostic heuristic, not a validity cutoff. Shrinkage does not establish normality.": 500,
+        "Cluster 1 has as few as 14 calibration rows. Pooling weights may be noisy; calibration<20 is a diagnostic heuristic, not a validity cutoff. Shrinkage does not establish normality.": 500,
+        "Cluster 2 has as few as 16 calibration rows. Pooling weights may be noisy; calibration<20 is a diagnostic heuristic, not a validity cutoff. Shrinkage does not establish normality.": 500,
+        "Cluster 3 has as few as 17 calibration rows. Pooling weights may be noisy; calibration<20 is a diagnostic heuristic, not a validity cutoff. Shrinkage does not establish normality.": 500,
+        "Cluster 0: residual treatment variance Q_hat = 0.155 is 1.36 x the raw within-cluster variance of D (0.1143). The treatment model predicts D worse than the cluster mean does; Q_hat may reflect between-cluster variation rather than within-cluster identifying variation.": 2,
+        "Cluster 0: residual treatment variance Q_hat = 0.1462 is 1.55 x the raw within-cluster variance of D (0.09418). The treatment model predicts D worse than the cluster mean does; Q_hat may reflect between-cluster variation rather than within-cluster identifying variation.": 2
+      },
+      "failures": [],
+      "result_sha256": "82628e5125c1dfb50e17e34713b8a46a3c2154e812a2522ff44caba8e27bd024"
+    },
+    {
+      "status": "PRELIMINARY - NOT FOR PUBLICATION",
+      "design": "t3_unequal",
+      "theta": 0.08,
+      "sizes": [
+        38,
+        74,
+        81,
+        87,
+        177,
+        179,
+        190,
+        234,
+        353,
+        401,
+        463,
+        485,
+        524,
+        636,
+        788,
+        1392
+      ],
+      "oracle_reps": 1000,
+      "fitted_reps": 500,
+      "seed": 20261009,
+      "variance_kappas": [
+        100,
+        20
+      ],
+      "variance_floor_fraction": 0.1,
+      "code_sha256": "e4427ec39513b16969b7f971d9efe7d6157cf11aecd3329855336c5f6185bfab",
+      "seconds": 609.1786780357361,
+      "warnings": {
+        "Cluster(s) [np.int64(0)] have fewer than 50 observations ([38]). The test treats each cluster score as approximately normal and symmetric; that approximation may be poor here. Small-sample warning: shrinkage does not establish normality. Consider sensitivity results with and without them.": 500,
+        "Cluster 0 has as few as 7 calibration rows. Pooling weights may be noisy; calibration<20 is a diagnostic heuristic, not a validity cutoff. Shrinkage does not establish normality.": 500,
+        "Cluster 1 has as few as 14 calibration rows. Pooling weights may be noisy; calibration<20 is a diagnostic heuristic, not a validity cutoff. Shrinkage does not establish normality.": 500,
+        "Cluster 2 has as few as 16 calibration rows. Pooling weights may be noisy; calibration<20 is a diagnostic heuristic, not a validity cutoff. Shrinkage does not establish normality.": 500,
+        "Cluster 3 has as few as 17 calibration rows. Pooling weights may be noisy; calibration<20 is a diagnostic heuristic, not a validity cutoff. Shrinkage does not establish normality.": 500,
+        "Cluster 0: residual treatment variance Q_hat = 0.155 is 1.36 x the raw within-cluster variance of D (0.1143). The treatment model predicts D worse than the cluster mean does; Q_hat may reflect between-cluster variation rather than within-cluster identifying variation.": 2,
+        "Cluster 0: residual treatment variance Q_hat = 0.1462 is 1.55 x the raw within-cluster variance of D (0.09418). The treatment model predicts D worse than the cluster mean does; Q_hat may reflect between-cluster variation rather than within-cluster identifying variation.": 2
+      },
+      "failures": [],
+      "result_sha256": "f177c31372cc3bfbbcb6544df980bc56d07d348ea65d27c557c2a11a1b0d32ec"
+    },
+    {
+      "status": "PRELIMINARY - NOT FOR PUBLICATION",
+      "design": "lognormal_unequal",
+      "theta": 0.08,
+      "sizes": [
+        38,
+        74,
+        81,
+        87,
+        177,
+        179,
+        190,
+        234,
+        353,
+        401,
+        463,
+        485,
+        524,
+        636,
+        788,
+        1392
+      ],
+      "oracle_reps": 1000,
+      "fitted_reps": 500,
+      "seed": 20261009,
+      "variance_kappas": [
+        100,
+        20
+      ],
+      "variance_floor_fraction": 0.1,
+      "code_sha256": "e4427ec39513b16969b7f971d9efe7d6157cf11aecd3329855336c5f6185bfab",
+      "seconds": 612.8402268886566,
+      "warnings": {
+        "Cluster(s) [np.int64(0)] have fewer than 50 observations ([38]). The test treats each cluster score as approximately normal and symmetric; that approximation may be poor here. Small-sample warning: shrinkage does not establish normality. Consider sensitivity results with and without them.": 500,
+        "Cluster 0 has as few as 7 calibration rows. Pooling weights may be noisy; calibration<20 is a diagnostic heuristic, not a validity cutoff. Shrinkage does not establish normality.": 500,
+        "Cluster 1 has as few as 14 calibration rows. Pooling weights may be noisy; calibration<20 is a diagnostic heuristic, not a validity cutoff. Shrinkage does not establish normality.": 500,
+        "Cluster 2 has as few as 16 calibration rows. Pooling weights may be noisy; calibration<20 is a diagnostic heuristic, not a validity cutoff. Shrinkage does not establish normality.": 500,
+        "Cluster 3 has as few as 17 calibration rows. Pooling weights may be noisy; calibration<20 is a diagnostic heuristic, not a validity cutoff. Shrinkage does not establish normality.": 500,
+        "Cluster 0: residual treatment variance Q_hat = 0.155 is 1.36 x the raw within-cluster variance of D (0.1143). The treatment model predicts D worse than the cluster mean does; Q_hat may reflect between-cluster variation rather than within-cluster identifying variation.": 2,
+        "Cluster 0: residual treatment variance Q_hat = 0.1462 is 1.55 x the raw within-cluster variance of D (0.09418). The treatment model predicts D worse than the cluster mean does; Q_hat may reflect between-cluster variation rather than within-cluster identifying variation.": 2
+      },
+      "failures": [],
+      "result_sha256": "59b0d50298f627438a37ebc858fb2928364b5ccfcd8f47b9c5f967c99cfccad2"
+    }
+  ],
+  "posthoc_diagnostic": {
+    "status": "PRELIMINARY - NOT FOR PUBLICATION",
+    "design": "lognormal_unequal",
+    "diagnostic": "Oracle nuisances; extra independent sample of 6102 observations used only for variance weights",
+    "evaluation_seed": 20261009,
+    "independent_seed": 20261010,
+    "reps": 1000,
+    "result_sha256": "2d667574beea28328834e51dd7de1be6a8d117f39cb2abde9af81f4c0b2abcc3"
+  },
+  "source_sha256": {
+    "weighting_simulation.py": "e4427ec39513b16969b7f971d9efe7d6157cf11aecd3329855336c5f6185bfab",
+    "independent_weight_diagnostic.py": "b4ede75e0465e40ce3ccc117e37bbd0025244ec83a213658b3abab9b47f8bc97",
+    "summarize_weighting_simulation.py": "8e0ee128d8b346232e197da244c64b3cebec23218dbe61bf50c2e3eab07b2870"
+  }
+}

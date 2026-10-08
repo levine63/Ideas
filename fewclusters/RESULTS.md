@@ -140,12 +140,13 @@ Monte Carlo s.e. of a rejection rate near 0.03: 0.0076. [824s]
 
 **Reading.**
 
-* **Size holds** for every method that keeps q = 6 (0.024-0.038 against an
-  attainable 0.031 at 5%), even with a 10-observation cluster. The noisy
-  small-cluster score is still centred and symmetric because its nuisances
-  never see its evaluation rows. Caveat: errors here are Gaussian; skewed
-  outcomes such as earnings could make a 10-observation score asymmetric,
-  and that is not tested yet.
+* **Observed rejection rates are near the attainable level** for methods
+  keeping q = 6 in this simulation (0.024-0.038 against 0.031 at 5%).
+  This is not a general small-cluster validity result. Honest sample splitting
+  avoids own-observation leakage; it does not by itself establish score
+  centering or symmetry, especially with estimated propensities and nuisance
+  error drift. Errors here are Gaussian; skewed earnings and heavy tails
+  require separate stress tests.
 * **The cost is power.** The equal-weighted statistic gives the n = 10
   cluster the same weight as the n = 800 cluster, and its score is 2-3x
   noisier than the oracle's. Power at 5% falls from 0.43 (oracle) to 0.19
@@ -160,9 +161,10 @@ Monte Carlo s.e. of a rejection rate near 0.03: 0.0076. [824s]
   q = 5, where the test cannot reject at 5% at all, and at 10% it has less
   power (0.47-0.57) than keeping the clusters with shrinkage (0.60-0.65).
 * **What would recover more power:** down-weighting small clusters in the
-  statistic. Any fixed positive weights chosen before seeing outcomes keep
-  validity (`ARTDML(weights=...)`); weights increasing in n_j should help
-  here. Not yet tested.
+  statistic. Prespecified deterministic positive weights preserve the sign-invariance
+  argument when its original assumptions hold (`ARTDML(weights=...)`).
+  They do not repair non-Gaussian small-site scores. Whether weights increasing
+  in n_j improve power is an untested conjecture in this design.
 
 ## Not covered
 

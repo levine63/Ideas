@@ -1,0 +1,74 @@
+{
+  "status": "PRELIMINARY - NOT FOR PUBLICATION",
+  "python": "3.12.10",
+  "git_head": "bdc88b2854726546bc74dc2d3cf72dfe4778a81f",
+  "seeds": [
+    0,
+    1,
+    2
+  ],
+  "folds": 5,
+  "shrink_l": 20,
+  "shrink_m": 0,
+  "min_local_train": 20,
+  "data_csv_sha256": "093fcc9102cb9194820477db73b79d8aefc99f6c424a5295adbabd2ee23a581d",
+  "baseline_core": "e4f1794 (baseline process started before merge; equivalent to explicit shrink_l=0, min_local_train=0)",
+  "shrink_core": "3e9fc11 plus matched-training and warning integration",
+  "code_sha256": {
+    "examples\\jtpa_analysis.py": "81e3e047bc6bc0ed3c22d56acbbd2ebb27707e2eaa18cab8bce4802f24610674",
+    "examples\\jtpa_pilot.py": "5577b028b3ba7e7aa0c53f22223a3947b2313991cc620a4e324b816dccf288d4",
+    "examples\\jtpa_shrink_pilot.py": "f5c90f16e9080d62a3220bfa379724be5e1698eeaa1c2af54bfe7a9a717df0e0",
+    "fewclusters\\model.py": "791cef880dc300d3d6b1079ea301bbb9b131b8ab12d0557a8800686768bd5d55"
+  },
+  "data_sources": {
+    "jtpa_women_manifest.json": {
+      "source_url": "https://raw.githubusercontent.com/melodyyhuang/senseweight/main/data/jtpa_women.rda",
+      "source_rda_sha256": "c54fc743295e1c863d5e88bf08c54948cde8abff817e6848c1fbfa76788893b0",
+      "csv_sha256": "093fcc9102cb9194820477db73b79d8aefc99f6c424a5295adbabd2ee23a581d",
+      "rows": 6102,
+      "columns": [
+        "site",
+        "Y",
+        "T",
+        "prevearn",
+        "age",
+        "married",
+        "hrwage",
+        "black",
+        "hispanic",
+        "hsorged",
+        "yrs_educ"
+      ],
+      "number_of_sites": 16,
+      "site_sizes_min_max": [
+        38,
+        1392
+      ],
+      "missing_counts": {
+        "site": 0,
+        "Y": 0,
+        "T": 0,
+        "prevearn": 0,
+        "age": 0,
+        "married": 0,
+        "hrwage": 0,
+        "black": 0,
+        "hispanic": 0,
+        "hsorged": 0,
+        "yrs_educ": 0
+      },
+      "assignment_values": [
+        0.0,
+        1.0
+      ],
+      "critical_warning": "Assignment shares in this extract are not verified design probabilities. Check original documentation before using m_known."
+    },
+    "jtpa_full_manifest.json": {
+      "source_url": "https://www.upjohn.org/sites/default/files/2019-02/jtpa_national_evaluation.zip",
+      "source_zip_sha256": "3607617e265ec3eac11436f3f19a25e43e3ecf53ba6de6b98a9dede53cc3a76b",
+      "archive_members": 388,
+      "notes": "This indexes the original distribution only. Select the analysis files and verify identifiers, assignment design, outcome timing, baseline status and codebook before merging or analysis."
+    }
+  },
+  "verification": "59 tests passed; 60 method/split/scenario rows; finite ordered intervals; unique method-seed-scenario keys; preliminary labels verified"
+}

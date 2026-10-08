@@ -117,6 +117,8 @@ class ARTDML:
     min_cluster_warn : int
         Emit a SmallClusterWarning for clusters with fewer scored rows: the
         test relies on each cluster score being approximately normal.
+    reserve_calibration : bool
+        Reserve calibration for fixed candidates to match adaptive training rows.
     exclude_same_fold : bool
         When borrowing, drop the other clusters' same-numbered fold.
     buffer : int
@@ -141,7 +143,9 @@ class ARTDML:
                  shrink_l: float = 20.0, shrink_m: float = 0.0, min_local_train: int = 20,
                  min_cluster_warn: int = 50, exclude_same_fold: bool = True, buffer: int = 0, contiguous: bool = False,
                  weights: Optional[np.ndarray] = None, max_exact: int = 20,
-                 n_random_signs: int = 10_000, random_state: Optional[int] = None):
+                 n_random_signs: int = 10_000, random_state: Optional[int] = None,
+                 reserve_calibration: bool = False):
+        self.reserve_calibration = reserve_calibration
         self.learner_m = learner_m
         self.learner_l = learner_l
         self.n_folds = n_folds
@@ -219,7 +223,7 @@ class ARTDML:
         spec_m = (NuisanceSpec(self.learner_m, self.pooling_m, self.borrow, name="m",
                                shrink_kappa=self.shrink_m, min_local_train=self.min_local_train)
                   if use_m_learner else None)
-        needs_calib = spec_l.needs_calibration or (use_m_learner and spec_m.needs_calibration)
+        needs_calib = self.reserve_calibration or spec_l.needs_calibration or (use_m_learner and spec_m.needs_calibration)
 
         plan = FoldPlan(cl, n_folds=self.n_folds, use_calibration=needs_calib,
                         calib_fraction=self.calib_fraction if needs_calib else None,
@@ -258,10 +262,20 @@ class ARTDML:
             msg = (f"Cluster(s) {[labels[j] for j in small]} have fewer than {self.min_cluster_warn} "
                    f"observations ({[int(scores.n[j]) for j in small]}). The test treats each cluster "
                    "score as approximately normal and symmetric; that approximation may be poor here. "
-                   "Consider merging small clusters (q must stay >= 6 at alpha = 0.05) or reporting "
+                   "Small-sample warning: shrinkage does not establish normality. Consider sensitivity "
                    "results with and without them.")
             warnings.warn(msg, SmallClusterWarning, stacklevel=2)
             notes.append(msg)
+
+        for j in range(q):
+            cal_sizes = [role.calib_idx.size for role in plan.roles
+                         if role.cluster == j and role.calib_idx.size]
+            if cal_sizes and min(cal_sizes) < 20:
+                msg = (f"Cluster {labels[j]} has as few as {min(cal_sizes)} calibration rows. "
+                       "Pooling weights may be noisy; calibration<20 is a diagnostic heuristic, "
+                       "not a validity cutoff. Shrinkage does not establish normality.")
+                notes.append(msg)
+                warnings.warn(msg, SmallClusterWarning, stacklevel=2)
 
         self.result_ = ARTDMLResult(
             labels=labels, scores=scores, weights=weights, signs=signs, exact=exact,
