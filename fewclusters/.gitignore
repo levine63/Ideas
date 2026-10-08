@@ -1,3 +1,6 @@
 __pycache__/
 *.pyc
 .pytest_cache/
+
+# Research data are fetched locally, never committed.
+jtpa_data/
