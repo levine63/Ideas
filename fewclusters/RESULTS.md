@@ -98,9 +98,76 @@ polynomial learners cannot exploit neighbouring rows, so this design tests
 the within-cluster CLT, not leakage through the nuisance fit. A leakage
 stress test needs serially dependent covariates and a flexible learner.
 
+
+## Very unequal, partly tiny clusters (`examples/small_clusters.py`)
+
+Six clusters of sizes 10, 25, 40, 200, 400, 800; outcome regression differs
+by cluster (tau_l = 1); polynomial learners; 500 replications, seed 2026;
+size at the true theta, power at theta - 0.3. "sd S(n=10) / oracle" is the
+spread of the n = 10 cluster's score relative to the true-nuisance score;
+"w_ell" is the mean outcome-model pooling weight (1 = fully borrowed).
+
+### Known treatment probabilities
+
+Attainable size: q=6 -> 0.0312 at 5%, 0.0938 at 10%; q=5 -> 0.0000 at 5%, 0.0625 at 10%.
+
+| method | size 5% | size 10% | power 5% | power 10% | sd S(n=10) / oracle | w_ell n=10 | w_ell n=800 |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| oracle | 0.026 | 0.105 | 0.435 | 0.786 | 1.00 | - | - |
+| local ell | 0.034 | 0.083 | 0.192 | 0.415 | 3.19 | - | - |
+| pooled_id ell | 0.034 | 0.085 | 0.302 | 0.665 | 2.18 | - | - |
+| adaptive ell, no shrink, no floor | 0.032 | 0.085 | 0.288 | 0.597 | 2.50 | 0.45 | 0.72 |
+| adaptive ell, kappa=20 + floor (default) | 0.032 | 0.079 | 0.308 | 0.645 | 2.18 | 1.00 | 0.75 |
+| default, drop n=10 cluster (q=5) | 0.000 | 0.077 | 0.000 | 0.552 | - | - | 0.75 |
+| default, merge n=10 and n=25 (q=5) | 0.000 | 0.075 | 0.000 | 0.571 | - | - | 0.75 |
+
+Monte Carlo s.e. of a rejection rate near 0.03: 0.0077. [500s]
+
+### Estimated treatment probabilities
+
+Attainable size: q=6 -> 0.0312 at 5%, 0.0938 at 10%; q=5 -> 0.0000 at 5%, 0.0625 at 10%.
+
+| method | size 5% | size 10% | power 5% | power 10% | sd S(n=10) / oracle | w_ell n=10 | w_ell n=800 |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| oracle | 0.024 | 0.094 | 0.425 | 0.760 | 1.00 | - | - |
+| local m, local ell | 0.038 | 0.106 | 0.220 | 0.499 | 2.72 | - | - |
+| pooled_id m, pooled_id ell | 0.028 | 0.088 | 0.325 | 0.647 | 1.98 | - | - |
+| adaptive, no shrink, no floor | 0.032 | 0.096 | 0.236 | 0.511 | 2.02 | 0.46 | 0.72 |
+| adaptive, kappa_l=20 + floor (default) | 0.032 | 0.100 | 0.301 | 0.597 | 1.98 | 1.00 | 0.75 |
+| default, merge n=10 and n=25 (q=5) | 0.000 | 0.064 | 0.000 | 0.469 | - | - | 0.75 |
+
+Monte Carlo s.e. of a rejection rate near 0.03: 0.0076. [824s]
+
+**Reading.**
+
+* **Size holds** for every method that keeps q = 6 (0.024-0.038 against an
+  attainable 0.031 at 5%), even with a 10-observation cluster. The noisy
+  small-cluster score is still centred and symmetric because its nuisances
+  never see its evaluation rows. Caveat: errors here are Gaussian; skewed
+  outcomes such as earnings could make a 10-observation score asymmetric,
+  and that is not tested yet.
+* **The cost is power.** The equal-weighted statistic gives the n = 10
+  cluster the same weight as the n = 800 cluster, and its score is 2-3x
+  noisier than the oracle's. Power at 5% falls from 0.43 (oracle) to 0.19
+  (local), 0.29 (adaptive, no shrinkage) and 0.31 (shrinkage + floor).
+* **Shrinkage helps where it should.** With estimated m, power at 5% rises
+  from 0.236 to 0.301 (at 10%: 0.511 to 0.597); with known m, 0.288 to
+  0.308. The default borrows fully in the n = 10 cluster (w = 1.00) and
+  keeps most of the data's choice in the n = 800 cluster (0.75 vs 0.72
+  unshrunk). It essentially matches always borrowing with cluster
+  intercepts (pooled_id), while still adapting in large clusters.
+* **Merging or dropping small clusters is not a fix at q = 6.** It leaves
+  q = 5, where the test cannot reject at 5% at all, and at 10% it has less
+  power (0.47-0.57) than keeping the clusters with shrinkage (0.60-0.65).
+* **What would recover more power:** down-weighting small clusters in the
+  statistic. Any fixed positive weights chosen before seeing outcomes keep
+  validity (`ARTDML(weights=...)`); weights increasing in n_j should help
+  here. Not yet tested.
+
 ## Not covered
 
 * Flexible learners (boosting, forests) in the Monte Carlo; they are used
   only in `quickstart.py` and `jtpa_analysis.py`.
-* q other than 6, and n_j other than 400 (except the dependence design).
+* q other than 6.
+* Skewed or heavy-tailed outcomes with tiny clusters.
 * Leakage through flexible nuisance fits under dependence (see above).
