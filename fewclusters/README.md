@@ -177,3 +177,24 @@ Shrinkage does not establish Gaussian score approximations. With estimated
 propensities, cluster identity alone does not guarantee a valid borrowed
 propensity model. The floor can force full borrowing for treatment even when
 `shrink_m=0`.
+
+### Preliminary test-sample weighting
+
+See [the weighting comparison](results/weighting/WEIGHTING_COMPARISON.md).
+From `fewclusters`, with `PYTHONPATH=.` (PowerShell: `$env:PYTHONPATH='.'`):
+
+```text
+python examples/jtpa_size_weights.py
+python examples/jtpa_weighting_fit.py 0
+python examples/jtpa_weighting_fit.py 1
+python examples/jtpa_weighting_fit.py 2
+python examples/summarize_jtpa_weighting.py
+```
+
+These scripts require the pilot's saved results and downloaded women data.
+Fit scripts stop on an existing ignored residual cache: review provenance and
+preserve or move that cache before rerunning. `score_weights` in
+`fewclusters.weighting` returns coefficients for scores already scaled by
+sqrt(site size). Size weighting therefore passes sqrt(n), not n. Precision
+weights are exploratory and need additional inference assumptions; neither
+these weights nor nuisance shrinkage establishes small-site normality.

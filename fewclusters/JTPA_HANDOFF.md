@@ -87,3 +87,40 @@ ages run from 22 to 77 and education from 7 to 17. This does not verify
 imputation or extraction rules. Earnings reach 114,739 dollars, reinforcing
 the need for an earnings-tail stress test rather than relying only on
 Gaussian-error simulations.
+
+## Test-sample weighting follow-up (2026-10-08)
+
+Implemented the user's requested comparison, retaining the PRELIMINARY - NOT
+FOR PUBLICATION label. Results and theory are in
+[weighting/WEIGHTING_COMPARISON.md](results/weighting/WEIGHTING_COMPARISON.md).
+All three splits are retained. Size weights are compared for all saved ART
+benchmarks; stabilized precision weights are compared for the shrinkage
+known-propensity and adaptive-propensity specifications.
+
+Root cause of the potential weighting error: the ART input already multiplies
+site estimates by sqrt(n). Passing n as its weight would produce effective
+n^(3/2) weights. The helper and regression test explicitly distinguish score
+weights sqrt(n)/tau_squared from effect weights n/tau_squared; constant score
+variance must reproduce size weighting. Additional tests cover stabilization,
+rescaling, sitewise residual sign changes and invalid variance inputs. The full
+suite passed 63 tests. The sign-invariance check is not a validity theorem.
+
+The earlier aggregate files did not preserve influence residuals needed for
+precision weighting. Reconstructed nuisance fits match every saved site
+estimate, and an ignored residual cache now preserves these fits for further
+sensitivity work. Existing caches block silent refitting with changed provenance.
+The summary checks 120 unique comparisons, matching reconstructed summaries,
+finite intervals/p-values and positive normalized weights. Variance shrinkage
+kappa=100, sensitivity kappa=20 and the 0.1 pooled-variance floor were fixed
+before inspecting weighting results. They differ from outcome shrinkage kappa=20.
+Weights stay fixed across signs and null values.
+
+Median paired width reductions are 7.7% (estimated propensity) and 10.2%
+(assumed p=2/3) for size weights, and 14.4% / 14.5% for primary precision
+weights. Estimated effects increase with size weighting. Do not interpret
+shorter observed intervals as improved coverage/power or unchanged targets
+under heterogeneous effects. Plug-in variances assume within-site independence;
+additional score/variance-limit assumptions are needed for estimated weights.
+Downweighting does not repair the small-site Gaussian approximation. Unequal
+sizes, heavy tails, heterogeneity and common nuisance training should enter the
+next simulation design before choosing a publication specification.

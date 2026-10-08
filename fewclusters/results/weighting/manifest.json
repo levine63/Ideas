@@ -1,0 +1,20 @@
+{
+  "status": "PRELIMINARY - NOT FOR PUBLICATION",
+  "base_commit": "6c949b7",
+  "seeds": [
+    0,
+    1,
+    2
+  ],
+  "primary_variance_kappa": 100,
+  "sensitivity_variance_kappa": 20,
+  "variance_floor_fraction": 0.1,
+  "outcome_shrink_kappa": 20,
+  "rows": 120,
+  "sha256": {
+    "jtpa_data\\jtpa_women.csv": "093fcc9102cb9194820477db73b79d8aefc99f6c424a5295adbabd2ee23a581d",
+    "fewclusters\\weighting.py": "cce0abcd6020385a138341ea4a91f3ef3f7bb4364f58be1ecfd72f2a4ee95ffe",
+    "examples\\jtpa_weighting_fit.py": "a9bd1234197709c84be5c32a9436933a4db75eda0342c743eca6cadcc2a872bd",
+    "examples\\jtpa_size_weights.py": "592ff32256cfa7f3323864be95c5ebff56548e134ea1ac3ee422d2eeaadddfd8"
+  }
+}
