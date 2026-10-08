@@ -17,7 +17,7 @@ fixed for every sign vector and every hypothesised value.
 
 ```
 pip install numpy scikit-learn        # the only dependencies
-PYTHONPATH=. python -m pytest tests   # 48 tests
+PYTHONPATH=. python -m pytest tests   # 54 tests
 PYTHONPATH=. python examples/quickstart.py
 PYTHONPATH=. python examples/jtpa_analysis.py --demo   # JTPA pipeline on synthetic data
 ```
@@ -49,6 +49,17 @@ and random signs (set the learners' own `random_state` too), or pass explicit
 fold labels with `fit(..., folds=f)`. Fit once, then call `test(lam)` and
 `confint()` as often as needed; nothing is refit.
 
+Small clusters: in `"adaptive"` mode the outcome-model weight is shrunk
+toward full borrowing, `w = (s w_hat + kappa) / (s + kappa)` with `s` the
+calibration rows and `shrink_l=20` by default (a cluster of 10 borrows almost
+entirely, 400 uses ~80% of its own choice). The treatment model is not
+shrunk by default (`shrink_m=0`), because a biased pooled treatment model
+breaks size. Below `min_local_train=20` base-training rows the local fit is
+skipped and the borrowing model (trained also on the calibration rows) is
+used outright. Clusters under `min_cluster_warn=50` rows trigger a
+`SmallClusterWarning`: the test relies on each cluster score being roughly
+normal. See `examples/small_clusters.py`.
+
 Calibration sample for `"adaptive"`: by default the next fold (needs
 `n_folds >= 3`); `calib_fraction=0.2` instead draws 20% of the cluster from
 outside the evaluation fold (works with `n_folds = 2`; not with buffers).
@@ -63,7 +74,7 @@ within `R` positions of a block may train or calibrate the model that scores it.
 |---|---|---|
 | `folds.py` | evaluation / calibration / base-training roles per (cluster, fold); buffers | Section 2, Corollary 1 |
 | `learners.py` | any `fit/predict` estimator (classifiers via `predict_proba`); cluster identity as a feature | Section 5.2 |
-| `pooling.py` | clipped least-squares mixing weight, local vs borrowing | eq. (7), Proposition 2 |
+| `pooling.py` | clipped least-squares mixing weight, local vs borrowing; shrinkage toward borrowing | eq. (7), Proposition 2 |
 | `nuisance.py` | cross-fitting loop for one nuisance; pooling modes | Section 3, 5.1 |
 | `scores.py` | `Q_j`, `theta_j`, `S_j(lambda) = a_j - b_j lambda` | eq. (2)-(3) |
 | `art.py` | sign group, p-value, decision, CI by inversion; pure numpy | eq. (4), Proposition 1 |

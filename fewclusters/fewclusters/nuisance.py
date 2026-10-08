@@ -10,7 +10,11 @@ predictor for the evaluation observations is built according to
     "pooled_id"  as "pooled", with one-hot cluster identity appended to X
     "adaptive"   fit the local candidate AND a borrowing candidate
                  (spec.borrow in {"pooled", "pooled_id"}), then choose the
-                 mixing weight on the calibration rows (pooling.py)
+                 mixing weight on the calibration rows (pooling.py),
+                 optionally shrunk toward borrowing (spec.shrink_kappa).
+                 If the target cluster has fewer than spec.min_local_train
+                 base-training rows, the local candidate is not fitted and
+                 the borrowing candidate is used outright (weight 1).
 
 The output is a vector of out-of-fold predictions, one per scored row, with
 NaN for rows that are never evaluated (buffer rows). Nothing from an
@@ -22,7 +26,7 @@ calibration MSE of each candidate.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Any, Dict, List, Literal, Optional
 
 import numpy as np
@@ -43,8 +47,14 @@ class NuisanceSpec:
     pooling: PoolingMode = "adaptive"
     borrow: BorrowMode = "pooled_id"
     name: str = "nuisance"
+    shrink_kappa: float = 0.0       # adaptive only: shrink weight toward borrowing
+    min_local_train: int = 0        # adaptive only: below this, skip the local fit
 
     def __post_init__(self) -> None:
+        if self.shrink_kappa < 0:
+            raise ValueError("shrink_kappa must be non-negative.")
+        if self.min_local_train < 0:
+            raise ValueError("min_local_train must be non-negative.")
         if self.pooling not in ("local", "pooled", "pooled_id", "adaptive"):
             raise ValueError(f"Unknown pooling mode {self.pooling!r}.")
         if self.borrow not in ("pooled", "pooled_id"):
@@ -69,6 +79,8 @@ class NuisanceDiagnostics:
     mse_local: Optional[float] = None
     mse_borrow: Optional[float] = None
     mse_mixture: Optional[float] = None
+    weight_raw: Optional[float] = None     # before shrinkage
+    local_skipped: bool = False            # too few rows for a local fit
 
     def as_dict(self) -> Dict[str, Any]:
         return self.__dict__.copy()
@@ -140,6 +152,8 @@ def crossfit_nuisance(z: np.ndarray, X: np.ndarray, cluster: np.ndarray,
     for role in plan.roles:
         X_eval = X[role.eval_idx]
         weight: Optional[float] = None
+        weight_raw: Optional[float] = None
+        local_skipped = False
         mse_local = mse_borrow = mse_mix = None
 
         if spec.pooling == "local":
@@ -148,6 +162,11 @@ def crossfit_nuisance(z: np.ndarray, X: np.ndarray, cluster: np.ndarray,
             predictor = _fit_pooled(spec, X, z, role)
         elif spec.pooling == "pooled_id":
             predictor = _fit_pooled_id(spec, X, z, cluster, plan.q, role)
+        elif role.base_target_idx.size < spec.min_local_train:   # adaptive, cluster too small
+            # no local fit and no calibration, so the calibration rows can train the borrower
+            role_b = replace(role, base_target_idx=np.concatenate([role.base_target_idx, role.calib_idx]))
+            predictor = _fit_borrow(spec, X, z, cluster, plan.q, role_b)
+            weight, local_skipped = 1.0, True
         else:  # adaptive
             local = _fit_local(spec, X, z, role)
             borrow = _fit_borrow(spec, X, z, cluster, plan.q, role)
@@ -158,9 +177,11 @@ def crossfit_nuisance(z: np.ndarray, X: np.ndarray, cluster: np.ndarray,
                 z[cal],
                 np.asarray(local.predict(X[cal])).ravel(),
                 np.asarray(borrow.predict(X[cal])).ravel(),
+                shrink_kappa=spec.shrink_kappa,
             )
             predictor = MixturePredictor(local, borrow, pw.w)
-            weight, mse_local, mse_borrow, mse_mix = pw.w, pw.mse_local, pw.mse_borrow, pw.mse_mixture
+            weight, weight_raw = pw.w, pw.w_raw
+            mse_local, mse_borrow, mse_mix = pw.mse_local, pw.mse_borrow, pw.mse_mixture
 
         out.predictions[role.eval_idx] = np.asarray(predictor.predict(X_eval)).ravel()
         out.diagnostics.append(NuisanceDiagnostics(
@@ -168,5 +189,6 @@ def crossfit_nuisance(z: np.ndarray, X: np.ndarray, cluster: np.ndarray,
             weight=weight, n_eval=role.n_eval, n_calib=int(role.calib_idx.size),
             n_base_target=int(role.base_target_idx.size), n_base_other=int(role.base_other_idx.size),
             mse_local=mse_local, mse_borrow=mse_borrow, mse_mixture=mse_mix,
+            weight_raw=weight_raw, local_skipped=local_skipped,
         ))
     return out

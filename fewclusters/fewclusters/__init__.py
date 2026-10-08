@@ -34,7 +34,7 @@ Notation follows the note: clusters j = 1..q, observations i = 1..n_j,
 outcome Y, treatment D, controls X, m_0j(x) = E[D|X=x], ell_0j(x) = E[Y|X=x].
 """
 
-from .model import ARTDML, ARTDMLResult
+from .model import ARTDML, ARTDMLResult, IdentificationWarning, SmallClusterWarning
 from .art import (
     sign_group,
     art_pvalue,
@@ -51,6 +51,8 @@ from .simulate import simulate_plm
 __all__ = [
     "ARTDML",
     "ARTDMLResult",
+    "IdentificationWarning",
+    "SmallClusterWarning",
     "sign_group",
     "art_pvalue",
     "art_test",

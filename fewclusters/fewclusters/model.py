@@ -53,6 +53,10 @@ class IdentificationWarning(UserWarning):
     """Raised (as a warning) when residual treatment variation looks spurious."""
 
 
+class SmallClusterWarning(UserWarning):
+    """Raised (as a warning) when a cluster is too small for its score's normal approximation."""
+
+
 @dataclass
 class ARTDMLResult:
     """Everything produced by fit(); kept separate so it is easy to inspect or pickle."""
@@ -100,6 +104,19 @@ class ARTDML:
         Calibration sample for "adaptive": a random share of the target
         cluster outside the evaluation fold (K >= 2), or None to use the next
         fold (K >= 3). Not available with buffered/contiguous folds.
+    shrink_l, shrink_m : float >= 0
+        Shrink the adaptive pooling weight toward full borrowing,
+        w = (s w_hat + kappa) / (s + kappa), s = calibration rows. Default 20
+        for the outcome model (small clusters mostly borrow) and 0 for the
+        treatment model: shrinking m toward a biased pooled model can break
+        size (Section 7.1). If you shrink m, use borrow="pooled_id".
+    min_local_train : int
+        In "adaptive" mode, a cluster/fold with fewer base-training rows than
+        this skips the local fit and uses the borrowing candidate outright.
+        Applies to both nuisances.
+    min_cluster_warn : int
+        Emit a SmallClusterWarning for clusters with fewer scored rows: the
+        test relies on each cluster score being approximately normal.
     exclude_same_fold : bool
         When borrowing, drop the other clusters' same-numbered fold.
     buffer : int
@@ -121,7 +138,8 @@ class ARTDML:
     def __init__(self, learner_m: Any = None, learner_l: Any = None, n_folds: int = 5,
                  pooling_m: str = "adaptive", pooling_l: str = "adaptive",
                  borrow: str = "pooled_id", calib_fraction: Optional[float] = None,
-                 exclude_same_fold: bool = True, buffer: int = 0, contiguous: bool = False,
+                 shrink_l: float = 20.0, shrink_m: float = 0.0, min_local_train: int = 20,
+                 min_cluster_warn: int = 50, exclude_same_fold: bool = True, buffer: int = 0, contiguous: bool = False,
                  weights: Optional[np.ndarray] = None, max_exact: int = 20,
                  n_random_signs: int = 10_000, random_state: Optional[int] = None):
         self.learner_m = learner_m
@@ -131,6 +149,10 @@ class ARTDML:
         self.pooling_l = pooling_l
         self.borrow = borrow
         self.calib_fraction = calib_fraction
+        self.shrink_l = shrink_l
+        self.shrink_m = shrink_m
+        self.min_local_train = min_local_train
+        self.min_cluster_warn = min_cluster_warn
         self.exclude_same_fold = exclude_same_fold
         self.buffer = buffer
         self.contiguous = contiguous
@@ -191,9 +213,12 @@ class ARTDML:
             if folds.size != n:
                 raise ValueError("folds must have one entry per row.")
 
-        spec_l = NuisanceSpec(self.learner_l, self.pooling_l, self.borrow, name="ell")
+        spec_l = NuisanceSpec(self.learner_l, self.pooling_l, self.borrow, name="ell",
+                              shrink_kappa=self.shrink_l, min_local_train=self.min_local_train)
         use_m_learner = m_known is None
-        spec_m = NuisanceSpec(self.learner_m, self.pooling_m, self.borrow, name="m") if use_m_learner else None
+        spec_m = (NuisanceSpec(self.learner_m, self.pooling_m, self.borrow, name="m",
+                               shrink_kappa=self.shrink_m, min_local_train=self.min_local_train)
+                  if use_m_learner else None)
         needs_calib = spec_l.needs_calibration or (use_m_learner and spec_m.needs_calibration)
 
         plan = FoldPlan(cl, n_folds=self.n_folds, use_calibration=needs_calib,
@@ -228,6 +253,15 @@ class ARTDML:
                          "between-cluster variation rather than within-cluster identifying variation.")
         for msg in notes:
             warnings.warn(msg, IdentificationWarning, stacklevel=2)
+        small = np.flatnonzero(scores.n < self.min_cluster_warn)
+        if small.size:
+            msg = (f"Cluster(s) {[labels[j] for j in small]} have fewer than {self.min_cluster_warn} "
+                   f"observations ({[int(scores.n[j]) for j in small]}). The test treats each cluster "
+                   "score as approximately normal and symmetric; that approximation may be poor here. "
+                   "Consider merging small clusters (q must stay >= 6 at alpha = 0.05) or reporting "
+                   "results with and without them.")
+            warnings.warn(msg, SmallClusterWarning, stacklevel=2)
+            notes.append(msg)
 
         self.result_ = ARTDMLResult(
             labels=labels, scores=scores, weights=weights, signs=signs, exact=exact,
@@ -276,6 +310,8 @@ class ARTDML:
         for j in range(r.scores.q):
             wm = [dg.weight for dg in r.diagnostics_m if dg.cluster == j and dg.weight is not None]
             wl = [dg.weight for dg in r.diagnostics_l if dg.cluster == j and dg.weight is not None]
+            wl_raw = [dg.weight_raw for dg in r.diagnostics_l if dg.cluster == j and dg.weight_raw is not None]
+            skipped = any(dg.local_skipped for dg in r.diagnostics_m + r.diagnostics_l if dg.cluster == j)
             rows.append({
                 "cluster": r.labels[j],
                 "n_scored": int(r.scores.n[j]),
@@ -284,6 +320,8 @@ class ARTDML:
                 "theta_hat": float(r.scores.theta[j]),
                 "mean_w_m": float(np.mean(wm)) if wm else None,
                 "mean_w_l": float(np.mean(wl)) if wl else None,
+                "mean_w_l_raw": float(np.mean(wl_raw)) if wl_raw else None,
+                "local_skipped": skipped,
             })
         return rows
 
