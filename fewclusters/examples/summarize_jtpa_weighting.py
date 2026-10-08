@@ -67,6 +67,8 @@ Three fixed splits (seeds 0, 1, 2), 6,102 women, 16 sites. All 65,536 sign vecto
 
 ## Findings
 
+**Subsequent coverage check:** same-sample precision weights undercovered in the skewed-error simulation (about 90-91% coverage for nominal 95%). Size weighting remained near 95% in that design. The observed interval reductions below therefore do not justify using estimated precision weights as the primary inference specification. See [coverage and power stress tests](../weighting_simulation/COVERAGE_POWER.md).
+
 Giving small sites less weight reduces observed interval widths, and raises the estimated effect in these data. Stabilized precision weights reduce widths further. This is an empirical sensitivity exercise, not a coverage or power comparison. Larger-site weighting also changes the estimand if site effects differ.
 
 The table summarizes separate runs; its medians and ranges are not a combined estimate or confidence interval. `p23` assumes assignment probability 2/3; `estimated` uses adaptively pooled propensity fits. Outcome nuisance fits use Claude's kappa=20 shrinkage and 20-row local-training floor in both cases.

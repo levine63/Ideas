@@ -124,3 +124,66 @@ additional score/variance-limit assumptions are needed for estimated weights.
 Downweighting does not repair the small-site Gaussian approximation. Unequal
 sizes, heavy tails, heterogeneity and common nuisance training should enter the
 next simulation design before choosing a publication specification.
+
+## Coverage/power follow-up (2026-10-08)
+
+The user's `go` authorized the proposed unequal-site, heavy-tail simulations.
+`examples/weighting_simulation.py` compares fixed current, size, stabilized
+precision (variance kappa=100 and 20), and DGP oracle-precision weights using
+the 16 JTPA site sizes. Four fixed error designs separate homoskedastic
+Gaussian, heteroskedastic Gaussian, symmetric t(3), and skewed lognormal
+errors. Treatment is Bernoulli(2/3), independent within sites, and the true
+common effect is 0.08 simulation units. Oracle nuisances use 1,000 replications;
+fitted shrinkage nuisances use the first 500. Fitted learners are Ridge for
+outcomes and adaptive sample means for propensity, not the JTPA boosting
+learners. Shared nuisance training across sites is included.
+
+The methodological risk being addressed is selection of a weighting rule
+from narrower observed intervals without checking its rejection probability.
+Generalized guardrails: use a prespecified nonzero DGP effect; report both
+acceptance of the true effect (coverage) and rejection of zero (power);
+preserve all rules rather than selecting the smallest p-value; report marginal
+Monte Carlo intervals and paired changes; record every failure; refuse to
+summarize silently if any failure occurred. No replications are discarded
+for extreme earnings or site estimates. Independent nuisance-oracle controls
+help separate score symmetry from nuisance-fitting problems. Oracle-precision
+weights are a DGP reference, not a claim of finite-sample optimality for fitted
+nuisances.
+
+The exact sign calculation uses one representative per +/- pair; a new test
+checks agreement with the production full enumeration, including ties. Another
+test checks deterministic simulation streams and the oracle residual identity.
+All 65 tests passed. The coverage calculation tests the true value directly,
+which equals coverage of the inverted confidence set without unnecessary
+endpoint searches. Small-site warnings are counted in output manifests rather
+than being silently suppressed. All outputs remain PRELIMINARY - NOT FOR
+PUBLICATION.
+
+Completed simulation findings: size weights improve power over current weights
+in every fitted-method design, with observed coverage 93.6-96.0% across the
+known/estimated propensity cases. Precision weighting fails the skewed-error
+stress: fitted coverage is 90.6% for primary kappa=100, with a Monte Carlo
+95% interval 87.7-92.9%, versus size-weight coverage 95.2% (93.0-96.8%).
+The high precision-weight rejection rate under alternatives is not an honest
+power advantage when its test overrejects the true null.
+
+Root-cause diagnostic (post hoc, explicitly labeled): the failure persists
+with oracle nuisances. Holding the evaluation datasets fixed and estimating
+variance weights on a separate independent synthetic sample raises oracle
+coverage from 91.3% to 94.5%; fixed DGP precision weights give 94.7%. The mean
+estimate changes from 0.08913 to 0.07996 around true theta=0.08. This isolates
+same-sample variance weighting as a contributor under skewed errors. Freezing
+such weights during sign enumeration does not make weights independent of
+score errors or establish joint sign symmetry. The extra sample costs data;
+this diagnostic is not a deployable fix or a fair equal-budget power contest.
+
+Generalized guardrail: retain skewed errors plus oracle/independent-weight
+controls whenever proposing a precision-weight change; require coverage and
+power reporting together. The earlier JTPA weight report and README now flag
+this observed failure. For this preliminary analysis, use size weighting as
+the primary weighting comparison and retain same-sample precision weights
+as experimental. No package defaults or previous results were silently
+replaced. All four main designs and the diagnostic are saved, with 40,000
+main method/replication/weight rows and 5,000 diagnostic rows. There were no
+failed or excluded main replications. See
+[coverage/power report](results/weighting_simulation/COVERAGE_POWER.md).

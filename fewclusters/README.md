@@ -180,6 +180,10 @@ propensity model. The floor can force full borrowing for treatment even when
 
 ### Preliminary test-sample weighting
 
+Follow-up skewed-error simulations found undercoverage with same-sample
+precision weights (about 90-91% for nominal 95%). Keep these experimental;
+size weighting is the better-supported preliminary primary comparison.
+
 See [the weighting comparison](results/weighting/WEIGHTING_COMPARISON.md).
 From `fewclusters`, with `PYTHONPATH=.` (PowerShell: `$env:PYTHONPATH='.'`):
 
@@ -198,3 +202,34 @@ preserve or move that cache before rerunning. `score_weights` in
 sqrt(site size). Size weighting therefore passes sqrt(n), not n. Precision
 weights are exploratory and need additional inference assumptions; neither
 these weights nor nuisance shrinkage establishes small-site normality.
+
+### Preliminary coverage and power stress test
+
+The follow-up uses JTPA site sizes with Gaussian, Student-t(3), and skewed
+lognormal errors. It compares current, size, stabilized precision and DGP
+oracle-precision weights, with both oracle and fitted shrinkage nuisances.
+Coverage is measured by testing the true effect; power by testing zero under
+a fixed nonzero common effect. See
+[coverage and power results](results/weighting_simulation/COVERAGE_POWER.md)
+for the design, uncertainty and scope limitations.
+
+From the repository root, set `PYTHONPATH=fewclusters`, `OMP_NUM_THREADS=1`
+and `OPENBLAS_NUM_THREADS=1`. Run `examples/weighting_simulation.py` through
+the full package path for each of `normal_equal`, `normal_unequal`,
+`t3_unequal`, and `lognormal_unequal`:
+
+```text
+python fewclusters/examples/weighting_simulation.py --design normal_equal --oracle-reps 1000 --fitted-reps 500 --output fewclusters/results/weighting_simulation/normal_equal.json
+python fewclusters/examples/summarize_weighting_simulation.py
+```
+
+Run the summarizer only after all four outputs exist. Existing outputs are
+not overwritten. Full sign enumeration is accelerated by using one member
+of each positive/negative pair, checked against the production sign test.
+
+After the four main simulations, run
+`python fewclusters/examples/independent_weight_diagnostic.py` before the
+simulation summarizer. This post hoc oracle diagnostic gives precision weights
+an additional independent synthetic sample; it is not an equal-data-budget
+proposal. It reproduced the original oracle comparisons and isolated
+same-sample weight estimation as a contributor to skewed-error undercoverage.
