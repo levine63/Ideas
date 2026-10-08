@@ -1,15 +1,24 @@
 """
-learners.py -- small adapters so that any estimator with fit(X, z) and
-predict(X) can be a nuisance learner.
+learners.py -- adapters so that any scikit-learn style estimator can be a
+nuisance learner, with one rule that matters for correctness:
 
-Three things live here:
+    every fitted nuisance model is wrapped in FittedNuisance, whose
+    predict(X) returns the CONDITIONAL MEAN of the response.
 
-    fit_fresh(learner, X, z)        clone the learner, fit it, return the fit
-    ClusterIdLearner                wraps a learner so that one-hot cluster
-                                    identity is appended to X (the
-                                    "pooled with cluster id" borrowing candidate)
-    ConstantPredictor               a predictor returning a fixed vector/value;
-                                    used for known propensities and in tests
+For a regressor that is predict(X). For a classifier (anything exposing
+predict_proba, e.g. LogisticRegression or a gradient-boosting classifier),
+predict(X) would return hard 0/1 labels, which are NOT E[D | X]; using them
+breaks the orthogonal score. FittedNuisance therefore returns the predicted
+probability of the class labelled 1. Classifiers are only accepted for a
+binary 0/1 response.
+
+Contents
+    is_classifier_like(est)   True if est has predict_proba (or is an sklearn classifier)
+    fit_fresh(learner, X, z)  clone, fit, wrap -> FittedNuisance
+    FittedNuisance            .predict(X) -> conditional mean, (n,)
+    ClusterIdLearner          learner that sees X plus one-hot cluster identity
+    ConstantPredictor         .predict(X) -> fixed value
+    BoundPredictor            freezes extra predict() kwargs into a plain predict(X)
 
 A "predictor" anywhere in this package is any object with predict(X) -> (n,).
 """
@@ -23,26 +32,75 @@ import numpy as np
 
 try:
     from sklearn.base import clone as _sk_clone
+    from sklearn.base import is_classifier as _sk_is_classifier
 except ImportError:  # scikit-learn is optional for the core
     _sk_clone = None
+    _sk_is_classifier = None
 
 
-def fit_fresh(learner: Any, X: np.ndarray, z: np.ndarray) -> Any:
+def is_classifier_like(est: Any) -> bool:
+    if _sk_is_classifier is not None:
+        try:
+            if _sk_is_classifier(est):
+                return True
+        except Exception:
+            pass
+    return hasattr(est, "predict_proba")
+
+
+class FittedNuisance:
     """
-    Return a freshly fitted copy of `learner`.
+    A fitted learner whose predict(X) is the conditional mean of the response.
+
+    For classifiers: P(class 1 | X) from predict_proba. If the training data
+    contained a single class c, the prediction is the constant c.
+    """
+
+    def __init__(self, model: Any, classifier: bool):
+        self.model = model
+        self.classifier = classifier
+        if classifier:
+            classes = np.asarray(model.classes_)
+            if not np.all(np.isin(classes, [0, 1])):
+                raise ValueError(f"Classifier trained on classes {classes}; expected a 0/1 response.")
+            self._single = float(classes[0]) if classes.size == 1 else None
+            self._col = None if classes.size == 1 else int(np.flatnonzero(classes == 1)[0])
+
+    def predict(self, X: np.ndarray) -> np.ndarray:
+        if not self.classifier:
+            return np.asarray(self.model.predict(X), dtype=float).ravel()
+        if self._single is not None:
+            return np.full(np.asarray(X).shape[0], self._single)
+        return np.asarray(self.model.predict_proba(X), dtype=float)[:, self._col]
+
+
+def _clone(learner: Any) -> Any:
+    if _sk_clone is not None:
+        try:
+            return _sk_clone(learner)
+        except Exception:
+            pass
+    return copy.deepcopy(learner)
+
+
+def fit_fresh(learner: Any, X: np.ndarray, z: np.ndarray) -> FittedNuisance:
+    """
+    Fit a fresh copy of `learner` and wrap it so predict() is a conditional mean.
 
     A new copy is made for every fit so that fits for different folds and
     clusters never share state.
     """
-    if _sk_clone is not None:
-        try:
-            fresh = _sk_clone(learner)
-        except Exception:
-            fresh = copy.deepcopy(learner)
-    else:
-        fresh = copy.deepcopy(learner)
+    classifier = is_classifier_like(learner)
+    z = np.asarray(z)
+    if classifier:
+        vals = np.unique(z)
+        if not np.all(np.isin(vals, [0, 1])):
+            raise ValueError("A classifier was supplied as a nuisance learner, but the response is not 0/1. "
+                             "Use a regressor for non-binary responses.")
+        z = z.astype(int)
+    fresh = _clone(learner)
     fresh.fit(X, z)
-    return fresh
+    return FittedNuisance(fresh, classifier)
 
 
 class ClusterIdLearner:
@@ -57,7 +115,7 @@ class ClusterIdLearner:
     def __init__(self, learner: Any, n_clusters: int):
         self.learner = learner
         self.n_clusters = n_clusters
-        self.fitted_: Optional[Any] = None
+        self.fitted_: Optional[FittedNuisance] = None
 
     @staticmethod
     def _augment(X: np.ndarray, cluster: np.ndarray, n_clusters: int) -> np.ndarray:
@@ -73,7 +131,7 @@ class ClusterIdLearner:
         if self.fitted_ is None:
             raise RuntimeError("ClusterIdLearner.predict called before fit.")
         cl = np.full(X.shape[0], cluster_id, dtype=int)
-        return np.asarray(self.fitted_.predict(self._augment(X, cl, self.n_clusters))).ravel()
+        return self.fitted_.predict(self._augment(X, cl, self.n_clusters))
 
 
 class ConstantPredictor:
@@ -97,4 +155,4 @@ class BoundPredictor:
         self.kwargs = kwargs
 
     def predict(self, X: np.ndarray) -> np.ndarray:
-        return np.asarray(self.fitted.predict(X, **self.kwargs)).ravel()
+        return np.asarray(self.fitted.predict(X, **self.kwargs), dtype=float).ravel()

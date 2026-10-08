@@ -20,7 +20,7 @@ sign-group test of Cai, Canay, Kim and Shaikh 2023, and the same weights):
   DML-loc   ART, known m, gradient boosting outcome model, local to each site
   DML-pool  ART, known m, gradient boosting fitted on all sites with site id
   DML-adapt ART, known m, adaptive mixture of local and pooled (eq. (7))
-  DML-mhat  ART, m ESTIMATED by boosting (adaptive) -- what one would do
+  DML-mhat  ART, m ESTIMATED by a boosted classifier (adaptive) -- what one would do
             without using the design; included for contrast
 
 Usage
@@ -49,7 +49,7 @@ from typing import Dict, List, Optional
 import numpy as np
 import pandas as pd
 from sklearn.dummy import DummyRegressor
-from sklearn.ensemble import HistGradientBoostingRegressor
+from sklearn.ensemble import HistGradientBoostingClassifier, HistGradientBoostingRegressor
 from sklearn.linear_model import LinearRegression
 
 from fewclusters import ARTDML, attainable_size
@@ -115,6 +115,12 @@ def crve_site_fe(y: np.ndarray, d: np.ndarray, X: np.ndarray, site: np.ndarray, 
 
 
 # --------------------------------------------------------------------- methods
+def gbc():
+    """Classifier for the binary assignment; fewclusters uses its predict_proba."""
+    return HistGradientBoostingClassifier(max_iter=200, learning_rate=0.05, max_leaf_nodes=15,
+                                          min_samples_leaf=30, random_state=0)
+
+
 def gbr():
     return HistGradientBoostingRegressor(max_iter=200, learning_rate=0.05, max_leaf_nodes=15,
                                          min_samples_leaf=30, random_state=0)
@@ -128,7 +134,7 @@ def method_specs() -> Dict[str, dict]:
         "DML-pool":  dict(learner_l=gbr(), pooling_l="pooled_id", known_m=True),
         "DML-adapt": dict(learner_l=gbr(), pooling_l="adaptive", known_m=True),
         "DML-mhat":  dict(learner_l=gbr(), pooling_l="adaptive", known_m=False,
-                          learner_m=gbr(), pooling_m="adaptive"),
+                          learner_m=gbc(), pooling_m="adaptive"),
     }
 
 

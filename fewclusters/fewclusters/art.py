@@ -70,12 +70,26 @@ def attainable_size(q: int, alpha: float) -> float:
 # statistics and p-values
 # --------------------------------------------------------------------------
 
+def _check_alpha(alpha: float) -> None:
+    if not (0.0 < alpha < 1.0):
+        raise ValueError("alpha must lie strictly between 0 and 1.")
+
+
+def _check_scores(a: np.ndarray, b: np.ndarray) -> None:
+    if a.shape != b.shape or a.ndim != 1:
+        raise ValueError("a and b must be 1-d arrays of the same length (one entry per cluster).")
+    if not (np.all(np.isfinite(a)) and np.all(np.isfinite(b))):
+        raise ValueError("cluster scores contain non-finite values.")
+    if np.any(b <= 0):
+        raise ValueError("score slopes b_j must be positive.")
+
+
 def _check_weights(q: int, weights: Optional[np.ndarray]) -> np.ndarray:
     if weights is None:
         return np.full(q, 1.0 / q)
     w = np.asarray(weights, dtype=float)
-    if w.shape != (q,):
-        raise ValueError(f"weights must have shape ({q},).")
+    if w.shape != (q,) or not np.all(np.isfinite(w)) or np.any(w <= 0):
+        raise ValueError(f"weights must be {q} positive finite numbers.")
     return w
 
 
@@ -116,6 +130,10 @@ def art_test(a: np.ndarray, b: np.ndarray, lam: float, signs: np.ndarray, exact:
     """Test H0: theta = lam from affine scores S_j(lam) = a_j - b_j lam."""
     a = np.asarray(a, dtype=float)
     b = np.asarray(b, dtype=float)
+    _check_scores(a, b)
+    _check_alpha(alpha)
+    if not np.isfinite(lam):
+        raise ValueError("lam must be finite.")
     scores = a - b * lam
     T = art_statistics(scores, signs, weights)
     p = float(np.mean(T >= T[0]))
@@ -144,6 +162,8 @@ def art_confint(a: np.ndarray, b: np.ndarray, signs: np.ndarray, alpha: float = 
     """
     a = np.asarray(a, dtype=float)
     b = np.asarray(b, dtype=float)
+    _check_scores(a, b)
+    _check_alpha(alpha)
     w = _check_weights(a.size, weights)
     center = float(np.sum(w * a) / np.sum(w * b))  # p_hat(center) = 1
 
