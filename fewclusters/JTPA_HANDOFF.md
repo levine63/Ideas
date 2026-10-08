@@ -187,3 +187,14 @@ replaced. All four main designs and the diagnostic are saved, with 40,000
 main method/replication/weight rows and 5,000 diagnostic rows. There were no
 failed or excluded main replications. See
 [coverage/power report](results/weighting_simulation/COVERAGE_POWER.md).
+
+## Paper insertion (2026-10-08)
+
+At the user's request, added the qualified weighting recommendation in Section
+3.1 of `paper/short_note_weighting_revision.docx`, a revised copy of the supplied
+Word note. An internal hyperlink points to new Appendix A, which summarizes
+the simulation design, coverage/power table and independent-weight diagnostic,
+with a stable link to the full report at commit 8a7da00. The original Downloads
+file remains unchanged. No manuscript was present in the repository beforehand;
+this is a reviewable working copy, not a claim to have updated another author's
+unseen current manuscript. All 130 native equations are preserved exactly.
