@@ -17,9 +17,9 @@ fixed for every sign vector and every hypothesised value.
 
 ```
 pip install numpy scikit-learn        # the only dependencies
-PYTHONPATH=. python -m pytest tests   # 54 tests
+PYTHONPATH=. python -m pytest tests   # 59 tests
 PYTHONPATH=. python examples/quickstart.py
-PYTHONPATH=. python examples/jtpa_analysis.py --demo   # JTPA pipeline on synthetic data
+PYTHONPATH=. python examples/jtpa_analysis.py --demo --out results/demo.md   # synthetic pipeline check
 ```
 
 ## Usage
@@ -137,3 +137,43 @@ separately.
 Cai, Canay, Kim, Shaikh (2023) J. Econometric Methods 12(1): 85-103.
 Canay, Romano, Shaikh (2017) Econometrica 85(3): 1013-1030.
 Chernozhukov et al. (2018) Econometrics Journal 21(1): C1-C68.
+
+
+## Preliminary JTPA pilot, October 8, 2026
+
+**PRELIMINARY - NOT FOR PUBLICATION.** See [JTPA_HANDOFF.md](JTPA_HANDOFF.md)
+for the novelty assessment, data provenance, corrected benchmark definitions,
+and unresolved design questions. The original downloaded data stay in ignored
+`jtpa_data/`; results are aggregate summaries only.
+
+The real-data example no longer supplies observed assignment shares as known
+probabilities. Its default estimates propensity; `--propensity` or
+`--propensity-column` requires `--propensity-source`. A source string records
+provenance or an explicit assumption; it does not itself verify the design.
+
+With the working directory set to `fewclusters`, these entry points reproduce
+the pilot (install pandas, scipy, requests, pyreadr and tabulate for examples):
+
+```text
+python examples/download_jtpa.py --dataset both --output-dir jtpa_data
+PYTHONPATH=. python examples/jtpa_pilot.py
+PYTHONPATH=. python examples/jtpa_shrink_pilot.py
+PYTHONPATH=. python examples/summarize_jtpa.py
+```
+
+The `PYTHONPATH=.` prefix is POSIX shell syntax; in PowerShell first run
+`$env:PYTHONPATH='.'`. Pilot seeds are 0, 1 and 2. The baseline script resumes
+saved pilot JSONs; use a fresh results directory for a new specification or data
+version. The shrinkage script recomputes its results.
+
+Original adaptive methods explicitly turn shrinkage and the local-fit floor
+off. The new methods use outcome shrinkage kappa=20, treatment shrinkage zero,
+and a 20-row local-fit floor. Setting `reserve_calibration=True` on a fixed
+local/pooled fit supplies the same training allocation as the adaptive method.
+The ordinary local benchmark also appears so the calibration cost is visible.
+
+Small-site warnings do not certify validity for sites above a threshold.
+Shrinkage does not establish Gaussian score approximations. With estimated
+propensities, cluster identity alone does not guarantee a valid borrowed
+propensity model. The floor can force full borrowing for treatment even when
+`shrink_m=0`.

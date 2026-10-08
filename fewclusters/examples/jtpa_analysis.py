@@ -21,7 +21,13 @@ from fewclusters.art import sign_group, art_test, art_confint
 def load_table(path):
     if str(path).lower().endswith('.dta'):
         return pd.read_stata(path, convert_categoricals=False)
-    return pd.read_csv(path)
+    if str(path).lower().endswith('.xpt'):
+        return pd.read_sas(path, format='xport')
+    if str(path).lower().endswith('.sas7bdat'):
+        return pd.read_sas(path)
+    if str(path).lower().endswith('.csv'):
+        return pd.read_csv(path)
+    raise ValueError(f'Unrecognized file type: {path}')
 
 
 def propensity_vector(data, probability=None, probability_column=None, source=None):

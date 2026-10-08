@@ -4,3 +4,6 @@ __pycache__/
 
 # Research data are fetched locally, never committed.
 jtpa_data/
+
+# Local runtime warning streams; report keeps substantive limitations.
+results/*warnings.log
