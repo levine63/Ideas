@@ -142,6 +142,8 @@ def run_all(df, y, d, site, xs, strata=None, alpha=.05, n_folds=5, seed=0,
         if p is not None and name == 'DML adaptive both':
             continue
         spec.setdefault('pooling_m', 'local')
+        spec.setdefault('shrink_l', 0.0)
+        spec.setdefault('min_local_train', 0)
         model = ARTDML(learner_m=gbc(), n_folds=n_folds, random_state=seed, **spec)
         model.fit(yv, dv, X, sv, m_known=p)
         lo, hi = model.confint(alpha)
