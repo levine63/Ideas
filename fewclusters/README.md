@@ -14,6 +14,7 @@ fixed for every sign vector and every hypothesised value.
 pip install numpy scikit-learn        # the only dependencies
 PYTHONPATH=. python -m pytest tests   # 22 tests
 PYTHONPATH=. python examples/quickstart.py
+PYTHONPATH=. python examples/jtpa_analysis.py --demo   # JTPA pipeline on synthetic data
 ```
 
 ## Usage
