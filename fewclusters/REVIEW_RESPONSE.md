@@ -21,7 +21,18 @@ across machines; used by the metamorphic tests).
 
 All earlier simulation numbers are superseded by [RESULTS.md](RESULTS.md),
 produced by the repaired driver (seeded folds, one fit per replication,
-dependent oracle scores, unequal cluster sizes).
+dependent oracle scores, unequal cluster sizes). Headlines:
+
+* Size holds near the attainable 1/32 for local, pooled and adaptive fits
+  when nuisances are common across clusters, and with serially dependent
+  oracle scores and 6:1 cluster sizes (0.030-0.043).
+* New and important: pooling a treatment model that differs by cluster
+  over-rejects badly (0.277); pooling a cluster-specific outcome model with
+  an estimated m over-rejects moderately (0.073); with known m it does not
+  (0.027). Adaptive pooling holds size in all three designs.
+* The dependence design confirms the within-cluster CLT but does not
+  stress-test buffering (low-capacity learners cannot leak); stated as a
+  limitation.
 
 ## Known limits that remain
 
